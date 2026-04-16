@@ -1,0 +1,6 @@
+RyadaZone is a social platform designed for sport lovers accross the globe, allowing users to connect with each other, organize matches, follow their performances and interact with a dynamic sports community. It embodies my vision of the ideal platform for athletes and sports fans : 
+Athletes can meet players of the same level (or teams depending on the sport) in the area thanks to my precise ranking system (still in development), challenge them and track their performances. 
+Fans on the other hand can interact thanks to the feed platform : a place where they can comment sports events, follow their favorite users, create and join communities to discuss a certain topic in particular. 
+This project is still new and in active development. I still plan on adding a "live" section where people can follow the score of their favorite sports in real time, comment under the match or share their pronostics as well as a marketplace where people can sell their sports equipment. 
+The goal is to create an environment where competition, social engagement and athletes' interactions meet in one place. 
+This is a college project. It might eventually lead to something more serious in the near future. 
