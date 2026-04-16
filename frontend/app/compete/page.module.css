@@ -1,0 +1,93 @@
+@reference "../../style/globals.css";
+
+.page {
+  @apply min-h-screen bg-gray-200;
+}
+
+.shell {
+  @apply flex w-full gap-0;
+}
+
+.main {
+  @apply min-w-0 flex-1 px-3 py-4 md:px-6 md:py-6 lg:px-8;
+}
+
+.mainInner {
+  @apply max-w-5xl;
+}
+
+.profileCard {
+  @apply mb-8 rounded-xl border border-gray-400 bg-gray-100 p-6 shadow-sm md:p-8;
+}
+
+.profileName {
+  @apply text-4xl font-black text-gray-900;
+}
+
+.ratingsGrid {
+  @apply mt-6 grid grid-cols-2 gap-6 md:grid-cols-4;
+}
+
+.sportLabel {
+  @apply text-xs font-bold uppercase tracking-wide text-blue-700;
+}
+
+.ratingValue {
+  @apply mt-1 text-3xl font-black text-gray-900;
+}
+
+.matchesPlayed {
+  @apply text-sm font-semibold text-gray-600;
+}
+
+.emptyStateText {
+  @apply text-gray-600;
+}
+
+.matchesHeader {
+  @apply mb-6 flex items-center justify-between rounded-lg bg-gray-300 px-5 py-3;
+}
+
+.matchesTitle {
+  @apply text-2xl font-black text-blue-800;
+}
+
+.matchesCount {
+  @apply text-sm font-bold text-gray-700;
+}
+
+.matchesList {
+  @apply space-y-6;
+}
+
+.emptyMatchesCard {
+  @apply rounded-xl border border-gray-400 bg-gray-100 p-12 text-center shadow-sm;
+}
+
+.emptyMatchesIconWrap {
+  @apply mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100;
+}
+
+.emptyMatchesTitle {
+  @apply mb-2 text-2xl font-black text-blue-800;
+}
+
+.emptyMatchesDesc {
+  @apply mx-auto max-w-md font-semibold text-gray-700;
+}
+
+.sectionCard {
+  @apply rounded-xl border border-gray-400 bg-gray-100 p-6 shadow-sm;
+}
+
+.sectionTitle {
+  @apply text-xl font-black text-blue-800;
+}
+
+.sectionTitleWithGap {
+  @apply mb-4 text-xl font-black text-blue-800;
+}
+
+.leaderboardRow {
+  @apply flex justify-between border-b border-gray-300 py-2 font-semibold;
+}

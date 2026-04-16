@@ -1,0 +1,81 @@
+@reference "../../style/globals.css";
+
+.aside {
+  @apply w-20 shrink-0 self-stretch md:w-72;
+}
+
+.nav {
+  @apply flex h-full min-h-full flex-col border-r-2 border-gray-300 bg-gray-200;
+}
+
+.header {
+  @apply border-b-2 border-gray-300 px-4 pb-3 pt-4;
+}
+
+.headerTitle {
+  @apply hidden text-xl font-black uppercase tracking-wide text-blue-800 md:block;
+}
+
+.groups {
+  @apply flex-1 space-y-6 px-3 py-4;
+}
+
+.group {
+  @apply space-y-2;
+}
+
+.sectionTitle {
+  @apply px-2 text-xl font-black uppercase tracking-wide text-blue-700;
+}
+
+.list {
+  @apply space-y-1;
+}
+
+.item {
+  @apply my-1 flex cursor-pointer items-center rounded-lg px-3 py-2.5 font-bold transition-all;
+}
+
+.itemActive {
+  @apply border border-blue-200 bg-white text-blue-700 shadow-sm;
+}
+
+.itemInactive {
+  @apply text-amber-600 hover:bg-white/70 hover:text-amber-700;
+}
+
+.itemIcon {
+  @apply w-6 flex-shrink-0 text-center;
+}
+
+.itemText {
+  @apply ml-3 hidden whitespace-nowrap text-[1.02rem] md:inline;
+}
+
+.userRow {
+  @apply flex min-w-0 items-center gap-3 border-t-2 border-gray-300 bg-gray-300 p-4;
+}
+
+.avatar {
+  @apply h-10 w-10 rounded-full bg-gray-900;
+}
+
+.userInfo {
+  @apply hidden min-w-0 md:block;
+}
+
+.userName {
+  @apply truncate text-sm font-black text-blue-900;
+}
+
+.userEmail {
+  @apply truncate text-xs text-gray-600;
+}
+
+.menuDesktop {
+  @apply ml-auto hidden text-gray-500 md:block;
+}
+
+.menuMobile {
+  @apply mx-auto text-gray-500 md:hidden;
+}

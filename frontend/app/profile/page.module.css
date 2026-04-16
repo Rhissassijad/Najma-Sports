@@ -1,0 +1,161 @@
+@reference "../../style/globals.css";
+
+.page {
+  @apply min-h-screen bg-gray-200;
+}
+
+.shell {
+  @apply flex w-full gap-0;
+}
+
+.sidebar {
+  @apply w-56 shrink-0 self-stretch md:w-72;
+}
+
+.sidebarNav {
+  @apply sticky top-24 flex h-full min-h-full flex-col border-r-2 border-gray-300 bg-gray-200;
+}
+
+.sidebarHeader {
+  @apply border-b-2 border-gray-300 px-4 pb-3 pt-4;
+}
+
+.sidebarTitle {
+  @apply text-xl font-black uppercase tracking-wide text-blue-800;
+}
+
+.sidebarList {
+  @apply flex-1 space-y-2 px-3 py-4;
+}
+
+.sidebarButton {
+  @apply w-full rounded-lg px-3 py-2.5 text-left text-[1.02rem] font-bold text-amber-600 transition hover:bg-white/70 hover:text-amber-700;
+}
+
+.sidebarButtonActive {
+  @apply border border-blue-200 bg-white text-blue-700 shadow-sm;
+}
+
+.main {
+  @apply min-w-0 flex-1 px-3 py-4 md:px-6 md:py-6 lg:px-8;
+}
+
+.mainInner {
+  @apply max-w-5xl;
+}
+
+.sectionCard {
+  @apply rounded-xl border border-gray-400 bg-gray-100 p-6 shadow-sm;
+}
+
+.sectionTitle {
+  @apply mb-6 text-3xl font-black text-blue-800;
+}
+
+.overviewTop {
+  @apply mb-6 flex flex-col gap-6 md:flex-row md:items-center;
+}
+
+.profilePictureBlock {
+  @apply flex min-w-[220px] flex-col items-start gap-3;
+}
+
+.profilePicture {
+  @apply h-28 w-28 rounded-full border-4 border-blue-700 object-cover;
+}
+
+.profileFallback {
+  @apply flex h-28 w-28 items-center justify-center rounded-full bg-blue-800 text-4xl font-black text-white;
+}
+
+.uploadButton {
+  @apply cursor-pointer rounded-md bg-blue-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-600;
+}
+
+.hiddenInput {
+  @apply hidden;
+}
+
+.uploadInfo {
+  @apply text-xs font-semibold text-gray-600;
+}
+
+.identityBlock {
+  @apply space-y-1;
+}
+
+.playerName {
+  @apply text-4xl font-black text-gray-900;
+}
+
+.playerMeta {
+  @apply font-semibold text-gray-600;
+}
+
+.infoGrid {
+  @apply grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3;
+}
+
+.infoCard {
+  @apply rounded-lg border border-gray-300 bg-white p-4;
+}
+
+.infoLabel {
+  @apply text-xs font-bold uppercase tracking-wide text-blue-700;
+}
+
+.infoValue {
+  @apply mt-1 text-lg font-black text-gray-900;
+}
+
+.noteCard {
+  @apply mt-5 rounded-lg border border-blue-200 bg-blue-50 p-4;
+}
+
+.noteTitle {
+  @apply text-lg font-black text-blue-800;
+}
+
+.noteText {
+  @apply mt-1 font-semibold text-gray-700;
+}
+
+.activityHeader {
+  @apply mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between;
+}
+
+.tournamentsButton {
+  @apply inline-flex rounded-md bg-amber-400 px-4 py-2 font-black text-blue-950 transition hover:bg-amber-300;
+}
+
+.matchesList {
+  @apply space-y-6;
+}
+
+.emptyState {
+  @apply rounded-lg border border-dashed border-gray-400 bg-white px-5 py-8 text-center font-semibold text-gray-600;
+}
+
+.sportsGrid {
+  @apply grid grid-cols-1 gap-4 md:grid-cols-2;
+}
+
+.infoCardLarge {
+  @apply rounded-lg border border-gray-300 bg-white p-4;
+}
+
+.cardTitle {
+  @apply mb-3 text-lg font-black text-blue-800;
+}
+
+.rowLine {
+  @apply flex items-center justify-between border-b border-gray-200 py-2 font-semibold text-gray-700 last:border-b-0;
+}
+
+.settingsList {
+  @apply mb-4 flex flex-col gap-3 sm:flex-row;
+}
+
+.settingsButton {
+  @apply rounded-md border border-blue-200 bg-white px-4 py-2 font-bold text-blue-700 transition hover:bg-blue-50;
+}

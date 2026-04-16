@@ -1,0 +1,41 @@
+@reference "../../style/globals.css";
+
+.aside {
+  @apply hidden w-[84px] shrink-0 self-stretch xl:block xl:w-72;
+}
+
+.nav {
+  @apply sticky top-24 flex h-[calc(100vh-6rem)] flex-col rounded-r-2xl border-r-2 border-gray-300 bg-gradient-to-b from-gray-100 via-gray-200 to-gray-200;
+}
+
+.header {
+  @apply border-b-2 border-gray-300 px-4 pb-4 pt-5;
+}
+
+.title {
+  @apply text-xl font-black uppercase tracking-wide text-blue-800;
+}
+
+.subtitle {
+  @apply mt-1 text-xs font-bold uppercase tracking-[0.18em] text-blue-500;
+}
+
+.createPostButton {
+  @apply mt-4 inline-flex w-full items-center justify-center rounded-xl bg-blue-700 px-3 py-2 text-sm font-black text-white transition hover:bg-blue-600;
+}
+
+.list {
+  @apply flex-1 space-y-2 px-3 py-4;
+}
+
+.itemLink {
+  @apply my-1 flex items-center rounded-lg px-3 py-2.5 text-[1.02rem] font-bold text-amber-700 transition hover:bg-white/80 hover:text-amber-800;
+}
+
+.itemLinkActive {
+  @apply border border-blue-200 bg-white text-blue-700 shadow-sm;
+}
+
+.dot {
+  @apply mr-3 h-2.5 w-2.5 rounded-full bg-current;
+}

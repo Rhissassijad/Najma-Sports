@@ -1,0 +1,125 @@
+@reference "../../style/globals.css";
+
+.card {
+  @apply mb-10 overflow-hidden rounded-2xl border border-amber-600 bg-amber-400 shadow-md transition-all duration-200 hover:shadow-lg;
+}
+
+.accentBar {
+  @apply h-1.5 bg-blue-700;
+}
+
+.body {
+  @apply p-6 md:p-8;
+}
+
+.header {
+  @apply mb-6 flex items-start justify-between gap-4;
+}
+
+.headerLeft {
+  @apply flex items-center gap-4;
+}
+
+.sportIcon {
+  @apply flex h-11 w-11 items-center justify-center rounded-full bg-blue-700 text-2xl text-white;
+}
+
+.venue {
+  @apply text-2xl font-black text-blue-900;
+}
+
+.meta {
+  @apply mt-1 text-sm font-semibold text-blue-800/80;
+}
+
+.headerRight {
+  @apply text-right;
+}
+
+.status {
+  @apply text-xs font-black uppercase tracking-widest text-blue-800;
+}
+
+.date {
+  @apply mt-1 text-sm font-semibold text-blue-900;
+}
+
+.results {
+  @apply space-y-3;
+}
+
+.playerRow {
+  @apply flex items-center justify-between rounded-xl border p-4;
+}
+
+.playerRowWinner {
+  @apply border-blue-300 bg-white/65;
+}
+
+.playerRowDefault {
+  @apply border-amber-600/60 bg-amber-300/60;
+}
+
+.playerLeft {
+  @apply flex items-center gap-4;
+}
+
+.avatar {
+  @apply flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-900 text-2xl text-white;
+}
+
+.playerName {
+  @apply text-xl font-black;
+}
+
+.playerNameWinner {
+  @apply text-blue-700;
+}
+
+.playerNameDefault {
+  @apply text-blue-900;
+}
+
+.ratingLine {
+  @apply mt-0.5 text-sm font-semibold text-blue-800;
+}
+
+.ratingValue {
+  @apply font-black text-blue-900;
+}
+
+.scoreBox {
+  @apply text-right;
+}
+
+.score {
+  @apply text-4xl font-black leading-none text-blue-800 tabular-nums md:text-5xl;
+}
+
+.ratingChange {
+  @apply mt-1 flex items-center justify-end gap-1 text-sm font-black;
+}
+
+.ratingUp {
+  @apply text-green-700;
+}
+
+.ratingDown {
+  @apply text-red-700;
+}
+
+.footer {
+  @apply mt-6 flex items-center justify-between border-t border-blue-800/25 pt-4 text-sm font-bold text-blue-900;
+}
+
+.footerLeft {
+  @apply flex items-center gap-2;
+}
+
+.footerDot {
+  @apply inline-block h-2.5 w-2.5 rounded-full bg-blue-700;
+}
+
+.sportTag {
+  @apply font-black uppercase tracking-wide text-blue-800;
+}

@@ -1,0 +1,45 @@
+@reference "../../style/globals.css";
+
+.footer {
+    @apply border-t-2 border-blue-900 bg-blue-700 text-white;
+}
+
+.inner {
+  @apply mx-auto grid max-w-[1440px] gap-8 px-6 py-10 md:grid-cols-5;
+}
+
+.brandCol {
+  @apply md:col-span-1;
+}
+
+.brand {
+  @apply text-4xl font-black tracking-wide text-white;
+}
+
+.brandAccent {
+  @apply text-amber-400;
+}
+
+.brandText {
+  @apply mt-3 max-w-xs font-semibold text-blue-100;
+}
+
+.col {
+  @apply space-y-3;
+}
+
+.colTitle {
+  @apply text-2xl font-black;
+}
+
+.linkList {
+  @apply space-y-1;
+}
+
+.link {
+  @apply font-semibold text-blue-100 transition hover:text-amber-300;
+}
+
+.bottom {
+  @apply border-t border-blue-800 px-6 py-4 text-center font-semibold text-blue-100;
+}

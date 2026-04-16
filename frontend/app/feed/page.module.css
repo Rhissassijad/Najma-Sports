@@ -1,0 +1,573 @@
+@reference "../../style/globals.css";
+
+.page {
+  @apply min-h-screen bg-gray-200;
+}
+
+.layout {
+  @apply mx-auto grid w-full max-w-[1500px] gap-4 px-3 py-4 md:gap-6 md:px-6 md:py-6 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[18rem_minmax(0,1fr)_20rem];
+}
+
+.main {
+  @apply min-w-0;
+}
+
+.mainInner {
+  @apply mx-auto flex w-full max-w-4xl flex-col gap-4 md:gap-5;
+}
+
+.heroCard {
+  @apply grid gap-4 rounded-2xl border border-blue-200 bg-gradient-to-r from-white to-blue-50 p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_18rem];
+}
+
+.heroPill {
+  @apply inline-flex rounded-full border border-blue-200 bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-blue-700;
+}
+
+.heroTitle {
+  @apply mt-3 text-3xl font-black text-blue-900;
+}
+
+.heroSubtitle {
+  @apply mt-2 text-sm font-semibold text-blue-700/80;
+}
+
+.gamificationCard {
+  @apply rounded-xl border border-amber-200 bg-white p-4;
+}
+
+.gamificationLabel {
+  @apply text-xs font-black uppercase tracking-[0.12em] text-amber-700;
+}
+
+.gamificationValue {
+  @apply mt-2 text-2xl font-black text-blue-900;
+}
+
+.gamificationMeta {
+  @apply mt-1 text-xs font-semibold text-gray-600;
+}
+
+.progressTrack {
+  @apply mt-4 h-2.5 w-full rounded-full bg-gray-200;
+}
+
+.progressFill {
+  @apply block h-full w-[72%] rounded-full bg-gradient-to-r from-blue-700 to-amber-400;
+}
+
+.feedHeader {
+  @apply rounded-2xl border border-gray-300 bg-white p-4 shadow-sm;
+}
+
+.feedHeaderTop {
+  @apply flex flex-wrap items-center justify-between gap-2;
+}
+
+.feedHeading {
+  @apply text-2xl font-black text-blue-900;
+}
+
+.feedMeta {
+  @apply text-xs font-bold uppercase tracking-[0.1em] text-gray-500;
+}
+
+.modeToggle {
+  @apply mt-4 inline-flex flex-wrap rounded-xl border border-gray-300 bg-gray-100 p-1;
+}
+
+.modeButton {
+  @apply rounded-lg px-3 py-2 text-sm font-black text-gray-600 transition hover:bg-white;
+}
+
+.modeButtonActive {
+  @apply bg-blue-700 text-white shadow-sm;
+}
+
+.filterRow {
+  @apply mt-4 grid gap-3 sm:grid-cols-2;
+}
+
+.filterLabel {
+  @apply flex flex-col gap-1 text-xs font-black uppercase tracking-[0.09em] text-gray-500;
+}
+
+.selectControl {
+  @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-blue-900;
+}
+
+.composerCard {
+  @apply rounded-2xl border border-gray-300 bg-white p-4 shadow-sm;
+}
+
+.composerTitle {
+  @apply text-lg font-black text-blue-900;
+}
+
+.composerInput {
+  @apply mt-3 h-28 w-full resize-none rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 outline-none transition focus:border-blue-400 focus:bg-white;
+}
+
+.composerTools {
+  @apply mt-3 flex flex-wrap gap-2;
+}
+
+.toolButton {
+  @apply rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-gray-600 transition hover:border-blue-200 hover:text-blue-700;
+}
+
+.toolButtonActive {
+  @apply border-blue-200 bg-blue-100 text-blue-700;
+}
+
+.tagSelectWrap {
+  @apply ml-auto flex items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-gray-500;
+}
+
+.tagSelect {
+  @apply bg-transparent text-xs font-black text-blue-700 outline-none;
+}
+
+.communitySelectWrap {
+  @apply flex items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-gray-500;
+}
+
+.communitySelect {
+  @apply min-w-[8rem] bg-transparent text-xs font-black text-blue-700 outline-none;
+}
+
+.communityPickerHint {
+  @apply mt-2 text-xs font-bold uppercase tracking-[0.05em] text-gray-600;
+}
+
+.locationInput {
+  @apply mt-3 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-blue-900 outline-none focus:border-blue-400;
+}
+
+.composerActions {
+  @apply mt-4 flex flex-wrap gap-2;
+}
+
+.quickAction {
+  @apply rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-black uppercase tracking-[0.05em] text-blue-700 transition hover:bg-blue-100;
+}
+
+.publishButton {
+  @apply ml-auto rounded-full bg-blue-700 px-5 py-2 text-sm font-black text-white transition hover:bg-blue-600;
+}
+
+.composerMessage {
+  @apply mt-3 text-sm font-bold text-blue-700;
+}
+
+.boardCard {
+  @apply rounded-2xl border border-gray-300 bg-white p-4 shadow-sm;
+}
+
+.boardTitle {
+  @apply text-xl font-black text-blue-900;
+}
+
+.boardGrid {
+  @apply mt-3 grid gap-3 md:grid-cols-2;
+}
+
+.boardItem {
+  @apply rounded-xl border border-gray-300 bg-gray-50 p-3;
+}
+
+.boardTopic {
+  @apply text-sm font-black text-blue-900;
+}
+
+.boardActivity {
+  @apply mt-1 text-xs font-bold text-gray-600;
+}
+
+.boardDelta {
+  @apply mt-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-black uppercase tracking-[0.07em] text-emerald-700;
+}
+
+.futureCard {
+  @apply rounded-xl border border-dashed border-gray-400 bg-gray-50 p-4;
+}
+
+.futureTitle {
+  @apply text-sm font-black uppercase tracking-[0.06em] text-blue-900;
+}
+
+.futureText {
+  @apply mt-2 text-sm font-semibold text-gray-600;
+}
+
+.communitySectionCard {
+  @apply rounded-2xl border border-gray-300 bg-white p-4 shadow-sm;
+}
+
+.communitySectionTitle {
+  @apply text-xl font-black text-blue-900;
+}
+
+.communitySectionSubtitle {
+  @apply mt-1 text-sm font-semibold text-gray-600;
+}
+
+.communityCreateRow {
+  @apply mt-3 flex flex-col gap-2 sm:flex-row;
+}
+
+.communityInput {
+  @apply w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-blue-900 outline-none focus:border-blue-400;
+}
+
+.communityCreateButton {
+  @apply rounded-xl bg-blue-700 px-4 py-2 text-sm font-black text-white transition hover:bg-blue-600;
+}
+
+.communityMessage {
+  @apply mt-2 text-sm font-bold text-blue-700;
+}
+
+.communityList {
+  @apply mt-3 space-y-2;
+}
+
+.communityEmpty {
+  @apply rounded-xl border border-dashed border-gray-400 bg-gray-50 px-3 py-4 text-sm font-semibold text-gray-600;
+}
+
+.communityCard {
+  @apply flex items-center justify-between gap-3 rounded-xl border border-gray-300 bg-gray-50 px-3 py-3;
+}
+
+.communityName {
+  @apply text-sm font-black text-blue-900;
+}
+
+.communityMeta {
+  @apply mt-1 text-xs font-semibold text-gray-600;
+}
+
+.communityJoinButton {
+  @apply rounded-full bg-blue-700 px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-white transition hover:bg-blue-600;
+}
+
+.communityJoinedButton {
+  @apply rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-emerald-700;
+}
+
+.feedStream {
+  @apply flex flex-col gap-4;
+}
+
+.feedCard {
+  @apply rounded-2xl border border-gray-300 bg-white p-4 shadow-sm;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+.reveal {
+  animation: riseIn 360ms ease both;
+}
+
+.matchCard {
+  @apply border-blue-200;
+}
+
+.trendingCard {
+  @apply border-amber-200 bg-gradient-to-r from-amber-50 to-white;
+}
+
+.cardTop {
+  @apply flex items-start justify-between gap-2;
+}
+
+.authorLine {
+  @apply text-base font-black text-blue-900;
+}
+
+.ownerAuthorGlow {
+  color: #0b4fd6;
+  text-shadow:
+    0 0 6px rgba(59, 130, 246, 0.55),
+    0 0 14px rgba(37, 99, 235, 0.35);
+}
+
+.ratingTag {
+  @apply ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-black uppercase tracking-[0.06em] text-blue-700;
+}
+
+.metaLine {
+  @apply mt-1 text-xs font-semibold uppercase tracking-[0.04em] text-gray-500;
+}
+
+.postTag {
+  @apply rounded-full bg-amber-100 px-2 py-1 text-[11px] font-black uppercase tracking-[0.07em] text-amber-700;
+}
+
+.postBody {
+  @apply mt-3 text-sm font-semibold leading-relaxed text-gray-700;
+}
+
+.postExtras {
+  @apply mt-3 flex flex-wrap gap-2;
+}
+
+.inlineEditWrap {
+  @apply mt-3 space-y-3;
+}
+
+.inlineEditTextarea {
+  @apply h-28 w-full resize-none rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-900 outline-none focus:border-blue-400 focus:bg-white;
+}
+
+.inlineEditControls {
+  @apply grid gap-3 sm:grid-cols-2;
+}
+
+.pill {
+  @apply rounded-full border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] font-black uppercase tracking-[0.06em] text-blue-700;
+}
+
+.pillMuted {
+  @apply rounded-full border border-gray-300 bg-gray-100 px-2 py-1 text-[11px] font-black uppercase tracking-[0.06em] text-gray-600;
+}
+
+.communityPill {
+  @apply rounded-full border border-emerald-300 bg-emerald-50 px-2 py-1 text-[11px] font-black tracking-[0.04em] text-emerald-700;
+}
+
+.cardActions {
+  @apply mt-4 flex flex-wrap gap-2;
+}
+
+.actionButton {
+  @apply rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-gray-600 transition hover:border-blue-200 hover:text-blue-700;
+}
+
+.followButton {
+  @apply rounded-full border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-blue-700 transition hover:bg-blue-100;
+}
+
+.followingButton {
+  @apply rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-emerald-700;
+}
+
+.challengeButton {
+  @apply rounded-full bg-blue-700 px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-white transition hover:bg-blue-600;
+}
+
+.ownerActions {
+  @apply mt-3 flex flex-wrap gap-2;
+}
+
+.ownerEditButton {
+  @apply rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-blue-700 transition hover:bg-blue-100;
+}
+
+.ownerDeleteButton {
+  @apply rounded-full border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-red-700 transition hover:bg-red-100;
+}
+
+.ownerCancelButton {
+  @apply rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[0.05em] text-gray-600 transition hover:bg-gray-100;
+}
+
+.matchSummary {
+  @apply text-lg font-black text-blue-900;
+}
+
+.scorePill {
+  @apply rounded-full bg-blue-700 px-3 py-1 text-xs font-black uppercase tracking-[0.06em] text-white;
+}
+
+.ratingShiftGrid {
+  @apply mt-3 grid gap-2 sm:grid-cols-2;
+}
+
+.ratingShiftCard {
+  @apply rounded-lg border border-gray-300 bg-gray-50 p-3;
+}
+
+.shiftPlayer {
+  @apply text-sm font-black text-blue-900;
+}
+
+.shiftValue {
+  @apply mt-1 text-sm font-bold text-gray-700;
+}
+
+.inlinePlayers {
+  @apply mt-3 grid gap-2 md:grid-cols-3;
+}
+
+.inlinePlayerCard {
+  @apply rounded-xl border border-gray-300 bg-gray-50 p-3;
+}
+
+.inlinePlayerName {
+  @apply text-sm font-black text-blue-900;
+}
+
+.inlinePlayerMeta {
+  @apply mt-1 text-xs font-semibold text-gray-600;
+}
+
+.inlinePlayerActions {
+  @apply mt-3 flex gap-2;
+}
+
+.loadAnchor {
+  @apply h-6 w-full;
+}
+
+.endMessage {
+  @apply py-2 text-center text-xs font-black uppercase tracking-[0.09em] text-gray-500;
+}
+
+.emptyStateCard {
+  @apply rounded-2xl border border-dashed border-gray-400 bg-white p-6 text-center;
+}
+
+.emptyStateCard h3 {
+  @apply text-lg font-black text-blue-900;
+}
+
+.emptyStateCard p {
+  @apply mt-2 text-sm font-semibold text-gray-600;
+}
+
+.skeletonCard {
+  @apply rounded-2xl border border-gray-300 bg-white p-4;
+}
+
+.skeletonLineWide,
+.skeletonLine,
+.skeletonChip {
+  @apply relative overflow-hidden rounded-full bg-gray-200;
+}
+
+.skeletonLineWide {
+  @apply h-4 w-2/3;
+}
+
+.skeletonLine {
+  @apply mt-3 h-3 w-full;
+}
+
+.skeletonRow {
+  @apply mt-4 flex gap-2;
+}
+
+.skeletonChip {
+  @apply h-8 w-20 rounded-full;
+}
+
+.skeletonLineWide::after,
+.skeletonLine::after,
+.skeletonChip::after {
+  content: "";
+  @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/70 to-transparent;
+  animation: shimmer 1300ms infinite;
+}
+
+.rightRail {
+  @apply min-w-0;
+}
+
+.rightRailInner {
+  @apply flex flex-col gap-4 lg:sticky lg:top-24;
+}
+
+.railCard {
+  @apply rounded-2xl border border-gray-300 bg-white p-4 shadow-sm;
+}
+
+.railHeader {
+  @apply mb-3 flex items-center justify-between gap-2;
+}
+
+.railHeader h3 {
+  @apply text-lg font-black text-blue-900;
+}
+
+.liveDot {
+  @apply h-2.5 w-2.5 rounded-full bg-red-500;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  animation: pulse 1400ms infinite;
+}
+
+.liveList,
+.recommendedList {
+  @apply flex flex-col gap-3;
+}
+
+.liveItem,
+.recommendedCard {
+  @apply rounded-xl border border-gray-300 bg-gray-50 p-3;
+}
+
+.liveMatchup {
+  @apply text-sm font-black text-blue-900;
+}
+
+.liveMeta {
+  @apply mt-1 text-xs font-semibold text-gray-600;
+}
+
+.liveActions {
+  @apply mt-3 flex gap-2;
+}
+
+.topicList {
+  @apply flex flex-col gap-2;
+}
+
+.topicItem {
+  @apply flex items-center justify-between rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-xs font-black uppercase tracking-[0.05em] text-blue-700 transition hover:bg-blue-50;
+}
+
+@media (max-width: 1279px) {
+  .publishButton {
+    @apply ml-0;
+  }
+
+  .tagSelectWrap {
+    @apply ml-0;
+  }
+
+  .communitySelectWrap {
+    @apply ml-0;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  }
+
+  70% {
+    box-shadow: 0 0 0 7px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}

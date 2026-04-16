@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #1d4ed8;
+  --accent: #f59e0b;
+  --background: #e5e7eb;
+  --text: #111827;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  font-family: Rockwell, "Roboto Slab", Cambria, "Times New Roman", serif;
+}
