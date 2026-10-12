@@ -13,7 +13,9 @@
 }
 
 .sidebarNav {
-  @apply sticky top-24 flex h-full min-h-full flex-col border-r-2 border-gray-300 bg-gray-200;
+  @apply sticky top-24 flex h-full flex-col border-r-2 border-gray-300 bg-gray-200;
+  min-height: calc(100vh - 96px);
+  align-self: flex-start;
 }
 
 .sidebarHeader {
@@ -158,4 +160,211 @@
 
 .settingsButton {
   @apply rounded-md border border-blue-200 bg-white px-4 py-2 font-bold text-blue-700 transition hover:bg-blue-50;
+}
+
+.settingsButton:disabled {
+  @apply cursor-not-allowed opacity-60;
+}
+
+.sportPickerLabel {
+  @apply self-center font-bold text-gray-700;
+}
+
+.sportPicker {
+  @apply min-w-48 rounded-md border border-gray-300 bg-white px-3 py-2 font-semibold text-gray-800;
+}
+
+.sportPicker:focus-visible,
+.settingsButton:focus-visible,
+.sidebarButton:focus-visible,
+.uploadButton:focus-within {
+  @apply outline outline-2 outline-offset-2 outline-blue-600;
+}
+
+.leaderboardList {
+  @apply mt-4 border-t border-gray-200 pt-3;
+}
+
+.errorMessage {
+  @apply mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 font-semibold text-red-800;
+}
+
+.editProfileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 25px;
+  width: 100%;
+}
+
+.editProfileForm h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Form Grid */
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* Individual Form Fields */
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 12px 15px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  background-color: #ffffff;
+  color: #111827;
+
+  font-size: 15px;
+
+  transition: border-color 0.2s ease;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* Form Buttons */
+
+.formActions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.saveButton {
+  padding: 12px 24px;
+
+  background-color: #2563eb;
+  color: white;
+
+  border: none;
+  border-radius: 8px;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background-color 0.2s ease;
+}
+
+.saveButton:hover {
+  background-color: #1d4ed8;
+}
+
+.cancelButton {
+  padding: 12px 24px;
+
+  background-color: #e5e7eb;
+  color: #111827;
+
+  border: none;
+  border-radius: 8px;
+
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  background-color: #d1d5db;
+}
+
+.saveButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Layout */
+
+@media (max-width: 768px) {
+  .shell {
+    @apply flex-col;
+  }
+
+  .sidebar {
+    @apply w-full;
+  }
+
+  .sidebarNav {
+    @apply top-16 h-auto border-b-2 border-r-0;
+    min-height: 0;
+  }
+
+  .sidebarHeader {
+    @apply hidden;
+  }
+
+  .sidebarList {
+    @apply flex gap-2 overflow-x-auto px-3 py-2;
+    scrollbar-width: thin;
+  }
+
+  .sidebarList li {
+    @apply shrink-0;
+  }
+
+  .sidebarButton {
+    @apply w-auto whitespace-nowrap px-3 py-2 text-sm;
+  }
+
+  .main {
+    @apply px-3 py-4;
+  }
+
+  .sectionCard {
+    @apply p-4;
+  }
+
+  .playerName {
+    @apply text-3xl;
+  }
+
+  .profilePictureBlock {
+    @apply min-w-0;
+  }
+
+  .settingsList {
+    @apply flex-col items-stretch;
+  }
+
+  .sportPickerLabel {
+    @apply self-start;
+  }
+
+  .sportPicker {
+    @apply w-full;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+
+  .saveButton,
+  .cancelButton {
+    width: 100%;
+  }
 }

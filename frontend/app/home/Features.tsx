@@ -1,40 +1,66 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Trophy, BarChart3, Target } from "lucide-react";
+import { Trophy, BarChart3, Target, UsersIcon, MessageCircleIcon, Folder, LocationEditIcon, Medal, ShoppingBag, ShoppingBasket, LucideShoppingCart } from "lucide-react";
+import styles from "./Features.module.css";
 
 const features = [
   {
     title: "Track Performance",
-    description: "Monitor your progress with detailed stats and analytics.",
+    description: "Monitor your match history, wins, losses, and performance statistics. Follow your progress over time and see how your results affect your rating.",
     icon: BarChart3,
   },
   {
-    title: "Compete",
-    description: "Challenge players and climb the global rankings.",
+    title: "Compete & climb rankings",
+    description: "Challenge other athletes, record match results, and earn rating points. Compare your performance with other players through sport-specific leaderboards.",
     icon: Trophy,
   },
   {
-    title: "Improve",
-    description: "Analyze your strengths and weaknesses to grow faster.",
+    title: "Improve your game",
+    description: "Review your results, identify areas for improvement, and set personal goals. Use your match history and rating progression to measure your development.",
     icon: Target,
+  },
+  {
+    title: "Find players & matches",
+    description: "Discover athletes who share your interests, find opponents, and connect with players near you. Find opportunities to compete at your preferred level.",
+    icon: UsersIcon,
+  },
+  {
+    title: "Join sports communities",
+    description: "Create or join communities dedicated to your favorite sports. Share experiences, discuss matches, and connect with athletes who share your passion.",
+    icon: MessageCircleIcon,
+  },
+  {
+    title: "Share your sports journey",
+    description: "Create posts, share your achievements, and follow activity from other athletes. Stay connected with your sports community through a personalized feed.",
+    icon: Folder,
+  },
+  {
+    title: "Join tournaments",
+    description: "Discover upcoming competitions, register for tournaments, and compete for a place on the podium. Follow tournament results and standings.",
+    icon: Medal,
+  },
+  {
+    title: "Sports marketplace",
+    description: "Explore sports equipment, accessories, and other products through a marketplace designed for athletes and sports enthusiasts.",
+    icon: LucideShoppingCart,
   },
 ];
 
 export default function Features() {
   return (
-    <section className="py-24 px-6 bg-[#E5E7EB] text-center">
-      
+    <section className={styles.features}>
+
       <motion.h2
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-3xl md:text-4xl font-bold mb-16"
+        className={styles.title}
       >
-        Why RyadaZone?
+        What is Najma Sports?
       </motion.h2>
 
-      <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+      <div className={styles.grid}>
         {features.map((feature, index) => {
           const Icon = feature.icon;
 
@@ -45,22 +71,21 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.2 }}
-              className="bg-white p-8 rounded-2xl shadow hover:shadow-xl hover:-translate-y-1 transition duration-300"
+              className={styles.card}
             >
-              {/* Icon */}
-              <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-[#0055CC]/10">
-                <Icon className="w-7 h-7 text-[#0055CC]" />
+
+              <div className={styles.iconContainer}>
+                <Icon className={styles.icon} />
               </div>
 
-              {/* Title */}
-              <h3 className="text-xl font-semibold mb-3">
+              <h3 className={styles.cardTitle}>
                 {feature.title}
               </h3>
 
-              {/* Description */}
-              <p className="text-gray-600 leading-relaxed">
+              <p className={styles.description}>
                 {feature.description}
               </p>
+
             </motion.div>
           );
         })}

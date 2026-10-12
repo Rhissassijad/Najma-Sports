@@ -6,11 +6,20 @@ const mongoose = require("mongoose");
 dotenv.config();
 
 const app = express();
+const Sport = require("./models/Sport");
+const DEFAULT_SPORTS = ["Tennis", "Soccer", "Padel", "Pickleball"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  ...(process.env.FRONTEND_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+];
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -49,7 +58,11 @@ app.use("/api/communities", communityRoutes);
 app.use("/api/feed", feedRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/ratings", ratingRoutes);
-app.use("/api/users", userRoutes);// 👈 KEEP LAST
+app.use("/api/users", userRoutes);
+
+app.use("/api", (req, res) => {
+  res.status(404).json({ message: `API route not found: ${req.method} ${req.path}` });
+});
 
 app.get("/test", (req, res) => {
   res.json({ message: "Backend reachable 🚀" });
@@ -60,8 +73,26 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB connected");
-    app.listen(8080, "0.0.0.0", () =>
-  console.log("🚀 Server running on http://localhost:8080")
-);
+    return Sport.find({ name: { $in: DEFAULT_SPORTS } })
+      .select("name")
+      .lean();
   })
-  .catch((err) => console.log(err));
+  .then(async (existingSports) => {
+    const existingNames = new Set(existingSports.map((sport) => sport.name));
+    const missingSports = DEFAULT_SPORTS
+      .filter((name) => !existingNames.has(name))
+      .map((name) => ({ name }));
+
+    if (missingSports.length > 0) {
+      await Sport.insertMany(missingSports);
+    }
+
+    const apiPort = process.env.API_PORT || 8080;
+    app.listen(apiPort, "0.0.0.0", () =>
+      console.log(`🚀 Server running on port ${apiPort}`)
+    );
+  })
+  .catch((err) => {
+    console.error("Backend startup failed:", err);
+    process.exitCode = 1;
+  });

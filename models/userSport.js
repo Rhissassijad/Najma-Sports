@@ -28,4 +28,6 @@ const userSportSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("userSport", userSportSchema);
+userSportSchema.index({ userId: 1, sportId: 1 }, { unique: true });
+
+module.exports = mongoose.model("UserSport", userSportSchema);

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
+import { Suspense } from "react";
 import FeedSidebar from "@/components/layout/FeedSidebar";
 import styles from "./page.module.css";
 
@@ -135,7 +136,7 @@ function FutureFeatureCard({ title }: { title: string }) {
   );
 }
 
-export default function FeedPage() {
+function FeedPageContent() {
   const searchParams = useSearchParams();
   const section = normalizeSection(searchParams.get("section"));
 
@@ -1017,5 +1018,13 @@ export default function FeedPage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+export default function FeedPage() {
+  return (
+    <Suspense fallback={null}>
+      <FeedPageContent />
+    </Suspense>
   );
 }

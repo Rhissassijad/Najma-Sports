@@ -1,0 +1,92 @@
+.howItWorks {
+    padding: 5rem 1.5rem;
+    text-align: center;
+    background: linear-gradient(to bottom, #E5E7EB, #c4d4f3);
+}
+
+.title {
+    margin-bottom: 3rem;
+
+    font-size: 1.875rem;
+    font-weight: 700;
+}
+
+.grid {
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 2.5rem;
+
+    max-width: 1152px;
+
+    margin: 0 auto;
+}
+
+/* Each step is now a card */
+.step {
+    padding: 2rem;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.step:hover {
+    transform: translateY(-4px);
+    transition: 0.3s;
+    color: white;
+    background: linear-gradient(to right,#63d3ff, #0055CC);
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+}
+.step:hover p{
+    transition: 0.3s;
+    color: white;
+}
+
+.stepTitle {
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.description {
+    margin: 0;
+
+    color: #4B5563;
+
+    line-height: 1.625;
+}
+.iconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 56px;
+    height: 56px;
+
+    margin: 0 auto 1.5rem;
+
+    background-color: rgba(0, 85, 204, 0.1);
+    border-radius: 1rem;
+}
+.icon{
+    width: 28px;
+    height: 28px;
+    color: #0055CC;
+}
+.step:hover .icon{
+    transition:0.3s;
+    color: #ffffff;
+}
+/* Tablet/Desktop */
+@media (min-width: 768px) {
+
+    .title {
+        font-size: 2.25rem;
+    }
+
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

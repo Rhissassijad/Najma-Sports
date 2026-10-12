@@ -7,7 +7,7 @@ export default function Footer() {
       <div className={styles.inner}>
         <div className={styles.brandCol}>
           <Link href="/" className={styles.brand}>
-            Ryada<span className={styles.brandAccent}>Zone</span>
+            Najma<span className={styles.brandAccent}>Sports</span>
           </Link>
           <p className={styles.brandText}>
             Compete, track performance, and climb rankings across your favorite sports.

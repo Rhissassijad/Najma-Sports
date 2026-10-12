@@ -1,4 +1,4 @@
-const UserSport = require("../models/UserSport");
+const UserSport = require("../models/userSport");
 
 const getUpdatedRatings = async (players, sportId) => {
   const userSports = await UserSport.find({

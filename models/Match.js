@@ -16,16 +16,55 @@ const matchSchema = new mongoose.Schema(
       },
     ],
 
-    // 🔹 NEW: Optional score system
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    status: {
+      type: String,
+      enum: ["open", "awaiting_result", "awaiting_confirmation", "completed"],
+      default: "open",
+      required: true,
+    },
+
     score: {
-      type: Object, // flexible (basketball, tennis, etc.)
+      type: mongoose.Schema.Types.Mixed,
       default: null,
     },
 
-    // 🔹 KEPT: Your current system (DO NOT BREAK)
+    proposedScore: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+
+    resultReporter: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    scheduledAt: {
+      type: Date,
+      default: null,
+    },
+
+    venue: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    type: {
+      type: String,
+      trim: true,
+      default: "Competitive",
+    },
+
     winner: {
       type: Number,
-      required: true,
+      default: null,
     },
   },
   { timestamps: true }

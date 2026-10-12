@@ -1,0 +1,106 @@
+
+.hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 7rem 1.5rem;
+    background: linear-gradient(to bottom, #E5E7EB, #c4d4f3);
+    background-image: linear-gradient(to left,rgba(0,0,0,0.90),rgba(0,0,0,0.25)),url(CTpicture.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 600px;
+    overflow: hidden;
+}
+
+.glow {
+    position: absolute;
+
+    width: 500px;
+    height: 500px;
+
+    top: -100px;
+
+    background-color: rgba(0, 85, 204, 0.1);
+
+    border-radius: 50%;
+
+    filter: blur(64px);
+}
+
+.title {
+    max-width: 768px;
+
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-left: auto;
+    color:#f5F5f5;
+}
+
+.highlight {
+    color: #F59E0B;
+}
+
+.description {
+    max-width: 672px;
+    margin-top: 1.5rem;
+    font-size: 1.125rem;
+    color: #f5F5f5;
+    margin-left: auto;
+}
+
+.buttons {
+    display: flex;
+    margin-top: 1.25rem;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.primaryButton,
+.secondaryButton {
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.primaryButton {
+    background-color: #0055CC;
+    color: white;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.primaryButton:hover {
+    transform: scale(1.05);
+    color: white;
+    background: linear-gradient(to right,#63d3ff, #0055CC);
+    transition:0.3s
+}
+
+.secondaryButton {
+    background-color: #0055CC;
+    color: white;
+}
+
+.secondaryButton:hover {
+    color: white;
+    background: linear-gradient(to right,#63d3ff, #0055CC);
+    scale: 1.05;
+    transition: 0.3s;
+}
+
+@media (min-width: 768px) {
+    .title {
+        font-size: 3.75rem;
+    }
+
+    .description {
+        font-size: 1.25rem;
+    }
+}

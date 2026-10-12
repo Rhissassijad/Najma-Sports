@@ -1,24 +1,54 @@
+import { style } from "framer-motion/client";
+import styles from "./HowItWorks.module.css";
+import {UserPlus,Users,TrendingUp} from "lucide-react"
+
 export default function HowItWorks() {
   return (
-    <section className="py-20 px-6 text-center">
-      <h2 className="text-3xl font-bold mb-12">How it works</h2>
+    <section className={styles.howItWorks}>
 
-      <div className="grid md:grid-cols-3 gap-8">
-        <div>
-          <h3 className="text-xl font-semibold mb-2">1. Create Account</h3>
-          <p>Sign up and set your profile.</p>
+      <h2 className={styles.title}>
+        How it works
+      </h2>
+
+      <div className={styles.grid}>
+
+        <div className={styles.step}>
+          <div className={styles.IconContainer}>
+            <UserPlus className={styles.icon} />
+         </div>
+          <h3 className={styles.stepTitle}>
+            Create your profile
+          </h3>
+
+          <p className={styles.description}>
+            Sign up, choose your favorite sports, and personalize your athlete profile to get started.
+          </p>
         </div>
 
-        <div>
-          <h3 className="text-xl font-semibold mb-2">2. Join Matches</h3>
-          <p>Compete with players near you.</p>
+        <div className={styles.step}>
+          <h3 className={styles.stepTitle}>
+            <Users className={styles.icon} />
+            Explore & Connect
+          </h3>
+
+          <p className={styles.description}>
+            Discover sports communities, connect with other athletes, and find activities that interest you.
+          </p>
         </div>
 
-        <div>
-          <h3 className="text-xl font-semibold mb-2">3. Improve</h3>
-          <p>Track results and grow your rating.</p>
+        <div className={styles.step}>
+          <h3 className={styles.stepTitle}>
+            <TrendingUp className={styles.icon} />
+            Get in the game! 
+          </h3>
+
+          <p className={styles.description}>
+            Join a community, share your first post, or find an opponent and start your sports journey.
+          </p>
         </div>
+
       </div>
+
     </section>
   );
 }

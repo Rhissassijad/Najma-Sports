@@ -7,7 +7,7 @@ import styles from "./cards.module.css";
 interface Player {
   name?: string;
   rating?: number;
-  ratingChange?: number;
+  ratingChange?: number | null;
 }
 
 interface Match {
@@ -15,9 +15,20 @@ interface Match {
   venue?: string;
   type?: string;
   createdAt?: string;
+  scheduledAt?: string;
   players?: Player[];
-  score?: number[];
+  score?: {
+    type?: string;
+    points?: number[];
+    sets?: number[][];
+  } | number[];
+  proposedScore?: {
+    type?: string;
+    points?: number[];
+    sets?: number[][];
+  } | null;
   winner?: number;
+  status?: "open" | "awaiting_result" | "awaiting_confirmation" | "completed";
 }
 
 interface MatchCardProps {
@@ -28,10 +39,27 @@ interface MatchCardProps {
 export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
   const player1 = match.players?.[0];
   const player2 = match.players?.[1];
-  const winnerIndex = match.winner;
-
-  const score1 = Array.isArray(match.score) ? match.score[0] : "-";
-  const score2 = Array.isArray(match.score) ? match.score[1] : "-";
+  const isCompleted =
+    match.status === "completed" ||
+    (match.winner !== null && match.winner !== undefined);
+  const pendingScore = match.status === "awaiting_confirmation" ? match.proposedScore : null;
+  const score = pendingScore || match.score;
+  const scoreForPlayer = (playerIndex: number) => {
+    if (Array.isArray(score)) return score[playerIndex] ?? "—";
+    if (score?.type === "standard") return score.points?.[playerIndex] ?? "—";
+    if (score?.type === "sets" && Array.isArray(score.sets)) {
+      return score.sets.map((set) => set[playerIndex]).join(" / ");
+    }
+    return "—";
+  };
+  const statusText = {
+    open: "Waiting for a player",
+    awaiting_result: "Match is ready",
+    awaiting_confirmation: "Confirm reported result",
+    completed: "Completed",
+  }[match.status || (isCompleted ? "completed" : "open")];
+  const matchDate = match.scheduledAt || match.createdAt;
+  const winnerIndex = isCompleted ? match.winner : null;
 
   const isPlayer1Winner = winnerIndex === 0;
   const isPlayer2Winner = winnerIndex === 1;
@@ -59,12 +87,10 @@ export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
           </div>
 
           <div className={styles.headerRight}>
-            <p className={styles.status}>
-              Completed
-            </p>
+            <p className={styles.status}>{statusText}</p>
             <p className={styles.date}>
-              {match.createdAt
-                ? new Date(match.createdAt).toLocaleDateString("en-US", {
+              {matchDate
+                ? new Date(matchDate).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
@@ -98,9 +124,9 @@ export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
 
             <div className={styles.scoreBox}>
               <p className={styles.score}>
-                {score1}
+                {scoreForPlayer(0)}
               </p>
-              {player1?.ratingChange !== undefined && player1.ratingChange !== 0 && (
+              {typeof player1?.ratingChange === "number" && player1.ratingChange !== 0 && (
                 <p className={`${styles.ratingChange} ${
                   player1.ratingChange > 0 ? styles.ratingUp : styles.ratingDown
                 }`}>
@@ -131,10 +157,8 @@ export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
             </div>
 
             <div className={styles.scoreBox}>
-              <p className={styles.score}>
-                {score2}
-              </p>
-              {player2?.ratingChange !== undefined && player2.ratingChange !== 0 && (
+              <p className={styles.score}>{scoreForPlayer(1)}</p>
+              {typeof player2?.ratingChange === "number" && player2.ratingChange !== 0 && (
                 <p className={`${styles.ratingChange} ${
                   player2.ratingChange > 0 ? styles.ratingUp : styles.ratingDown
                 }`}>
@@ -149,7 +173,7 @@ export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
         <div className={styles.footer}>
           <div className={styles.footerLeft}>
             <span className={styles.footerDot} />
-            Match Completed
+            {isCompleted ? "Match Completed" : statusText}
           </div>
           {sport && (
             <div className={styles.sportTag}>

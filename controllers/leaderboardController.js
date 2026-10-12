@@ -1,22 +1,22 @@
-const UserSport = require("../models/UserSport");
+const UserSport = require("../models/userSport");
+const mongoose = require("mongoose");
 
 const getLeaderboard = async (req, res) => {
   try {
     const { sportId } = req.params;
 
-    console.log("📊 Fetching leaderboard for sport:", sportId);
+    if (!mongoose.isValidObjectId(sportId)) {
+      return res.status(400).json({ message: "Invalid sport ID" });
+    }
 
     const leaderboard = await UserSport.find({ sportId })
       .sort({ currentRating: -1 })
-      .populate("userId", "name email");
+      .populate("userId", "name firstName lastName");
 
-    // 🔥 Add ranking position
     const ranked = leaderboard.map((player, index) => ({
       rank: index + 1,
       ...player.toObject(),
     }));
-
-    console.log("✅ Leaderboard ready");
 
     res.status(200).json(ranked);
   } catch (error) {

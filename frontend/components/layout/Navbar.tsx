@@ -11,7 +11,7 @@ export default function Navbar() {
     <nav className={styles.nav}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand}>
-          Ryada<span className={styles.brandAccent}>Zone</span>
+          Najma<span className={styles.brandAccent}>Sports</span>
         </Link>
 
         <div className={styles.primaryLinks}>
