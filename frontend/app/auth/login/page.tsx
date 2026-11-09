@@ -50,7 +50,8 @@ export default function LoginPage() {
       }
 
       login(data.token);
-      router.push("/profile");
+      const next = new URLSearchParams(window.location.search).get("next");
+      router.push(next === "/soccer" ? "/soccer" : "/profile");
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {

@@ -16,10 +16,26 @@ exports.register = async (req, res) => {
   } = req.body;
 
   try {
-    const normalizedEmail = String(email || "").trim().toLowerCase();
+    const onboarding = req.body.onboarding || {
+      category: "both",
+      intent: "player",
+    };
+    if (
+      !["individual", "team", "both"].includes(onboarding.category) ||
+      !["player", "manage", "join"].includes(onboarding.intent)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Choose valid sport and participation preferences." });
+    }
+    const normalizedEmail = String(email || "")
+      .trim()
+      .toLowerCase();
     const trimmedFirstName = String(firstName || "").trim();
     const trimmedLastName = String(lastName || "").trim();
-    const normalizedPhoneCountry = String(phoneCountry || "").trim().toUpperCase();
+    const normalizedPhoneCountry = String(phoneCountry || "")
+      .trim()
+      .toUpperCase();
     const trimmedPhoneNumber = String(phoneNumber || "").trim();
     const trimmedGender = String(gender || "").trim();
 
@@ -33,7 +49,11 @@ exports.register = async (req, res) => {
       !dateOfBirth ||
       !password
     ) {
-      return res.status(400).json({ message: "All required registration fields must be provided." });
+      return res
+        .status(400)
+        .json({
+          message: "All required registration fields must be provided.",
+        });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -71,6 +91,7 @@ exports.register = async (req, res) => {
       gender: trimmedGender,
       dateOfBirth: dob,
       password: hashedPassword,
+      onboarding,
     });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -87,12 +108,15 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const normalizedEmail = String(email || "").trim().toLowerCase();
+    const normalizedEmail = String(email || "")
+      .trim()
+      .toLowerCase();
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",

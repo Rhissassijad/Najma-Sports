@@ -33,7 +33,11 @@ router.get("/me", protect, async (req, res) => {
         Match.find({
           players: userId,
           $or: [
-            { status: { $in: ["open", "awaiting_result", "awaiting_confirmation"] } },
+            {
+              status: {
+                $in: ["open", "awaiting_result", "awaiting_confirmation"],
+              },
+            },
             { status: { $exists: false }, score: null },
           ],
         })
@@ -57,7 +61,6 @@ router.get("/me", protect, async (req, res) => {
       upcomingMatches: enrichedUpcomingMatches,
       ratingHistory,
     });
-
   } catch (error) {
     console.error("GET /api/users/me ERROR:", error);
     return res.status(500).json({ message: "Server error" });
@@ -77,10 +80,18 @@ router.post("/me/sports", protect, async (req, res) => {
       return res.status(404).json({ message: "Sport not found" });
     }
 
+    if (sport.name.toLowerCase() === "soccer")
+      return res
+        .status(400)
+        .json({
+          message:
+            "Use the Soccer hub to join a squad and build your soccer profile.",
+        });
+
     const userSport = await UserSport.findOneAndUpdate(
       { userId: req.user.id, sportId },
       { $setOnInsert: { userId: req.user.id, sportId } },
-      { new: true, upsert: true, runValidators: true }
+      { new: true, upsert: true, runValidators: true },
     ).populate("sportId");
 
     return res.status(200).json(userSport);
@@ -106,9 +117,7 @@ router.patch("/me", protect, async (req, res) => {
     const updates = {};
 
     allowedFields.forEach((field) => {
-      if (
-        Object.prototype.hasOwnProperty.call(req.body, field)
-      ) {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
         updates[field] = req.body[field];
       }
     });
@@ -119,7 +128,7 @@ router.patch("/me", protect, async (req, res) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     ).select("-password");
 
     if (!updatedUser) {

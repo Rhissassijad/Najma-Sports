@@ -22,7 +22,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
 
 // ✅ IMPORTANT: handle preflight requests
@@ -49,7 +49,6 @@ const leaderboardRoutes = require("./routes/leaderboardRoutes");
 const ratingRoutes = require("./routes/ratingRoutes");
 const userRoutes = require("./routes/userRoutes");
 
-
 // ⚠️ ORDER MATTERS
 app.use("/api/matches", matchRoutes);
 app.use("/api/sports", sportRoutes);
@@ -59,9 +58,12 @@ app.use("/api/feed", feedRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/soccer", require("./routes/soccerRoutes"));
 
 app.use("/api", (req, res) => {
-  res.status(404).json({ message: `API route not found: ${req.method} ${req.path}` });
+  res
+    .status(404)
+    .json({ message: `API route not found: ${req.method} ${req.path}` });
 });
 
 app.get("/test", (req, res) => {
@@ -79,9 +81,9 @@ mongoose
   })
   .then(async (existingSports) => {
     const existingNames = new Set(existingSports.map((sport) => sport.name));
-    const missingSports = DEFAULT_SPORTS
-      .filter((name) => !existingNames.has(name))
-      .map((name) => ({ name }));
+    const missingSports = DEFAULT_SPORTS.filter(
+      (name) => !existingNames.has(name),
+    ).map((name) => ({ name }));
 
     if (missingSports.length > 0) {
       await Sport.insertMany(missingSports);
@@ -89,7 +91,7 @@ mongoose
 
     const apiPort = process.env.API_PORT || 8080;
     app.listen(apiPort, "0.0.0.0", () =>
-      console.log(`🚀 Server running on port ${apiPort}`)
+      console.log(`🚀 Server running on port ${apiPort}`),
     );
   })
   .catch((err) => {

@@ -61,6 +61,8 @@ export default function RegisterPage() {
     setCountryOptions(buildCountryOptions());
   }, []);
 
+  const [category, setCategory] = useState("both");
+  const [intent, setIntent] = useState("player");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -97,6 +99,7 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          onboarding: { category, intent },
           firstName,
           lastName,
           email,
@@ -113,7 +116,9 @@ export default function RegisterPage() {
         throw new Error(data.message || "Registration failed.");
       }
 
-      router.push("/auth/login");
+      if (category === "team" || intent !== "player")
+        router.push("/auth/login?next=/soccer");
+      else router.push("/auth/login");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -135,6 +140,36 @@ export default function RegisterPage() {
           </p>
         )}
 
+        <label className={styles.fieldLabel} htmlFor="sport-category">
+          Which sports interest you?
+        </label>
+        <select
+          id="sport-category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option value="both">Team and individual sports</option>
+          <option value="team">Team sports · start with soccer</option>
+          <option value="individual">
+            Individual sports · tennis, padel, pickleball
+          </option>
+        </select>
+        <label className={styles.fieldLabel} htmlFor="participation">
+          How would you like to get started?
+        </label>
+        <select
+          id="participation"
+          value={intent}
+          onChange={(e) => setIntent(e.target.value)}
+        >
+          <option value="player">Play as an individual</option>
+          <option value="manage">Create or manage a squad / club</option>
+          <option value="join">Join an existing squad</option>
+        </select>
+        <p className={styles.switch}>
+          One personal login, all your sports. Clubs are organizations you
+          manage, not shared accounts. You can add other sports and roles later.
+        </p>
         <label className={styles.fieldLabel} htmlFor="first-name">
           First Name
         </label>

@@ -6,7 +6,8 @@ const updateRatings = require("../utils/UpdateRatings");
 const calculateWinner = require("../utils/calculateWinner");
 const enrichMatches = require("../utils/enrichMatches");
 
-const httpError = (status, message) => Object.assign(new Error(message), { status });
+const httpError = (status, message) =>
+  Object.assign(new Error(message), { status });
 
 const createMatch = async (req, res) => {
   try {
@@ -18,8 +19,13 @@ const createMatch = async (req, res) => {
 
     if (scheduledAt) {
       const scheduledDate = new Date(scheduledAt);
-      if (Number.isNaN(scheduledDate.getTime()) || scheduledDate <= new Date()) {
-        return res.status(400).json({ message: "Scheduled date must be in the future" });
+      if (
+        Number.isNaN(scheduledDate.getTime()) ||
+        scheduledDate <= new Date()
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Scheduled date must be in the future" });
       }
     }
 
@@ -31,8 +37,15 @@ const createMatch = async (req, res) => {
     if (!sportExists) {
       return res.status(404).json({ message: "Sport not found" });
     }
+    if (sportExists.name.toLowerCase() === "soccer") {
+      return res
+        .status(400)
+        .json({ message: "Use the Soccer hub to create squad matches." });
+    }
     if (!creator) {
-      return res.status(401).json({ message: "Authenticated player no longer exists" });
+      return res
+        .status(401)
+        .json({ message: "Authenticated player no longer exists" });
     }
 
     const match = await Match.create({
@@ -108,17 +121,21 @@ const joinMatch = async (req, res) => {
         $addToSet: { players: req.user.id },
         $set: { status: "awaiting_result" },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     )
       .populate("players", "name firstName lastName")
       .populate("sport", "name");
 
     if (!match) {
-      const existingMatch = await Match.findById(req.params.matchId).select("status players");
+      const existingMatch = await Match.findById(req.params.matchId).select(
+        "status players",
+      );
       if (!existingMatch) {
         return res.status(404).json({ message: "Match not found" });
       }
-      return res.status(409).json({ message: "This match is no longer available to join" });
+      return res
+        .status(409)
+        .json({ message: "This match is no longer available to join" });
     }
 
     return res.status(200).json(match);
@@ -141,16 +158,22 @@ const proposeResult = async (req, res) => {
     });
 
     if (!existingMatch) {
-      const existingMatch = await Match.findById(req.params.matchId).select("status");
+      const existingMatch = await Match.findById(req.params.matchId).select(
+        "status",
+      );
       if (!existingMatch) {
         return res.status(404).json({ message: "Match not found" });
       }
-      return res.status(409).json({ message: "This match is not awaiting a result" });
+      return res
+        .status(409)
+        .json({ message: "This match is not awaiting a result" });
     }
 
     const winner = calculateWinner(req.body.score, existingMatch.players);
     if (winner === null) {
-      return res.status(400).json({ message: "A valid, non-tied score is required" });
+      return res
+        .status(400)
+        .json({ message: "A valid, non-tied score is required" });
     }
 
     const match = await Match.findOneAndUpdate(
@@ -166,10 +189,12 @@ const proposeResult = async (req, res) => {
           resultReporter: req.user.id,
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
     if (!match) {
-      return res.status(409).json({ message: "Another result was submitted first" });
+      return res
+        .status(409)
+        .json({ message: "Another result was submitted first" });
     }
     await match.populate([
       { path: "players", select: "name firstName lastName" },
@@ -208,7 +233,10 @@ const confirmResult = async (req, res) => {
         if (!existingMatch) {
           throw httpError(404, "Match not found");
         }
-        throw httpError(409, "Only the other player can confirm this pending result");
+        throw httpError(
+          409,
+          "Only the other player can confirm this pending result",
+        );
       }
 
       const winnerIndex = calculateWinner(match.proposedScore, match.players);
@@ -238,7 +266,11 @@ const confirmResult = async (req, res) => {
     console.error("Confirm match result error:", error);
     return res
       .status(error.status || 500)
-      .json({ message: error.status ? error.message : "Failed to confirm match result" });
+      .json({
+        message: error.status
+          ? error.message
+          : "Failed to confirm match result",
+      });
   } finally {
     await session.endSession();
   }

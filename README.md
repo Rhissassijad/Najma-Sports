@@ -4,3 +4,8 @@ Fans on the other hand can interact thanks to the feed platform : a place where 
 This project is still new and in active development. I still plan on adding a "live" section where people can follow the score of their favorite sports in real time, comment under the match or share their pronostics as well as a marketplace where people can sell their sports equipment. 
 The goal is to create an environment where competition, social engagement and athletes' interactions meet in one place. 
 This is a college project. It might eventually lead to something more serious in the near future. 
+
+
+## Soccer team workflow
+
+Clubs, independent squads, roster approvals, result confirmation, squad Elo and team-recorded player statistics are available in the Soccer hub. See [the soccer guide](docs/soccer.md) for setup, workflows and tests.

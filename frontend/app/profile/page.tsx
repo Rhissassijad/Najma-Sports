@@ -52,8 +52,11 @@ type ProfileForm = {
 export default function ProfilePage() {
   const { isAuthenticated, isCheckingAuth } = useAuthGuard("/");
 
-  const [activeSection, setActiveSection] = useState<ProfileSection>("overview");
-  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+  const [activeSection, setActiveSection] =
+    useState<ProfileSection>("overview");
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
+    null,
+  );
   const [selectedImageName, setSelectedImageName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
@@ -111,7 +114,7 @@ export default function ProfilePage() {
           result?.message ||
             (res.status === 404
               ? `Backend route not found (${res.status}): ${url}. Restart the backend server.`
-              : `Request failed (${res.status}) for ${url}`)
+              : `Request failed (${res.status}) for ${url}`),
         );
       }
 
@@ -130,19 +133,23 @@ export default function ProfilePage() {
         const userJson = await safeFetch(`${API_URL}/api/users/me`, token);
 
         const userBase = userJson?.user || userJson || null;
-        const userRatings = Array.isArray(userJson?.ratings) ? userJson.ratings : [];
+        const userRatings = Array.isArray(userJson?.ratings)
+          ? userJson.ratings.filter(
+              (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
+            )
+          : [];
         const followersCount =
           typeof userJson?.followersCount === "number"
             ? userJson.followersCount
             : Array.isArray(userBase?.followers)
-            ? userBase.followers.length
-            : 0;
+              ? userBase.followers.length
+              : 0;
         const followingCount =
           typeof userJson?.followingCount === "number"
             ? userJson.followingCount
             : Array.isArray(userBase?.following)
-            ? userBase.following.length
-            : 0;
+              ? userBase.following.length
+              : 0;
 
         setData((previous: any) => ({
           ...previous,
@@ -171,7 +178,7 @@ export default function ProfilePage() {
           ...userRatings
             .filter((rating: any) => rating?.sportId?._id)
             .map((rating: any) =>
-              safeFetch(`${API_URL}/api/leaderboard/${rating.sportId._id}`)
+              safeFetch(`${API_URL}/api/leaderboard/${rating.sportId._id}`),
             ),
         ]);
         const leaderboards: Record<string, any[]> = {};
@@ -188,7 +195,8 @@ export default function ProfilePage() {
         setData((previous: any) => ({
           ...previous,
           sportsCatalog:
-            sportsResult.status === "fulfilled" && Array.isArray(sportsResult.value)
+            sportsResult.status === "fulfilled" &&
+            Array.isArray(sportsResult.value)
               ? sportsResult.value
               : [],
           leaderboards,
@@ -197,13 +205,13 @@ export default function ProfilePage() {
           setApiError(
             sportsResult.reason instanceof Error
               ? sportsResult.reason.message
-              : "Could not load the list of sports."
+              : "Could not load the list of sports.",
           );
         }
       } catch (err) {
         console.error("Profile page fetch error", err);
         setApiError(
-          err instanceof Error ? err.message : "Unable to load profile data."
+          err instanceof Error ? err.message : "Unable to load profile data.",
         );
       } finally {
         setIsLoadingProfile(false);
@@ -233,15 +241,13 @@ export default function ProfilePage() {
     setProfileImagePreview(URL.createObjectURL(file));
   };
 
-  const handleProfileChange = (
-    event: ChangeEvent<HTMLInputElement>
-    ) => {
-      const { name, value } = event.target;
+  const handleProfileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
 
-      setProfileForm((previous) => ({
-        ...previous,
-        [name]: value,
-      }));
+    setProfileForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
   };
 
   const {
@@ -281,7 +287,7 @@ export default function ProfilePage() {
       setData((previous: any) => ({
         ...previous,
         ratings: previous.ratings.some(
-          (rating: any) => rating.sportId?._id === selectedSportId
+          (rating: any) => rating.sportId?._id === selectedSportId,
         )
           ? previous.ratings
           : [...previous.ratings, result],
@@ -289,10 +295,12 @@ export default function ProfilePage() {
       setSelectedSportId("");
 
       const leaderboardResponse = await fetch(
-        `${API_URL}/api/leaderboard/${selectedSportId}`
+        `${API_URL}/api/leaderboard/${selectedSportId}`,
       );
       if (!leaderboardResponse.ok) {
-        throw new Error("Sport was added, but its leaderboard could not be refreshed.");
+        throw new Error(
+          "Sport was added, but its leaderboard could not be refreshed.",
+        );
       }
       const rows = await leaderboardResponse.json();
       setData((previous: any) => ({
@@ -305,39 +313,56 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Add profile sport error:", error);
       setApiError(
-        error instanceof Error ? error.message : "Unable to add this sport."
+        error instanceof Error ? error.message : "Unable to add this sport.",
       );
     } finally {
       setIsAddingSport(false);
     }
   };
 
-  const accountTypeRaw = user?.accountType || user?.role || (user?.isAthlete ? "Athlete" : "Fan");
+  const accountTypeRaw =
+    user?.accountType || user?.role || (user?.isAthlete ? "Athlete" : "Fan");
   const accountType =
-    typeof accountTypeRaw === "string" ? accountTypeRaw : accountTypeRaw ? String(accountTypeRaw) : "Fan";
+    typeof accountTypeRaw === "string"
+      ? accountTypeRaw
+      : accountTypeRaw
+        ? String(accountTypeRaw)
+        : "Fan";
   const isAthlete = accountType.toLowerCase().includes("athlete");
 
   const sportsPlayed = useMemo(() => {
     const fromProfile = Array.isArray(user?.sports)
       ? user.sports
-          .map((sport: any) => sport?.name || sport?.sportId?.name || sport?.sport?.name || sport)
+          .map(
+            (sport: any) =>
+              sport?.name ||
+              sport?.sportId?.name ||
+              sport?.sport?.name ||
+              sport,
+          )
           .filter(Boolean)
       : [];
 
     const fromRatings = Array.isArray(ratings)
-      ? ratings.map((r: any) => r?.sportId?.name || r?.sport?.name).filter(Boolean)
+      ? ratings
+          .map((r: any) => r?.sportId?.name || r?.sport?.name)
+          .filter(Boolean)
       : [];
 
     return Array.from(new Set([...fromProfile, ...fromRatings])) as string[];
   }, [ratings, user?.sports]);
 
-  const profilePicture = profileImagePreview || user?.profilePicture || user?.avatarUrl || null;
+  const profilePicture =
+    profileImagePreview || user?.profilePicture || user?.avatarUrl || null;
 
   const overviewFields = [
     { label: "User Type", value: accountType || "Not set" },
     { label: "Followers", value: String(user?.followersCount ?? 0) },
     { label: "Following", value: String(user?.followingCount ?? 0) },
-    { label: "Age", value: getAge(user?.age || user?.dateOfBirth || user?.dob) },
+    {
+      label: "Age",
+      value: getAge(user?.age || user?.dateOfBirth || user?.dob),
+    },
     { label: "Nationality", value: user?.nationality || "Not set" },
     { label: "City", value: user?.city || user?.location?.city || "Not set" },
     { label: "Height", value: user?.height ? `${user.height} cm` : "Not set" },
@@ -345,116 +370,100 @@ export default function ProfilePage() {
     { label: "Favorite Player", value: user?.favoritePlayer || "Not set" },
   ];
 
-    const handleEditProfile = () => {
-      if (!user) {
-        setSaveMessage(
-          isLoadingProfile
-            ? "Your profile is still loading. Please try again shortly."
-            : "Your profile could not be loaded. Refresh the page and try again."
-        );
-        setActiveSection("settings");
-        return;
+  const handleEditProfile = () => {
+    if (!user) {
+      setSaveMessage(
+        isLoadingProfile
+          ? "Your profile is still loading. Please try again shortly."
+          : "Your profile could not be loaded. Refresh the page and try again.",
+      );
+      setActiveSection("settings");
+      return;
+    }
+
+    setProfileForm({
+      name: user.name || "",
+      nationality: user.nationality || "",
+      city: user.city || user.location?.city || "",
+      dateOfBirth: user.dateOfBirth
+        ? new Date(user.dateOfBirth).toISOString().split("T")[0]
+        : "",
+      height: user.height?.toString() || "",
+      weight: user.weight?.toString() || "",
+      favoritePlayer: user.favoritePlayer || "",
+    });
+
+    setSaveMessage("");
+    setIsEditing(true);
+    setActiveSection("settings");
+  };
+
+  const handleSaveProfile = async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    setSaveMessage("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("You must be logged in.");
       }
 
-      setProfileForm({
-        name: user.name || "",
-        nationality: user.nationality || "",
-        city: user.city || user.location?.city || "",
-        dateOfBirth: user.dateOfBirth
-          ? new Date(user.dateOfBirth).toISOString().split("T")[0]
-          : "",
-        height: user.height?.toString() || "",
-        weight: user.weight?.toString() || "",
-        favoritePlayer: user.favoritePlayer || "",
+      const response = await fetch(`${API_URL}/api/users/me`, {
+        method: "PATCH",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify({
+          name: profileForm.name,
+          nationality: profileForm.nationality,
+          city: profileForm.city,
+
+          dateOfBirth: profileForm.dateOfBirth || null,
+
+          height: profileForm.height === "" ? null : Number(profileForm.height),
+
+          weight: profileForm.weight === "" ? null : Number(profileForm.weight),
+
+          favoritePlayer: profileForm.favoritePlayer,
+        }),
       });
 
-      setSaveMessage("");
-      setIsEditing(true);
-      setActiveSection("settings");
-    };
+      const result = await response.json();
 
-
-    const handleSaveProfile = async () => {
-      if (isSaving) return;
-
-      setIsSaving(true);
-      setSaveMessage("");
-
-      try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          throw new Error("You must be logged in.");
-        }
-
-        const response = await fetch(
-          `${API_URL}/api/users/me`,
-          {
-            method: "PATCH",
-
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-
-            body: JSON.stringify({
-              name: profileForm.name,
-              nationality: profileForm.nationality,
-              city: profileForm.city,
-
-              dateOfBirth:
-                profileForm.dateOfBirth || null,
-
-              height:
-                profileForm.height === ""
-                  ? null
-                  : Number(profileForm.height),
-
-              weight:
-                profileForm.weight === ""
-                  ? null
-                  : Number(profileForm.weight),
-
-              favoritePlayer:
-                profileForm.favoritePlayer,
-            }),
-          }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            result.message || "Failed to update profile."
-          );
-        }
-
-        // Update the profile displayed on the page.
-        setData((previous: any) => ({
-          ...previous,
-
-          user: {
-            ...previous.user,
-            ...result.user,
-          },
-        }));
-
-        setIsEditing(false);
-        setSaveMessage("Profile updated successfully!");
-
-      } catch (error) {
-        console.error("Profile update error:", error);
-
-        setSaveMessage(
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred."
-        );
-
-      } finally {
-        setIsSaving(false);
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to update profile.");
       }
-    };
+
+      // Update the profile displayed on the page.
+      setData((previous: any) => ({
+        ...previous,
+
+        user: {
+          ...previous.user,
+          ...result.user,
+        },
+      }));
+
+      setIsEditing(false);
+      setSaveMessage("Profile updated successfully!");
+    } catch (error) {
+      console.error("Profile update error:", error);
+
+      setSaveMessage(
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (isCheckingAuth || !isAuthenticated) {
     return null;
@@ -500,9 +509,15 @@ export default function ProfilePage() {
                 <div className={styles.overviewTop}>
                   <div className={styles.profilePictureBlock}>
                     {profilePicture ? (
-                      <img src={profilePicture} alt="Profile" className={styles.profilePicture} />
+                      <img
+                        src={profilePicture}
+                        alt="Profile"
+                        className={styles.profilePicture}
+                      />
                     ) : (
-                      <div className={styles.profileFallback}>{(user?.name || user?.email || "U")[0]?.toUpperCase()}</div>
+                      <div className={styles.profileFallback}>
+                        {(user?.name || user?.email || "U")[0]?.toUpperCase()}
+                      </div>
                     )}
 
                     <label className={styles.uploadButton}>
@@ -515,14 +530,23 @@ export default function ProfilePage() {
                       />
                     </label>
 
-                    {selectedImageName && <p className={styles.uploadInfo}>Selected: {selectedImageName}</p>}
+                    {selectedImageName && (
+                      <p className={styles.uploadInfo}>
+                        Selected: {selectedImageName}
+                      </p>
+                    )}
                   </div>
 
                   <div className={styles.identityBlock}>
-                    <h2 className={styles.playerName}>{user?.name || "Player"}</h2>
-                    <p className={styles.playerMeta}>{user?.email || "No email set"}</p>
+                    <h2 className={styles.playerName}>
+                      {user?.name || "Player"}
+                    </h2>
                     <p className={styles.playerMeta}>
-                      {user?.followersCount ?? 0} Followers • {user?.followingCount ?? 0} Following
+                      {user?.email || "No email set"}
+                    </p>
+                    <p className={styles.playerMeta}>
+                      {user?.followersCount ?? 0} Followers •{" "}
+                      {user?.followingCount ?? 0} Following
                     </p>
                   </div>
                 </div>
@@ -540,7 +564,9 @@ export default function ProfilePage() {
                   <div className={styles.noteCard}>
                     <h3 className={styles.noteTitle}>Sports Played</h3>
                     {sportsPlayed.length > 0 ? (
-                      <p className={styles.noteText}>{sportsPlayed.join(" • ")}</p>
+                      <p className={styles.noteText}>
+                        {sportsPlayed.join(" • ")}
+                      </p>
                     ) : (
                       <p className={styles.noteText}>No sports added yet.</p>
                     )}
@@ -561,68 +587,89 @@ export default function ProfilePage() {
                 {matches.length > 0 ? (
                   <div className={styles.matchesList}>
                     {matches.map((m: any) => (
-                      <MatchCard key={m._id} match={m} sport={m?.sport?.name || "Sport"} />
+                      <MatchCard
+                        key={m._id}
+                        match={m}
+                        sport={m?.sport?.name || "Sport"}
+                      />
                     ))}
                   </div>
                 ) : (
-                  <div className={styles.emptyState}>No matches yet. Start competing to see your activity here.</div>
+                  <div className={styles.emptyState}>
+                    No matches yet. Start competing to see your activity here.
+                  </div>
                 )}
               </section>
             )}
 
             {activeSection === "sports-levels" && (
               <section className={styles.sectionCard}>
-                <SportPanel user={user} ratings={ratings} history={ratingHistory} leaderboards={leaderboards} recentMatches={recentMatches} picture={profilePicture} onEdit={handleEditProfile} />
-                <details className={styles.addSportDisclosure}><summary>Add a sport</summary>
-                <div className={styles.settingsList}>
-                  <label className={styles.sportPickerLabel} htmlFor="profile-sport">
-                    Add a sport
-                  </label>
-                  <select
-                    id="profile-sport"
-                    className={styles.sportPicker}
-                    value={selectedSportId}
-                    onChange={(event) => setSelectedSportId(event.target.value)}
-                  >
-                    <option value="">Choose a sport</option>
-                    {sportsCatalog
-                      .filter(
-                        (sport: any) =>
-                          !ratings.some(
-                            (rating: any) =>
-                              String(rating.sportId?._id) === String(sport._id)
-                          )
-                      )
-                      .map((sport: any) => (
-                        <option key={sport._id} value={sport._id}>
-                          {sport.name}
-                        </option>
-                      ))}
-                  </select>
-                  <button
-                    type="button"
-                    className={styles.settingsButton}
-                    disabled={!selectedSportId || isAddingSport}
-                    onClick={handleAddSport}
-                  >
-                    {isAddingSport ? "Adding..." : "Add Sport"}
-                  </button>
-                </div>
-
+                <Link href="/soccer" className={styles.soccerLink}>
+                  Team sports: manage your soccer squads, memberships and player
+                  profile →
+                </Link>
+                <SportPanel
+                  user={user}
+                  ratings={ratings}
+                  history={ratingHistory}
+                  leaderboards={leaderboards}
+                  recentMatches={recentMatches}
+                  picture={profilePicture}
+                  onEdit={handleEditProfile}
+                />
+                <details className={styles.addSportDisclosure}>
+                  <summary>Add a sport</summary>
+                  <div className={styles.settingsList}>
+                    <label
+                      className={styles.sportPickerLabel}
+                      htmlFor="profile-sport"
+                    >
+                      Add a sport
+                    </label>
+                    <select
+                      id="profile-sport"
+                      className={styles.sportPicker}
+                      value={selectedSportId}
+                      onChange={(event) =>
+                        setSelectedSportId(event.target.value)
+                      }
+                    >
+                      <option value="">Choose a sport</option>
+                      {sportsCatalog
+                        .filter(
+                          (sport: any) =>
+                            sport.name?.toLowerCase() !== "soccer" &&
+                            !ratings.some(
+                              (rating: any) =>
+                                String(rating.sportId?._id) ===
+                                String(sport._id),
+                            ),
+                        )
+                        .map((sport: any) => (
+                          <option key={sport._id} value={sport._id}>
+                            {sport.name}
+                          </option>
+                        ))}
+                    </select>
+                    <button
+                      type="button"
+                      className={styles.settingsButton}
+                      disabled={!selectedSportId || isAddingSport}
+                      onClick={handleAddSport}
+                    >
+                      {isAddingSport ? "Adding..." : "Add Sport"}
+                    </button>
+                  </div>
                 </details>
               </section>
             )}
 
             {activeSection === "settings" && (
               <section className={styles.sectionCard}>
-
-                <h1 className={styles.sectionTitle}>
-                  Settings
-                </h1>
+                <h1 className={styles.sectionTitle}>Settings</h1>
 
                 {!isEditing ? (
                   <div className={styles.settingsList}>
-
                     <button
                       type="button"
                       className={styles.settingsButton}
@@ -638,10 +685,8 @@ export default function ProfilePage() {
                     >
                       Change Password (Coming Soon)
                     </button>
-
                   </div>
                 ) : (
-
                   <form
                     className={styles.editProfileForm}
                     onSubmit={(event) => {
@@ -649,15 +694,11 @@ export default function ProfilePage() {
                       handleSaveProfile();
                     }}
                   >
-
                     <h2>Edit Your Profile</h2>
 
                     <div className={styles.formGrid}>
-
                       <div className={styles.formGroup}>
-                        <label htmlFor="name">
-                          Full Name
-                        </label>
+                        <label htmlFor="name">Full Name</label>
 
                         <input
                           id="name"
@@ -670,9 +711,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label htmlFor="nationality">
-                          Nationality
-                        </label>
+                        <label htmlFor="nationality">Nationality</label>
 
                         <input
                           id="nationality"
@@ -684,9 +723,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label htmlFor="city">
-                          City
-                        </label>
+                        <label htmlFor="city">City</label>
 
                         <input
                           id="city"
@@ -698,9 +735,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label htmlFor="dateOfBirth">
-                          Date of Birth
-                        </label>
+                        <label htmlFor="dateOfBirth">Date of Birth</label>
 
                         <input
                           id="dateOfBirth"
@@ -713,9 +748,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label htmlFor="height">
-                          Height (cm)
-                        </label>
+                        <label htmlFor="height">Height (cm)</label>
 
                         <input
                           id="height"
@@ -729,9 +762,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label htmlFor="weight">
-                          Weight (kg)
-                        </label>
+                        <label htmlFor="weight">Weight (kg)</label>
 
                         <input
                           id="weight"
@@ -746,9 +777,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label htmlFor="favoritePlayer">
-                          Favorite Player
-                        </label>
+                        <label htmlFor="favoritePlayer">Favorite Player</label>
 
                         <input
                           id="favoritePlayer"
@@ -758,19 +787,15 @@ export default function ProfilePage() {
                           onChange={handleProfileChange}
                         />
                       </div>
-
                     </div>
 
                     <div className={styles.formActions}>
-
                       <button
                         type="submit"
                         className={styles.saveButton}
                         disabled={isSaving}
                       >
-                        {isSaving
-                          ? "Saving..."
-                          : "Save Changes"}
+                        {isSaving ? "Saving..." : "Save Changes"}
                       </button>
 
                       <button
@@ -784,21 +809,15 @@ export default function ProfilePage() {
                       >
                         Cancel
                       </button>
-
                     </div>
-
                   </form>
                 )}
 
                 {saveMessage && (
-                  <p
-                    role="status"
-                    className={styles.noteText}
-                  >
+                  <p role="status" className={styles.noteText}>
                     {saveMessage}
                   </p>
                 )}
-
               </section>
             )}
           </div>

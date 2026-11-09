@@ -308,3 +308,13 @@
   line-height: 1.9;
   color: #718097;
 }
+.soccerLink {
+  display: block;
+  background: #edf2ff;
+  color: #2450d8;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}

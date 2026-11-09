@@ -13,6 +13,7 @@ export default function Navbar() {
   const path = usePathname();
   const links = [
     { href: "/compete", label: "Compete" },
+    { href: "/soccer", label: "Soccer" },
     { href: "/feed", label: "Community" },
     { href: "/compete?section=leaderboard", label: "Rankings" },
     { href: "/profile", label: "My profile" },

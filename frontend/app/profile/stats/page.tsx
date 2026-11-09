@@ -22,8 +22,16 @@ export default function StatsPage() {
 
       const data = await res.json();
 
-      setRatings(data.ratings || []);
-      setHistory(data.ratingHistory || []);
+      setRatings(
+        (data.ratings || []).filter(
+          (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
+        ),
+      );
+      setHistory(
+        (data.ratingHistory || []).filter(
+          (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
+        ),
+      );
     };
 
     fetchData();

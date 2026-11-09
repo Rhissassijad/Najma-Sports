@@ -91,7 +91,9 @@ function CompetitionContent() {
         userResult.status === "fulfilled" ? userResult.value : null;
       const sportsCatalog =
         sportsResult.status === "fulfilled" && Array.isArray(sportsResult.value)
-          ? sportsResult.value
+          ? sportsResult.value.filter(
+              (s: any) => s.name?.toLowerCase() !== "soccer",
+            )
           : [];
       const matches =
         matchesResult.status === "fulfilled" &&
@@ -106,13 +108,19 @@ function CompetitionContent() {
 
       setData({
         user: userJson?.user || userJson || null,
-        ratings: Array.isArray(userJson?.ratings) ? userJson.ratings : [],
+        ratings: Array.isArray(userJson?.ratings)
+          ? userJson.ratings.filter(
+              (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
+            )
+          : [],
         matches,
         openMatches,
         sportsCatalog,
         leaderboard: [],
       });
-      const firstRatedSportId = userJson?.ratings?.[0]?.sportId?._id;
+      const firstRatedSportId = userJson?.ratings?.find(
+        (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
+      )?.sportId?._id;
       const params = new URLSearchParams(query);
       if (params.get("section") === "leaderboard") setSection("leaderboard");
       const requestedSport = params.get("sport");
@@ -262,6 +270,10 @@ function CompetitionContent() {
               </p>
             )}
 
+            <Link href="/soccer" className={styles.soccerLink}>
+              Team sports: explore soccer squads, club rosters and team rankings
+              →
+            </Link>
             {/* PROFILE CARD */}
             <div className={styles.profileCard}>
               <h1 className={styles.profileName}>
