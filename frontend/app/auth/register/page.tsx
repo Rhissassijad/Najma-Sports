@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  ALL_SPORTS,
+  TEAM_SPORTS,
+  INDIVIDUAL_SPORTS,
+  isTeamSport,
+} from "@/lib/sports";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "../auth.module.css";
@@ -61,6 +67,7 @@ export default function RegisterPage() {
     setCountryOptions(buildCountryOptions());
   }, []);
 
+  const [startingSport, setStartingSport] = useState("Tennis");
   const [category, setCategory] = useState("both");
   const [intent, setIntent] = useState("player");
   const [firstName, setFirstName] = useState("");
@@ -99,7 +106,7 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          onboarding: { category, intent },
+          onboarding: { category, intent, sport: startingSport },
           firstName,
           lastName,
           email,
@@ -116,8 +123,14 @@ export default function RegisterPage() {
         throw new Error(data.message || "Registration failed.");
       }
 
-      if (category === "team" || intent !== "player")
-        router.push("/auth/login?next=/soccer");
+      if (isTeamSport(startingSport) || intent !== "player")
+        router.push(
+          "/auth/login?next=" +
+            encodeURIComponent(
+              "/compete?section=teams&sport=" +
+                (isTeamSport(startingSport) ? startingSport : "Soccer"),
+            ),
+        );
       else router.push("/auth/login");
     } catch (err: any) {
       setError(err.message);
@@ -146,13 +159,38 @@ export default function RegisterPage() {
         <select
           id="sport-category"
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            if (e.target.value === "individual") setIntent("player");
+            setStartingSport(
+              e.target.value === "team" ? TEAM_SPORTS[0] : INDIVIDUAL_SPORTS[0],
+            );
+          }}
         >
           <option value="both">Team and individual sports</option>
-          <option value="team">Team sports · start with soccer</option>
+          <option value="team">
+            Team sports · soccer, volleyball, football and more
+          </option>
           <option value="individual">
             Individual sports · tennis, padel, pickleball
           </option>
+        </select>
+        <label className={styles.fieldLabel} htmlFor="starting-sport">
+          Sport to start with
+        </label>
+        <select
+          id="starting-sport"
+          value={startingSport}
+          onChange={(e) => setStartingSport(e.target.value)}
+        >
+          {(category === "team"
+            ? TEAM_SPORTS
+            : category === "individual"
+              ? INDIVIDUAL_SPORTS
+              : ALL_SPORTS
+          ).map((sport) => (
+            <option key={sport}>{sport}</option>
+          ))}
         </select>
         <label className={styles.fieldLabel} htmlFor="participation">
           How would you like to get started?
@@ -160,11 +198,19 @@ export default function RegisterPage() {
         <select
           id="participation"
           value={intent}
-          onChange={(e) => setIntent(e.target.value)}
+          onChange={(e) => {
+            setIntent(e.target.value);
+            if (e.target.value !== "player" && !isTeamSport(startingSport))
+              setStartingSport("Soccer");
+          }}
         >
           <option value="player">Play as an individual</option>
-          <option value="manage">Create or manage a squad / club</option>
-          <option value="join">Join an existing squad</option>
+          {category !== "individual" && (
+            <option value="manage">Create or manage a squad / club</option>
+          )}
+          {category !== "individual" && (
+            <option value="join">Join an existing squad</option>
+          )}
         </select>
         <p className={styles.switch}>
           One personal login, all your sports. Clubs are organizations you

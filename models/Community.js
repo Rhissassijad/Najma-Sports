@@ -9,6 +9,11 @@ const communitySchema = new mongoose.Schema(
       unique: true,
       maxlength: 80,
     },
+    sport: {
+      type: String,
+      enum: ["General", ...require("../utils/sports").allSports],
+      default: "General",
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -21,7 +26,7 @@ const communitySchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 communitySchema.index({ createdAt: -1 });

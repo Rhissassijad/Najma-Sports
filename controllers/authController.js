@@ -1,3 +1,4 @@
+const { allSports, normalizeSport } = require("../utils/sports");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -28,6 +29,13 @@ exports.register = async (req, res) => {
         .status(400)
         .json({ message: "Choose valid sport and participation preferences." });
     }
+    if (onboarding.sport !== undefined) {
+      onboarding.sport = normalizeSport(onboarding.sport);
+      if (!allSports.includes(onboarding.sport))
+        return res
+          .status(400)
+          .json({ message: "Choose a supported starting sport." });
+    }
     const normalizedEmail = String(email || "")
       .trim()
       .toLowerCase();
@@ -49,11 +57,9 @@ exports.register = async (req, res) => {
       !dateOfBirth ||
       !password
     ) {
-      return res
-        .status(400)
-        .json({
-          message: "All required registration fields must be provided.",
-        });
+      return res.status(400).json({
+        message: "All required registration fields must be provided.",
+      });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

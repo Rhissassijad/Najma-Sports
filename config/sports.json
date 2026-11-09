@@ -1,0 +1,306 @@
+{
+  "individual": ["Tennis", "Padel", "Pickleball"],
+  "team": {
+    "Soccer": {
+      "formats": ["5", "7", "11"],
+      "positions": ["Goalkeeper", "Defender", "Midfielder", "Forward"],
+      "metrics": [
+        {
+          "key": "goals",
+          "label": "Goals",
+          "max": 100
+        },
+        {
+          "key": "assists",
+          "label": "Assists",
+          "max": 100
+        }
+      ],
+      "scoreLabel": "Goals",
+      "allowDraw": true,
+      "participation": {
+        "key": "minutes",
+        "label": "Minutes",
+        "max": 120
+      },
+      "maxScore": 100,
+      "marginStep": 0.05,
+      "sideLabel": "Dominant foot"
+    },
+    "Volleyball": {
+      "formats": ["6", "2"],
+      "positions": [
+        "Setter",
+        "Outside hitter",
+        "Opposite hitter",
+        "Middle blocker",
+        "Libero",
+        "Defensive specialist"
+      ],
+      "metrics": [
+        {
+          "key": "kills",
+          "label": "Kills",
+          "max": 200
+        },
+        {
+          "key": "assists",
+          "label": "Assists",
+          "max": 200
+        },
+        {
+          "key": "digs",
+          "label": "Digs",
+          "max": 200
+        },
+        {
+          "key": "blocks",
+          "label": "Blocks",
+          "max": 100
+        },
+        {
+          "key": "aces",
+          "label": "Aces",
+          "max": 100
+        }
+      ],
+      "scoreLabel": "Sets won",
+      "allowDraw": false,
+      "participation": {
+        "key": "setsPlayed",
+        "label": "Sets played",
+        "max": 5
+      },
+      "maxScore": 3,
+      "marginStep": 0.1,
+      "sideLabel": "Dominant hand"
+    },
+    "Football": {
+      "formats": ["11", "7", "5"],
+      "positions": [
+        "Quarterback",
+        "Running back",
+        "Wide receiver",
+        "Tight end",
+        "Offensive line",
+        "Defensive line",
+        "Linebacker",
+        "Defensive back",
+        "Kicker",
+        "Punter"
+      ],
+      "metrics": [
+        {
+          "key": "passingYards",
+          "label": "Passing yards",
+          "max": 2000
+        },
+        {
+          "key": "rushingYards",
+          "label": "Rushing yards",
+          "max": 2000
+        },
+        {
+          "key": "receivingYards",
+          "label": "Receiving yards",
+          "max": 2000
+        },
+        {
+          "key": "touchdowns",
+          "label": "Touchdowns",
+          "max": 50
+        },
+        {
+          "key": "tackles",
+          "label": "Tackles",
+          "max": 100
+        }
+      ],
+      "scoreLabel": "Points",
+      "allowDraw": true,
+      "participation": {
+        "key": "minutes",
+        "label": "Minutes",
+        "max": 120
+      },
+      "maxScore": 200,
+      "marginStep": 0.01,
+      "sideLabel": "Throwing hand"
+    },
+    "Handball": {
+      "formats": ["7"],
+      "positions": [
+        "Goalkeeper",
+        "Left wing",
+        "Right wing",
+        "Left back",
+        "Right back",
+        "Centre back",
+        "Pivot"
+      ],
+      "metrics": [
+        {
+          "key": "goals",
+          "label": "Goals",
+          "max": 100
+        },
+        {
+          "key": "assists",
+          "label": "Assists",
+          "max": 100
+        },
+        {
+          "key": "saves",
+          "label": "Saves",
+          "max": 200
+        }
+      ],
+      "scoreLabel": "Goals",
+      "allowDraw": true,
+      "participation": {
+        "key": "minutes",
+        "label": "Minutes",
+        "max": 90
+      },
+      "maxScore": 100,
+      "marginStep": 0.05,
+      "sideLabel": "Dominant hand"
+    },
+    "Basketball": {
+      "formats": ["5", "3"],
+      "positions": [
+        "Point guard",
+        "Shooting guard",
+        "Small forward",
+        "Power forward",
+        "Centre"
+      ],
+      "metrics": [
+        {
+          "key": "points",
+          "label": "Points",
+          "max": 300
+        },
+        {
+          "key": "rebounds",
+          "label": "Rebounds",
+          "max": 100
+        },
+        {
+          "key": "assists",
+          "label": "Assists",
+          "max": 100
+        },
+        {
+          "key": "steals",
+          "label": "Steals",
+          "max": 100
+        },
+        {
+          "key": "blocks",
+          "label": "Blocks",
+          "max": 100
+        }
+      ],
+      "scoreLabel": "Points",
+      "allowDraw": false,
+      "participation": {
+        "key": "minutes",
+        "label": "Minutes",
+        "max": 90
+      },
+      "maxScore": 300,
+      "marginStep": 0.01,
+      "sideLabel": "Dominant hand"
+    },
+    "Baseball": {
+      "formats": ["9"],
+      "positions": [
+        "Pitcher",
+        "Catcher",
+        "First base",
+        "Second base",
+        "Third base",
+        "Shortstop",
+        "Left field",
+        "Centre field",
+        "Right field",
+        "Designated hitter"
+      ],
+      "metrics": [
+        {
+          "key": "hits",
+          "label": "Hits",
+          "max": 30
+        },
+        {
+          "key": "runs",
+          "label": "Runs",
+          "max": 100
+        },
+        {
+          "key": "rbi",
+          "label": "Runs batted in",
+          "max": 100
+        },
+        {
+          "key": "pitchingStrikeouts",
+          "label": "Pitching strikeouts",
+          "max": 100
+        }
+      ],
+      "scoreLabel": "Runs",
+      "allowDraw": false,
+      "participation": {
+        "key": "inningsPlayed",
+        "label": "Innings participated in",
+        "max": 30
+      },
+      "maxScore": 100,
+      "marginStep": 0.05,
+      "sideLabel": "Dominant hand"
+    },
+    "Hockey": {
+      "formats": ["6"],
+      "positions": [
+        "Goalkeeper",
+        "Defender",
+        "Centre",
+        "Left wing",
+        "Right wing"
+      ],
+      "metrics": [
+        {
+          "key": "goals",
+          "label": "Goals",
+          "max": 100
+        },
+        {
+          "key": "assists",
+          "label": "Assists",
+          "max": 200
+        },
+        {
+          "key": "shots",
+          "label": "Shots",
+          "max": 200
+        },
+        {
+          "key": "saves",
+          "label": "Saves",
+          "max": 200
+        }
+      ],
+      "scoreLabel": "Goals",
+      "allowDraw": false,
+      "participation": {
+        "key": "minutes",
+        "label": "Minutes",
+        "max": 120
+      },
+      "maxScore": 100,
+      "marginStep": 0.05,
+      "sideLabel": "Dominant hand"
+    }
+  }
+}

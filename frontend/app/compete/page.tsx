@@ -1,6 +1,8 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import TeamCompetition from "@/components/TeamCompetition";
+import { TEAM_SPORTS, isTeamSport } from "@/lib/sports";
 import { useSearchParams } from "next/navigation";
 import { LeaderboardPanel, ratingNumber } from "@/components/RatingPanels";
 import Link from "next/link";
@@ -21,8 +23,36 @@ type Section =
 export default function CompetePage() {
   return (
     <Suspense fallback={<p role="status">Loading competition…</p>}>
-      <CompetitionContent />
+      <CompetitionRouter />
     </Suspense>
+  );
+}
+
+function CompetitionRouter() {
+  const params = useSearchParams();
+  const teams = params.get("section") === "teams";
+  const sport = TEAM_SPORTS.includes(params.get("sport") || "")
+    ? params.get("sport")!
+    : "Soccer";
+  return (
+    <>
+      <nav className={styles.competitionModes} aria-label="Competition type">
+        <Link href="/compete" aria-current={!teams ? "page" : undefined}>
+          Individual sports
+        </Link>
+        <Link
+          href="/compete?section=teams"
+          aria-current={teams ? "page" : undefined}
+        >
+          Team sports
+        </Link>
+      </nav>
+      {teams ? (
+        <TeamCompetition sport={sport} key={sport} />
+      ) : (
+        <CompetitionContent />
+      )}
+    </>
   );
 }
 
@@ -91,27 +121,25 @@ function CompetitionContent() {
         userResult.status === "fulfilled" ? userResult.value : null;
       const sportsCatalog =
         sportsResult.status === "fulfilled" && Array.isArray(sportsResult.value)
-          ? sportsResult.value.filter(
-              (s: any) => s.name?.toLowerCase() !== "soccer",
-            )
+          ? sportsResult.value.filter((s: any) => !isTeamSport(s.name))
           : [];
       const matches =
         matchesResult.status === "fulfilled" &&
         Array.isArray(matchesResult.value)
-          ? matchesResult.value
+          ? matchesResult.value.filter((m: any) => !isTeamSport(m.sport?.name))
           : [];
       const openMatches =
         openMatchesResult.status === "fulfilled" &&
         Array.isArray(openMatchesResult.value)
-          ? openMatchesResult.value
+          ? openMatchesResult.value.filter(
+              (m: any) => !isTeamSport(m.sport?.name),
+            )
           : [];
 
       setData({
         user: userJson?.user || userJson || null,
         ratings: Array.isArray(userJson?.ratings)
-          ? userJson.ratings.filter(
-              (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
-            )
+          ? userJson.ratings.filter((r: any) => !isTeamSport(r.sportId?.name))
           : [],
         matches,
         openMatches,
@@ -119,7 +147,7 @@ function CompetitionContent() {
         leaderboard: [],
       });
       const firstRatedSportId = userJson?.ratings?.find(
-        (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
+        (r: any) => !isTeamSport(r.sportId?.name),
       )?.sportId?._id;
       const params = new URLSearchParams(query);
       if (params.get("section") === "leaderboard") setSection("leaderboard");
@@ -270,9 +298,8 @@ function CompetitionContent() {
               </p>
             )}
 
-            <Link href="/soccer" className={styles.soccerLink}>
-              Team sports: explore soccer squads, club rosters and team rankings
-              →
+            <Link href="/compete?section=teams" className={styles.soccerLink}>
+              Team sports: explore squads, club rosters and team rankings →
             </Link>
             {/* PROFILE CARD */}
             <div className={styles.profileCard}>

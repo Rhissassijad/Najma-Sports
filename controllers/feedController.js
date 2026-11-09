@@ -4,7 +4,10 @@ const Community = require("../models/Community");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
-const ALLOWED_SPORT_TAGS = ["Tennis", "Soccer", "Padel", "Pickleball"];
+const {
+  allSports: ALLOWED_SPORT_TAGS,
+  normalizeSport,
+} = require("../utils/sports");
 
 function canManagePost(post, userId) {
   return post?.author && String(post.author) === String(userId);
@@ -39,10 +42,15 @@ exports.getFeedPosts = async (req, res) => {
     let filter = nonCommunityPostsFilter();
 
     if (userId) {
-      const memberCommunityIds = await Community.distinct("_id", { members: userId });
+      const memberCommunityIds = await Community.distinct("_id", {
+        members: userId,
+      });
       if (memberCommunityIds.length > 0) {
         filter = {
-          $or: [...nonCommunityPostsFilter().$or, { community: { $in: memberCommunityIds } }],
+          $or: [
+            ...nonCommunityPostsFilter().$or,
+            { community: { $in: memberCommunityIds } },
+          ],
         };
       }
     }
@@ -62,7 +70,15 @@ exports.getFeedPosts = async (req, res) => {
 exports.createFeedPost = async (req, res) => {
   try {
     const userId = req.user?.id;
-    const { text, sportTag, location, isMatchResult, hasMedia, hasLocation, communityId } = req.body;
+    const {
+      text,
+      sportTag,
+      location,
+      isMatchResult,
+      hasMedia,
+      hasLocation,
+      communityId,
+    } = req.body;
 
     if (!userId) {
       return res.status(401).json({ message: "Not authorized." });
@@ -74,7 +90,7 @@ exports.createFeedPost = async (req, res) => {
     }
 
     const trimmedText = String(text || "").trim();
-    const normalizedSportTag = String(sportTag || "").trim();
+    const normalizedSportTag = normalizeSport(sportTag);
     const trimmedLocation = String(location || "").trim();
 
     if (!trimmedText) {
@@ -102,11 +118,17 @@ exports.createFeedPost = async (req, res) => {
       }
 
       const isMember = Array.isArray(community.members)
-        ? community.members.some((memberId) => String(memberId) === String(userId))
+        ? community.members.some(
+            (memberId) => String(memberId) === String(userId),
+          )
         : false;
 
       if (!isMember) {
-        return res.status(403).json({ message: "You must join this community before posting in it." });
+        return res
+          .status(403)
+          .json({
+            message: "You must join this community before posting in it.",
+          });
       }
 
       resolvedCommunityId = community._id;
@@ -137,7 +159,8 @@ exports.updateFeedPost = async (req, res) => {
   try {
     const userId = req.user?.id;
     const postId = req.params?.postId;
-    const { text, sportTag, location, isMatchResult, hasMedia, hasLocation } = req.body;
+    const { text, sportTag, location, isMatchResult, hasMedia, hasLocation } =
+      req.body;
 
     if (!userId) {
       return res.status(401).json({ message: "Not authorized." });
@@ -149,7 +172,9 @@ exports.updateFeedPost = async (req, res) => {
     }
 
     if (!canManagePost(post, userId)) {
-      return res.status(403).json({ message: "You can only modify your own posts." });
+      return res
+        .status(403)
+        .json({ message: "You can only modify your own posts." });
     }
 
     if (text !== undefined) {
@@ -161,7 +186,7 @@ exports.updateFeedPost = async (req, res) => {
     }
 
     if (sportTag !== undefined) {
-      const normalizedSportTag = String(sportTag || "").trim();
+      const normalizedSportTag = normalizeSport(sportTag);
       if (!ALLOWED_SPORT_TAGS.includes(normalizedSportTag)) {
         return res.status(400).json({ message: "Invalid sport tag." });
       }
@@ -210,7 +235,9 @@ exports.deleteFeedPost = async (req, res) => {
     }
 
     if (!canManagePost(post, userId)) {
-      return res.status(403).json({ message: "You can only delete your own posts." });
+      return res
+        .status(403)
+        .json({ message: "You can only delete your own posts." });
     }
 
     await FeedPost.deleteOne({ _id: postId });

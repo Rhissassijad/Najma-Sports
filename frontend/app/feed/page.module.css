@@ -694,3 +694,30 @@
     min-width: 0;
   }
 }
+.sectionNav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sectionNav a {
+  padding: 9px 14px;
+  border: 1px solid #e0e6ef;
+  border-radius: 7px;
+  color: #2450d8;
+  background: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+.communityCreateRow {
+  flex-wrap: wrap;
+}
+.communityCard {
+  flex-wrap: wrap;
+}
+.communityCard > div {
+  min-width: 0;
+  max-width: 100%;
+}
+.communityCreateRow > label {
+  min-width: 150px;
+}

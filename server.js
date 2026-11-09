@@ -7,7 +7,7 @@ dotenv.config();
 
 const app = express();
 const Sport = require("./models/Sport");
-const DEFAULT_SPORTS = ["Tennis", "Soccer", "Padel", "Pickleball"];
+const { allSports: DEFAULT_SPORTS } = require("./utils/sports");
 const allowedOrigins = [
   "http://localhost:3000",
   ...(process.env.FRONTEND_URL || "")
@@ -59,6 +59,7 @@ app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/soccer", require("./routes/soccerRoutes"));
+app.use("/api/team-sports", require("./routes/teamSportsRoutes"));
 
 app.use("/api", (req, res) => {
   res

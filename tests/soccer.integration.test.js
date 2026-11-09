@@ -9,7 +9,7 @@ const { SoccerSquad: Squad, SoccerMatch: Match } = require("../models/Soccer");
 const uri = process.env.SOCCER_TEST_MONGO_URI;
 // Dedicated localhost database only: never run this destructive test against application data.
 test(
-  "soccer API: mutual memberships, isolated formats, detailed stats, disputes and atomic Elo",
+  "team competition API: all sports, memberships, stats, atomic Elo, legacy soccer and social categories",
   {
     skip:
       !uri && "Set SOCCER_TEST_MONGO_URI to a localhost MongoDB replica set.",
@@ -27,6 +27,9 @@ test(
     app.use(express.json());
     app.use("/api/auth", require("../routes/authRoutes"));
     app.use("/api/soccer", require("../routes/soccerRoutes"));
+    app.use("/api/team-sports", require("../routes/teamSportsRoutes"));
+    app.use("/api/feed", require("../routes/feedRoutes"));
+    app.use("/api/communities", require("../routes/communityRoutes"));
     const server = app.listen(0, "127.0.0.1");
     await new Promise((r) => server.on("listening", r));
     const base = `http://127.0.0.1:${server.address().port}`;
@@ -265,5 +268,160 @@ test(
       1,
     );
     assert.equal((await Match.findById(match._id)).status, "completed");
+    const { catalog, teamSports } = require("../utils/sports");
+    for (const sport of teamSports) {
+      const d = catalog.team[sport];
+      const root = "/api/team-sports";
+      const path = (p) => root + p + "?sport=" + encodeURIComponent(sport);
+      const h = await request(
+        a.token,
+        path("/squads"),
+        { name: sport + " Home", format: d.formats[0] },
+        201,
+      );
+      const v = await request(
+        b.token,
+        path("/squads"),
+        { name: sport + " Away", format: d.formats[0] },
+        201,
+      );
+      for (const [manager, member, squad] of [
+        [a, p, h],
+        [b, x, v],
+      ]) {
+        await request(manager.token, path(`/squads/${squad._id}/membership`), {
+          action: "invite",
+          email: member.email,
+        });
+        await request(member.token, path(`/squads/${squad._id}/membership`), {
+          action: "accept",
+          playerId: member.id,
+        });
+      }
+      await request(
+        p.token,
+        path("/profile"),
+        { position: d.positions[0], side: "Left" },
+        200,
+        "PATCH",
+      );
+      if (sport !== "Soccer")
+        await request(
+          a.token,
+          path("/matches"),
+          { home: h._id, away: away._id, mode: "results", scheduledAt: date },
+          400,
+        );
+      const game = await request(
+        a.token,
+        path("/matches"),
+        { home: h._id, away: v._id, mode: "detailed", scheduledAt: date },
+        201,
+      );
+      const action = (kind) => path(`/matches/${game._id}/${kind}`);
+      await request(b.token, action("accept"), {});
+      const stats = Object.fromEntries(
+        [d.participation, ...d.metrics].map((m) => [m.key, 0]),
+      );
+      stats[d.participation.key] = 1;
+      stats[d.metrics[0].key] = 1;
+      await request(a.token, action("lineup"), {
+        players: [{ user: p.id, position: d.positions[0], stats }],
+      });
+      await request(b.token, action("lineup"), {
+        players: [
+          {
+            user: x.id,
+            position: d.positions[0],
+            stats: { [d.participation.key]: 1 },
+          },
+        ],
+      });
+      if (!d.allowDraw)
+        await request(
+          a.token,
+          action("result"),
+          { homeScore: 1, awayScore: 1 },
+          400,
+        );
+      const hs = sport === "Volleyball" ? 3 : sport === "Football" ? 14 : 2;
+      await request(a.token, action("result"), { homeScore: hs, awayScore: 0 });
+      await request(b.token, action("confirm"), {});
+      const profile = await request(
+        p.token,
+        path(`/players/${p.id}`),
+        undefined,
+      );
+      assert.equal(profile.player.teamProfile.position, d.positions[0]);
+      assert(profile.appearances.some((r) => r.matchId === game._id));
+      assert(profile.squads.some((q) => q._id === h._id));
+      const listing = await request(a.token, path(""), undefined);
+      assert(listing.squads.every((q) => q.sport === sport));
+      assert(listing.matches.every((m) => m.sport === sport));
+      const community = await request(
+        a.token,
+        "/api/communities",
+        { name: sport + " club community", sport },
+        201,
+      );
+      assert.equal(community.sport, sport);
+      const post = await request(
+        a.token,
+        "/api/feed/posts",
+        {
+          text: sport + " match update",
+          sportTag: sport,
+          communityId: community._id,
+        },
+        201,
+      );
+      assert.equal(post.sportTag, sport);
+      await request(
+        b.token,
+        `/api/communities/${community._id}`,
+        { sport: "Tennis" },
+        403,
+        "PATCH",
+      );
+      const updated = await request(
+        a.token,
+        `/api/communities/${community._id}`,
+        { sport: "Tennis" },
+        200,
+        "PATCH",
+      );
+      assert.equal(updated.sport, "Tennis");
+      const edit = await request(
+        a.token,
+        `/api/feed/posts/${post._id}`,
+        { sportTag: "Basketball" },
+        200,
+        "PUT",
+      );
+      assert.equal(edit.sportTag, "Basketball");
+    }
+    const allSports = await request(
+      p.token,
+      "/api/team-sports/participation",
+      undefined,
+    );
+    assert.equal(allSports.sports.length, 7);
+    const legacy = home.toObject ? home.toObject() : { ...home };
+    delete legacy.sport;
+    delete legacy._id;
+    delete legacy.__v;
+    const raw = await Squad.collection.insertOne({
+      ...legacy,
+      name: "Legacy soccer",
+      manager: new mongoose.Types.ObjectId(a.id),
+      format: "11",
+      members: [],
+    });
+    const listing = await request(a.token, "/api/team-sports", undefined);
+    assert(
+      listing.squads.some(
+        (q) => q._id === String(raw.insertedId) && q.sport === "Soccer",
+      ),
+    );
   },
 );

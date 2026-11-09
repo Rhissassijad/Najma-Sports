@@ -1,3 +1,4 @@
+const { isTeamSport } = require("../utils/sports");
 const express = require("express");
 const router = express.Router();
 const protect = require("../middleware/authMiddleware");
@@ -80,13 +81,11 @@ router.post("/me/sports", protect, async (req, res) => {
       return res.status(404).json({ message: "Sport not found" });
     }
 
-    if (sport.name.toLowerCase() === "soccer")
-      return res
-        .status(400)
-        .json({
-          message:
-            "Use the Soccer hub to join a squad and build your soccer profile.",
-        });
+    if (isTeamSport(sport.name))
+      return res.status(400).json({
+        message:
+          "Use the Compete team-sports area to join a squad and build your team-sports profile.",
+      });
 
     const userSport = await UserSport.findOneAndUpdate(
       { userId: req.user.id, sportId },

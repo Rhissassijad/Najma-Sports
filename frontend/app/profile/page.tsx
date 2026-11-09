@@ -1,5 +1,6 @@
 "use client";
 
+import { isTeamSport } from "@/lib/sports";
 import Link from "next/link";
 import { SportPanel } from "@/components/RatingPanels";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
@@ -134,9 +135,7 @@ export default function ProfilePage() {
 
         const userBase = userJson?.user || userJson || null;
         const userRatings = Array.isArray(userJson?.ratings)
-          ? userJson.ratings.filter(
-              (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
-            )
+          ? userJson.ratings.filter((r: any) => !isTeamSport(r.sportId?.name))
           : [];
         const followersCount =
           typeof userJson?.followersCount === "number"
@@ -604,8 +603,11 @@ export default function ProfilePage() {
 
             {activeSection === "sports-levels" && (
               <section className={styles.sectionCard}>
-                <Link href="/soccer" className={styles.soccerLink}>
-                  Team sports: manage your soccer squads, memberships and player
+                <Link
+                  href="/compete?section=teams"
+                  className={styles.soccerLink}
+                >
+                  Team sports: manage your squads, memberships and player
                   profile →
                 </Link>
                 <SportPanel
@@ -638,7 +640,7 @@ export default function ProfilePage() {
                       {sportsCatalog
                         .filter(
                           (sport: any) =>
-                            sport.name?.toLowerCase() !== "soccer" &&
+                            !isTeamSport(sport.name) &&
                             !ratings.some(
                               (rating: any) =>
                                 String(rating.sportId?._id) ===

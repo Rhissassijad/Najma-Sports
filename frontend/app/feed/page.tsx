@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ALL_SPORTS } from "@/lib/sports";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
@@ -10,7 +12,7 @@ import styles from "./page.module.css";
 type FeedMode = "for-you" | "following" | "nearby";
 type ContentFilter = "all" | "posts" | "matches";
 type FeedSection = "feed" | "trending" | "my-sports" | "my-communities";
-type SportFilter = "all" | "Tennis" | "Soccer" | "Padel" | "Pickleball";
+type SportFilter = string;
 type ComposerSportTag = Exclude<SportFilter, "all">;
 
 type ApiAuthor = {
@@ -40,6 +42,7 @@ type ApiFeedPost = {
 };
 
 type ApiCommunity = {
+  sport?: string;
   _id: string;
   name: string;
   createdBy?: ApiAuthor;
@@ -171,6 +174,9 @@ function FeedPageContent() {
   const [followBusyUserId, setFollowBusyUserId] = useState<string | null>(null);
 
   const [communities, setCommunities] = useState<ApiCommunity[]>([]);
+  const [communitySport, setCommunitySport] = useState("General");
+  const [communityFilter, setCommunityFilter] = useState("all");
+  const [communityUpdating, setCommunityUpdating] = useState("");
   const [communityName, setCommunityName] = useState("");
   const [isCreatingCommunity, setIsCreatingCommunity] = useState(false);
   const [joiningCommunityId, setJoiningCommunityId] = useState<string | null>(
@@ -231,7 +237,16 @@ function FeedPageContent() {
                   .map((rating) => rating?.sportId?.name)
                   .filter((sport): sport is string => Boolean(sport))
               : [];
-            setUserSports(Array.from(new Set(sports)));
+            let teamSports: string[] = [];
+            try {
+              const response = await fetch(
+                `${API_BASE}/api/team-sports/participation`,
+                { headers: { Authorization: `Bearer ${resolvedToken}` } },
+              );
+              if (response.ok)
+                teamSports = (await response.json()).sports || [];
+            } catch {}
+            setUserSports(Array.from(new Set([...sports, ...teamSports])));
           } else {
             setCurrentUserId(null);
             setFollowingIds([]);
@@ -569,6 +584,32 @@ function FeedPageContent() {
     }
   };
 
+  const updateCommunitySport = async (id: string, sport: string) => {
+    if (!token || communityUpdating) return;
+    setCommunityUpdating(id);
+    setCommunityMessage("");
+    try {
+      const response = await fetch(`${API_BASE}/api/communities/${id}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sport }),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw Error(result.message || "Could not update community sport.");
+      setCommunities((prev) => prev.map((c) => (c._id === id ? result : c)));
+      setCommunityMessage(
+        "Community category updated. Existing post categories are preserved.",
+      );
+    } catch (e) {
+      setCommunityMessage((e as Error).message);
+    } finally {
+      setCommunityUpdating("");
+    }
+  };
   const handleCreateCommunity = async () => {
     const cleanName = communityName.trim();
     if (!cleanName) {
@@ -591,7 +632,7 @@ function FeedPageContent() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name: cleanName }),
+        body: JSON.stringify({ name: cleanName, sport: communitySport }),
       });
 
       const data = await res.json().catch(() => null);
@@ -676,6 +717,11 @@ function FeedPageContent() {
 
         <main className={styles.main}>
           <div className={styles.mainInner}>
+            <nav className={styles.sectionNav} aria-label="Community sections">
+              <Link href="/feed">Feed</Link>
+              <Link href="/feed?section=my-sports">My sports</Link>
+              <Link href="/feed?section=my-communities">Communities</Link>
+            </nav>
             <section className={styles.heroCard}>
               <div>
                 <p className={styles.heroPill}>{SECTION_INTRO[section].pill}</p>
@@ -752,10 +798,11 @@ function FeedPageContent() {
                     }
                   >
                     <option value="all">All sports</option>
-                    <option value="Tennis">Tennis</option>
-                    <option value="Soccer">Soccer</option>
-                    <option value="Padel">Padel</option>
-                    <option value="Pickleball">Pickleball</option>
+                    {ALL_SPORTS.map((sport) => (
+                      <option key={sport} value={sport}>
+                        {sport}
+                      </option>
+                    ))}
                   </select>
                 </label>
               </div>
@@ -808,10 +855,11 @@ function FeedPageContent() {
                       )
                     }
                   >
-                    <option value="Tennis">#Tennis</option>
-                    <option value="Soccer">#Soccer</option>
-                    <option value="Padel">#Padel</option>
-                    <option value="Pickleball">#Pickleball</option>
+                    {ALL_SPORTS.map((sport) => (
+                      <option key={sport} value={sport}>
+                        {sport}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 {isCommunitySection && (
@@ -886,6 +934,18 @@ function FeedPageContent() {
                     value={communityName}
                     onChange={(event) => setCommunityName(event.target.value)}
                   />
+                  <label className={styles.filterLabel}>
+                    Community sport
+                    <select
+                      className={styles.selectControl}
+                      value={communitySport}
+                      onChange={(e) => setCommunitySport(e.target.value)}
+                    >
+                      {["General", ...ALL_SPORTS].map((sport) => (
+                        <option key={sport}>{sport}</option>
+                      ))}
+                    </select>
+                  </label>
                   <button
                     type="button"
                     className={styles.communityCreateButton}
@@ -900,46 +960,95 @@ function FeedPageContent() {
                   <p className={styles.communityMessage}>{communityMessage}</p>
                 )}
 
+                <label className={styles.filterLabel}>
+                  Browse communities by sport
+                  <select
+                    className={styles.selectControl}
+                    value={communityFilter}
+                    onChange={(e) => setCommunityFilter(e.target.value)}
+                  >
+                    <option value="all">All sports</option>
+                    {["General", ...ALL_SPORTS].map((sport) => (
+                      <option key={sport}>{sport}</option>
+                    ))}
+                  </select>
+                </label>
                 <div className={styles.communityList}>
-                  {communities.length === 0 && (
+                  {communities.filter(
+                    (c) =>
+                      communityFilter === "all" ||
+                      (c.sport || "General") === communityFilter,
+                  ).length === 0 && (
                     <div className={styles.communityEmpty}>
-                      No communities yet. Create the first one.
+                      No communities match this category. Create one or choose
+                      another sport.
                     </div>
                   )}
 
-                  {communities.map((community) => (
-                    <article
-                      key={community._id}
-                      className={styles.communityCard}
-                    >
-                      <div>
-                        <p className={styles.communityName}>{community.name}</p>
-                        <p className={styles.communityMeta}>
-                          {community.memberCount} member
-                          {community.memberCount === 1 ? "" : "s"}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        className={
-                          community.isMember
-                            ? styles.communityJoinedButton
-                            : styles.communityJoinButton
-                        }
-                        onClick={() => handleJoinCommunity(community._id)}
-                        disabled={
-                          community.isMember ||
-                          joiningCommunityId === community._id
-                        }
+                  {communities
+                    .filter(
+                      (c) =>
+                        communityFilter === "all" ||
+                        (c.sport || "General") === communityFilter,
+                    )
+                    .map((community) => (
+                      <article
+                        key={community._id}
+                        className={styles.communityCard}
                       >
-                        {community.isMember
-                          ? "Member"
-                          : joiningCommunityId === community._id
-                            ? "Joining..."
-                            : "Join"}
-                      </button>
-                    </article>
-                  ))}
+                        <div>
+                          <p className={styles.communityName}>
+                            {community.name}
+                          </p>
+                          <p className={styles.communityMeta}>
+                            {community.sport || "General"}
+                          </p>
+                          {community.createdBy?._id === currentUserId && (
+                            <label className={styles.filterLabel}>
+                              Change sport category
+                              <select
+                                className={styles.selectControl}
+                                value={community.sport || "General"}
+                                disabled={!!communityUpdating}
+                                onChange={(e) =>
+                                  updateCommunitySport(
+                                    community._id,
+                                    e.target.value,
+                                  )
+                                }
+                              >
+                                {["General", ...ALL_SPORTS].map((sport) => (
+                                  <option key={sport}>{sport}</option>
+                                ))}
+                              </select>
+                            </label>
+                          )}
+                          <p className={styles.communityMeta}>
+                            {community.memberCount} member
+                            {community.memberCount === 1 ? "" : "s"}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          className={
+                            community.isMember
+                              ? styles.communityJoinedButton
+                              : styles.communityJoinButton
+                          }
+                          onClick={() => handleJoinCommunity(community._id)}
+                          disabled={
+                            community.isMember ||
+                            joiningCommunityId === community._id
+                          }
+                        >
+                          {community.isMember
+                            ? "Member"
+                            : joiningCommunityId === community._id
+                              ? "Joining..."
+                              : "Join"}
+                        </button>
+                      </article>
+                    ))}
                 </div>
               </section>
             )}
@@ -1056,10 +1165,11 @@ function FeedPageContent() {
                                   )
                                 }
                               >
-                                <option value="Tennis">Tennis</option>
-                                <option value="Soccer">Soccer</option>
-                                <option value="Padel">Padel</option>
-                                <option value="Pickleball">Pickleball</option>
+                                {ALL_SPORTS.map((sport) => (
+                                  <option key={sport} value={sport}>
+                                    {sport}
+                                  </option>
+                                ))}
                               </select>
                             </label>
                             <input

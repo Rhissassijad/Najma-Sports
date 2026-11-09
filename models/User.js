@@ -17,6 +17,14 @@ const userSchema = new mongoose.Schema(
     favoritePlayer: { type: String, default: "" },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    teamProfiles: {
+      type: Map,
+      of: new mongoose.Schema(
+        { position: String, side: String },
+        { _id: false },
+      ),
+      default: {},
+    },
     soccer: {
       position: {
         type: String,
@@ -25,6 +33,7 @@ const userSchema = new mongoose.Schema(
       foot: { type: String, enum: ["Left", "Right", "Both"] },
     },
     onboarding: {
+      sport: { type: String, enum: require("../utils/sports").allSports },
       category: {
         type: String,
         enum: ["individual", "team", "both"],

@@ -1,3 +1,4 @@
+const { isTeamSport } = require("../utils/sports");
 const mongoose = require("mongoose");
 const Match = require("../models/Match");
 const Sport = require("../models/Sport");
@@ -37,10 +38,12 @@ const createMatch = async (req, res) => {
     if (!sportExists) {
       return res.status(404).json({ message: "Sport not found" });
     }
-    if (sportExists.name.toLowerCase() === "soccer") {
+    if (isTeamSport(sportExists.name)) {
       return res
         .status(400)
-        .json({ message: "Use the Soccer hub to create squad matches." });
+        .json({
+          message: "Use the Compete team-sports area to create squad matches.",
+        });
     }
     if (!creator) {
       return res
@@ -264,13 +267,9 @@ const confirmResult = async (req, res) => {
     return res.status(200).json(completedMatch);
   } catch (error) {
     console.error("Confirm match result error:", error);
-    return res
-      .status(error.status || 500)
-      .json({
-        message: error.status
-          ? error.message
-          : "Failed to confirm match result",
-      });
+    return res.status(error.status || 500).json({
+      message: error.status ? error.message : "Failed to confirm match result",
+    });
   } finally {
     await session.endSession();
   }

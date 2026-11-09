@@ -318,3 +318,26 @@
   font-weight: 600;
   margin-bottom: 20px;
 }
+.competitionModes {
+  display: flex;
+  gap: 8px;
+  padding: 14px 32px;
+  background: #fff;
+  border-bottom: 1px solid #e0e6ef;
+}
+.competitionModes a {
+  padding: 10px 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #718097;
+  font-weight: 650;
+}
+.competitionModes a[aria-current="page"] {
+  background: #edf2ff;
+  color: #2450d8;
+}
+@media (max-width: 500px) {
+  .competitionModes {
+    padding: 12px 14px;
+  }
+}

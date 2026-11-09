@@ -381,3 +381,13 @@
 .tabs a {
   margin-left: 0;
 }
+.sportPicker {
+  max-width: 300px;
+  margin: 22px 0 0;
+}
+.lineup {
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+.metrics {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}

@@ -7,11 +7,11 @@ import styles from "./page.module.css";
 
 const destinations = [
   {
-    href: "/soccer",
+    href: "/compete?section=teams",
     icon: Users,
-    title: "Your soccer squad",
+    title: "Your team",
     text: "Join a squad, manage a club, and compete with confirmed team results.",
-    action: "Explore soccer",
+    action: "Explore team sports",
   },
   {
     href: "/compete",

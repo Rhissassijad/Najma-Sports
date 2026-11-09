@@ -1,5 +1,6 @@
 "use client";
 
+import { isTeamSport } from "@/lib/sports";
 import { useEffect, useState } from "react";
 import { ratingNumber } from "@/components/RatingPanels";
 import { useAuthGuard } from "@/lib/withAuth";
@@ -23,13 +24,11 @@ export default function StatsPage() {
       const data = await res.json();
 
       setRatings(
-        (data.ratings || []).filter(
-          (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
-        ),
+        (data.ratings || []).filter((r: any) => !isTeamSport(r.sportId?.name)),
       );
       setHistory(
         (data.ratingHistory || []).filter(
-          (r: any) => r.sportId?.name?.toLowerCase() !== "soccer",
+          (r: any) => !isTeamSport(r.sportId?.name),
         ),
       );
     };

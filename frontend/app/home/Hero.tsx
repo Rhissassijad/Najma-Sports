@@ -47,7 +47,9 @@ export default function Hero() {
         </Link>
       </motion.div>
 
-      <p className={styles.caption}>TENNIS · SOCCER · PADEL · PICKLEBALL</p>
+      <p className={styles.caption}>
+        INDIVIDUAL SPORTS · TEAM SPORTS · YOUR NEXT LEVEL
+      </p>
     </section>
   );
 }
