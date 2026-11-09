@@ -10,6 +10,8 @@ test("production app registers team-sports and follow routes before the API fall
     ["/api/team-sports", "GET"],
     ["/api/team-sports?sport=Basketball", "GET"],
     ["/api/users/69ca15aa807a21a113ee9cde/follow", "POST"],
+    ["/api/feed/posts/69ca15aa807a21a113ee9cde/reaction", "POST"],
+    ["/api/feed/challenges", "GET"],
   ]) {
     const res = await fetch(base + path, { method });
     assert.equal(res.status, 401);
@@ -18,6 +20,7 @@ test("production app registers team-sports and follow routes before the API fall
   const health = await (await fetch(base + "/api/health")).json();
   assert.equal(health.features.teamSports, true);
   assert.equal(health.features.following, true);
+  assert.equal(health.features.socialInteractions, true);
   const missing = await fetch(base + "/api/no-such-route");
   assert.equal(missing.status, 404);
 });

@@ -25,6 +25,11 @@ mongoose
     }
 
     await require("./utils/migrateDisciplines")();
+    await Promise.all(
+      Object.values(require("./models/FeedInteraction")).map((model) =>
+        model.init(),
+      ),
+    );
     const apiPort = process.env.API_PORT || 8080;
     const server = app.listen(apiPort, "0.0.0.0", () =>
       console.log(`🚀 Server running on port ${apiPort}`),

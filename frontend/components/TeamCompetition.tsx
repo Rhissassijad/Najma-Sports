@@ -6,6 +6,7 @@ import { useAuthGuard } from "@/lib/withAuth";
 import { API_URL } from "@/lib/api";
 import { ratingNumber } from "@/components/RatingPanels";
 import s from "./TeamCompetition.module.css";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { TEAM_SPORTS, teamDefinition, formatLabel } from "@/lib/sports";
 
@@ -44,6 +45,10 @@ export default function TeamCompetition({
   sport?: string;
 }) {
   const router = useRouter();
+  const params = useSearchParams();
+  useEffect(() => {
+    if (params.get("view") === "matches") setTab("matches");
+  }, [params.toString()]);
   const d = teamDefinition(sport),
     positions = d.positions;
   const metrics = [d.participation, ...d.metrics];

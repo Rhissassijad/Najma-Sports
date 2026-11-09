@@ -1,5 +1,7 @@
 "use client";
 
+import PostInteractions from "@/components/PostInteractions";
+import FeedChallenges from "@/components/FeedChallenges";
 import Link from "next/link";
 import { API_URL } from "@/lib/api";
 import { ALL_SPORTS, disciplines, individualDiscipline } from "@/lib/sports";
@@ -31,6 +33,10 @@ type ApiPostCommunity = {
 
 type ApiFeedPost = {
   discipline?: string;
+  likes?: number;
+  dislikes?: number;
+  commentCount?: number;
+  myReaction?: "like" | "dislike" | null;
   _id: string;
   text: string;
   sportTag: ComposerSportTag;
@@ -153,6 +159,7 @@ function FeedPageContent() {
   const searchParams = useSearchParams();
   const section = normalizeSection(searchParams.get("section"));
 
+  const [challengeRevision, setChallengeRevision] = useState(0);
   const [feedMode, setFeedMode] = useState<FeedMode>("for-you");
   const [contentFilter, setContentFilter] = useState<ContentFilter>("all");
   const [sportFilter, setSportFilter] = useState<SportFilter>("all");
@@ -225,7 +232,28 @@ function FeedPageContent() {
         });
         if (!postsRes.ok) throw new Error("Failed to load feed.");
         const postsData = await postsRes.json();
-        setPosts(Array.isArray(postsData) ? postsData : []);
+        let loaded = Array.isArray(postsData) ? postsData : [];
+        const sharedPost = searchParams.get("post");
+        if (sharedPost) {
+          const sharedResponse = await fetch(
+            `${API_BASE}/api/feed/posts/${encodeURIComponent(sharedPost)}`,
+            {
+              headers: resolvedToken
+                ? { Authorization: `Bearer ${resolvedToken}` }
+                : {},
+            },
+          );
+          const shared = await sharedResponse.json();
+          if (!sharedResponse.ok)
+            throw new Error(
+              shared.message || "This shared post is unavailable.",
+            );
+          loaded = [
+            shared,
+            ...loaded.filter((post: any) => post._id !== shared._id),
+          ];
+        }
+        setPosts(loaded);
 
         if (resolvedToken) {
           const meRes = await fetch(`${API_BASE}/api/users/me`, {
@@ -282,14 +310,18 @@ function FeedPageContent() {
           setUserSports([]);
         }
       } catch (error) {
-        setFeedError("Unable to load feed at the moment.");
+        setFeedError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load feed at the moment.",
+        );
       } finally {
         setIsInitialLoading(false);
       }
     };
 
     load();
-  }, []);
+  }, [searchParams.get("post")]);
 
   const showFutureModeCard = feedMode === "nearby";
   const showFutureSectionCard = section === "trending";
@@ -781,6 +813,11 @@ function FeedPageContent() {
 
         <main className={styles.main}>
           <div className={styles.mainInner}>
+            <FeedChallenges
+              token={token}
+              userId={currentUserId}
+              revision={challengeRevision}
+            />
             <nav className={styles.sectionNav} aria-label="Community sections">
               <Link href="/feed">Feed</Link>
               <Link href="/feed?section=my-sports">My sports</Link>
@@ -1228,11 +1265,7 @@ function FeedPageContent() {
               </section>
             )}
 
-            {showFutureModeCard && (
-              <FutureFeatureCard
-                title="Nearby Feed"
-              />
-            )}
+            {showFutureModeCard && <FutureFeatureCard title="Nearby Feed" />}
             {showFutureSectionCard && (
               <FutureFeatureCard title="Trending Feed" />
             )}
@@ -1288,6 +1321,7 @@ function FeedPageContent() {
 
                   return (
                     <article
+                      id={`post-${post._id}`}
                       key={post._id}
                       className={`${styles.feedCard} ${styles.reveal}`}
                     >
@@ -1422,16 +1456,27 @@ function FeedPageContent() {
                         </div>
                       )}
 
-                      <div className={styles.cardActions}>
-                        <button type="button" className={styles.actionButton}>
-                          Like
-                        </button>
-                        <button type="button" className={styles.actionButton}>
-                          Comment
-                        </button>
-                        <button type="button" className={styles.actionButton}>
-                          Share
-                        </button>
+                      <PostInteractions
+                        post={post}
+                        userId={currentUserId}
+                        token={token}
+                        onUpdate={(stats) =>
+                          setPosts((prev) =>
+                            prev.map((p) =>
+                              p._id === post._id
+                                ? {
+                                    ...p,
+                                    likes: stats.likes,
+                                    dislikes: stats.dislikes,
+                                    commentCount: stats.commentCount,
+                                    myReaction: stats.myReaction,
+                                  }
+                                : p,
+                            ),
+                          )
+                        }
+                        onChallenge={() => setChallengeRevision((n) => n + 1)}
+                      >
                         {!isOwner && Boolean(authorId) && (
                           <button
                             type="button"
@@ -1450,13 +1495,7 @@ function FeedPageContent() {
                                 : "Follow"}
                           </button>
                         )}
-                        <button
-                          type="button"
-                          className={styles.challengeButton}
-                        >
-                          Challenge
-                        </button>
-                      </div>
+                      </PostInteractions>
 
                       {isOwner && !isEditing && (
                         <div className={styles.ownerActions}>

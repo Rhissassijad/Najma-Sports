@@ -13,6 +13,7 @@ const feedPostSchema = new mongoose.Schema(
       trim: true,
       maxlength: 1200,
     },
+    interactionVersion: { type: Number, default: 0 },
     discipline: { type: String, default: "" },
     sportTag: {
       type: String,

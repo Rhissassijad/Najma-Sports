@@ -1,0 +1,142 @@
+.section {
+  margin-top: 18px;
+  min-width: 0;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.section button,
+.inbox button,
+.matchLink {
+  font-size: 12px;
+  font-weight: 650;
+  padding: 8px 12px;
+  border-radius: 7px;
+  background: #fff;
+  border: 1px solid #dce3ed;
+  color: #496184;
+}
+.section button[aria-pressed="true"] {
+  background: #e8efff;
+  color: #234dc4;
+  border-color: #8fa9eb;
+}
+.section button.primary {
+  background: #2450d8;
+  color: white;
+  border-color: #2450d8;
+}
+.panel {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid #e0e6ef;
+  background: #f8faff;
+  border-radius: 10px;
+}
+.panel h4 {
+  font-size: 15px;
+  font-weight: 750;
+  color: #1b2d4e;
+  margin-bottom: 12px;
+}
+.panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 650;
+  color: #61718c;
+  margin-top: 12px;
+}
+.label input,
+.label textarea,
+.label select {
+  width: 100%;
+  min-width: 0;
+  background: white;
+  border: 1px solid #dce3ed;
+  border-radius: 7px;
+  padding: 10px;
+  font-size: 13px;
+  color: #233958;
+}
+.label textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.comment {
+  padding: 14px 0;
+  border-top: 1px solid #e0e6ef;
+  margin-top: 14px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.comment strong {
+  color: #233958;
+}
+.comment small {
+  display: block;
+  font-size: 10px;
+  color: #718097;
+  margin-top: 4px;
+}
+.comment p {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  margin: 9px 0;
+  color: #536784;
+}
+.notice {
+  font-size: 12px;
+  color: #718097;
+  margin-top: 10px;
+  line-height: 1.8;
+}
+.error {
+  font-size: 12px;
+  color: #a42323;
+  background: #fff0f0;
+  padding: 10px;
+  border-radius: 7px;
+  margin-top: 12px;
+}
+.inbox {
+  background: white;
+  border: 1px solid #e0e6ef;
+  border-radius: 12px;
+  padding: 20px;
+  color: #233958;
+}
+.inbox summary {
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.matchLink {
+  display: inline-block;
+  color: #2450d8;
+}
+@media (max-width: 500px) {
+  .panel {
+    padding: 14px;
+  }
+  .actions {
+    gap: 6px;
+  }
+  .section button {
+    padding: 8px 10px;
+  }
+  .inbox {
+    padding: 16px;
+  }
+}

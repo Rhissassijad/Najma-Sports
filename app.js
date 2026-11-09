@@ -41,6 +41,7 @@ app.get("/api/health", (req, res) =>
     features: {
       teamSports: true,
       following: true,
+      socialInteractions: true,
       individualDisciplines: true,
     },
   }),

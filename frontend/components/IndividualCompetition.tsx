@@ -28,9 +28,11 @@ export default function IndividualCompetition() {
     [tab, setTab] = useState(
       params.get("section") === "leaderboard"
         ? "rankings"
-        : params.get("section") === "records"
-          ? "records"
-          : "find",
+        : params.get("section") === "matches"
+          ? "matches"
+          : params.get("section") === "records"
+            ? "records"
+            : "find",
     );
   const [me, setMe] = useState<any>(null),
     [matches, setMatches] = useState<any[]>([]),
@@ -129,9 +131,11 @@ export default function IndividualCompetition() {
         setTab(
           params.get("section") === "leaderboard"
             ? "rankings"
-            : params.get("section") === "records"
-              ? "records"
-              : "find",
+            : params.get("section") === "matches"
+              ? "matches"
+              : params.get("section") === "records"
+                ? "records"
+                : "find",
         );
       } catch (e) {
         if (active) setError((e as Error).message);

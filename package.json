@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "server": "node server.js",
-    "server:dev": "nodemon server.js"
+    "server:dev": "nodemon server.js",
+    "check:api": "node scripts/check-api.cjs"
   },
   "keywords": [],
   "author": "",

@@ -1,3 +1,4 @@
+const { summaries } = require("../utils/feedAccess");
 const { optionalDiscipline } = require("../utils/individualSports");
 const FeedPost = require("../models/FeedPost");
 const User = require("../models/User");
@@ -62,7 +63,7 @@ exports.getFeedPosts = async (req, res) => {
       .populate("author", "firstName lastName name email")
       .populate("community", "name");
 
-    res.json(posts);
+    res.json(await summaries(posts, userId));
   } catch (error) {
     res.status(500).json({ message: "Failed to load feed posts." });
   }
@@ -149,13 +150,11 @@ exports.createFeedPost = async (req, res) => {
       .populate("author", "firstName lastName name email")
       .populate("community", "name");
 
-    res.status(201).json(populatedPost);
+    res.status(201).json((await summaries([populatedPost], userId))[0]);
   } catch (error) {
-    res
-      .status(error.status || 500)
-      .json({
-        message: error.status ? error.message : "Failed to create feed post.",
-      });
+    res.status(error.status || 500).json({
+      message: error.status ? error.message : "Failed to create feed post.",
+    });
   }
 };
 
@@ -221,39 +220,12 @@ exports.updateFeedPost = async (req, res) => {
     const populatedPost = await FeedPost.findById(post._id)
       .populate("author", "firstName lastName name email")
       .populate("community", "name");
-    res.json(populatedPost);
+    res.json((await summaries([populatedPost], userId))[0]);
   } catch (error) {
-    res
-      .status(error.status || 500)
-      .json({
-        message: error.status ? error.message : "Failed to update feed post.",
-      });
+    res.status(error.status || 500).json({
+      message: error.status ? error.message : "Failed to update feed post.",
+    });
   }
 };
 
-exports.deleteFeedPost = async (req, res) => {
-  try {
-    const userId = req.user?.id;
-    const postId = req.params?.postId;
-
-    if (!userId) {
-      return res.status(401).json({ message: "Not authorized." });
-    }
-
-    const post = await FeedPost.findById(postId);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found." });
-    }
-
-    if (!canManagePost(post, userId)) {
-      return res
-        .status(403)
-        .json({ message: "You can only delete your own posts." });
-    }
-
-    await FeedPost.deleteOne({ _id: postId });
-    res.json({ success: true, postId });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to delete feed post." });
-  }
-};
+exports.deleteFeedPost = require("./feedInteractionController").deletePost;
