@@ -12,6 +12,7 @@ const userSportSchema = mongoose.Schema(
       ref: "Sport",
       required: true,
     },
+    discipline: { type: String, default: "singles", required: true },
     currentRating: {
       type: Number,
       default: 800,
@@ -25,9 +26,12 @@ const userSportSchema = mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-userSportSchema.index({ userId: 1, sportId: 1 }, { unique: true });
+userSportSchema.index(
+  { userId: 1, sportId: 1, discipline: 1 },
+  { unique: true },
+);
 
 module.exports = mongoose.model("UserSport", userSportSchema);

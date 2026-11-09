@@ -1,3 +1,4 @@
+const { optionalDiscipline } = require("../utils/individualSports");
 const { allSports, normalizeSport } = require("../utils/sports");
 const Community = require("../models/Community");
 const User = require("../models/User");
@@ -14,6 +15,7 @@ function toCommunityPayload(community, currentUserId) {
     _id: community._id,
     name: community.name,
     sport: community.sport || "General",
+    discipline: community.discipline || "",
     createdBy: community.createdBy,
     memberCount,
     isMember,
@@ -74,6 +76,7 @@ exports.createCommunity = async (req, res) => {
     const community = await Community.create({
       name,
       sport,
+      discipline: optionalDiscipline(sport, req.body.discipline),
       createdBy: userId,
       members: [userId],
     });
@@ -84,7 +87,11 @@ exports.createCommunity = async (req, res) => {
     );
     res.status(201).json(toCommunityPayload(populated, userId));
   } catch (error) {
-    res.status(500).json({ message: "Failed to create community." });
+    res
+      .status(error.status || 500)
+      .json({
+        message: error.status ? error.message : "Failed to create community.",
+      });
   }
 };
 
@@ -137,11 +144,18 @@ exports.updateCommunitySport = async (req, res) => {
       return res
         .status(403)
         .json({ message: "Only the community creator may change its sport." });
+    if (community.sport !== sport) community.discipline = "";
     community.sport = sport;
+    if (req.body.discipline !== undefined)
+      community.discipline = optionalDiscipline(sport, req.body.discipline);
     await community.save();
     await community.populate("createdBy", "name firstName lastName");
     res.json(toCommunityPayload(community, req.user.id));
   } catch (e) {
-    res.status(500).json({ message: "Could not update community sport." });
+    res
+      .status(e.status || 500)
+      .json({
+        message: e.status ? e.message : "Could not update community sport.",
+      });
   }
 };

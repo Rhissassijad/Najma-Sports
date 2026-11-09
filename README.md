@@ -8,3 +8,7 @@ This is a college project. It might eventually lead to something more serious in
 ## Compete: team sports
 
 Clubs, independent squads, roster approvals, result confirmation, squad Elo and team-recorded player statistics are available for Soccer, Volleyball, Football, Handball, Basketball, Baseball and Hockey under Compete. See [the team sports guide](docs/team-sports.md) for setup, workflows and tests.
+
+## Individual disciplines
+
+Tennis, Padel, Pickleball, Badminton, Table Tennis, Swimming and Golf now have discipline-aware profiles, competition and results. See [the individual sports guide](docs/individual-sports.md) for events, scoring, rankings and the automatic rating-index migration.

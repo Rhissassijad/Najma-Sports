@@ -1,3 +1,4 @@
+const { resolve } = require("../utils/individualSports");
 const { isTeamSport } = require("../utils/sports");
 const express = require("express");
 const router = express.Router();
@@ -87,16 +88,19 @@ router.post("/me/sports", protect, async (req, res) => {
           "Use the Compete team-sports area to join a squad and build your team-sports profile.",
       });
 
+    const d = resolve(sport.name, req.body.discipline);
     const userSport = await UserSport.findOneAndUpdate(
-      { userId: req.user.id, sportId },
-      { $setOnInsert: { userId: req.user.id, sportId } },
+      { userId: req.user.id, sportId, discipline: d.id },
+      { $setOnInsert: { userId: req.user.id, sportId, discipline: d.id } },
       { new: true, upsert: true, runValidators: true },
     ).populate("sportId");
 
     return res.status(200).json(userSport);
   } catch (error) {
     console.error("Add profile sport error:", error);
-    return res.status(500).json({ message: "Failed to add sport" });
+    return res
+      .status(error.status || 500)
+      .json({ message: error.status ? error.message : "Failed to add sport" });
   }
 });
 router.patch("/me", protect, async (req, res) => {

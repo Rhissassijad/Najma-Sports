@@ -1,285 +1,217 @@
-const { isTeamSport } = require("../utils/sports");
 const mongoose = require("mongoose");
 const Match = require("../models/Match");
 const Sport = require("../models/Sport");
 const User = require("../models/User");
-const updateRatings = require("../utils/UpdateRatings");
-const calculateWinner = require("../utils/calculateWinner");
-const enrichMatches = require("../utils/enrichMatches");
-
-const httpError = (status, message) =>
-  Object.assign(new Error(message), { status });
-
-const createMatch = async (req, res) => {
+const Performance = require("../models/Performance");
+const enrich = require("../utils/enrichMatches");
+const updateRatings = require("../utils/updateIndividualRatings");
+const { resolve, context, result, fail } = require("../utils/individualSports");
+const action = (handler) => async (req, res) => {
   try {
-    const { sport, scheduledAt, venue, type } = req.body;
-
-    if (!sport || !mongoose.isValidObjectId(sport)) {
-      return res.status(400).json({ message: "A valid sport ID is required" });
-    }
-
-    if (scheduledAt) {
-      const scheduledDate = new Date(scheduledAt);
-      if (
-        Number.isNaN(scheduledDate.getTime()) ||
-        scheduledDate <= new Date()
-      ) {
-        return res
-          .status(400)
-          .json({ message: "Scheduled date must be in the future" });
-      }
-    }
-
-    const [sportExists, creator] = await Promise.all([
-      Sport.findById(sport),
-      User.findById(req.user.id),
-    ]);
-
-    if (!sportExists) {
-      return res.status(404).json({ message: "Sport not found" });
-    }
-    if (isTeamSport(sportExists.name)) {
-      return res
-        .status(400)
-        .json({
-          message: "Use the Compete team-sports area to create squad matches.",
-        });
-    }
-    if (!creator) {
-      return res
-        .status(401)
-        .json({ message: "Authenticated player no longer exists" });
-    }
-
-    const match = await Match.create({
-      sport,
-      players: [creator._id],
-      createdBy: creator._id,
-      status: "open",
-      scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
-      venue: typeof venue === "string" ? venue.trim() : undefined,
-      type: typeof type === "string" ? type.trim() : undefined,
-    });
-
-    await match.populate([
-      { path: "players", select: "name firstName lastName" },
-      { path: "sport", select: "name" },
-    ]);
-
-    return res.status(201).json(match);
-  } catch (error) {
-    console.error("Create match error:", error);
-    return res.status(500).json({ message: "Failed to create match" });
-  }
-};
-
-const getUserMatches = async (req, res) => {
-  try {
-    const userId = req.params.userId || req.user.id;
-    if (!mongoose.isValidObjectId(userId)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
-
-    const matches = await Match.find({ players: userId })
-      .populate("players", "name firstName lastName")
-      .populate("sport", "name")
-      .sort({ createdAt: -1 });
-
-    return res.status(200).json(await enrichMatches(matches));
-  } catch (error) {
-    console.error("Get user matches error:", error);
-    return res.status(500).json({ message: "Failed to retrieve matches" });
-  }
-};
-
-const getOpenMatches = async (req, res) => {
-  try {
-    const matches = await Match.find({
-      status: { $in: ["open", "awaiting_result", "awaiting_confirmation"] },
-    })
-      .populate("players", "name firstName lastName")
-      .populate("sport", "name")
-      .sort({ createdAt: -1 });
-
-    return res.status(200).json(await enrichMatches(matches));
-  } catch (error) {
-    console.error("Get open matches error:", error);
-    return res.status(500).json({ message: "Failed to retrieve open matches" });
-  }
-};
-
-const joinMatch = async (req, res) => {
-  try {
-    if (!mongoose.isValidObjectId(req.params.matchId)) {
-      return res.status(400).json({ message: "Invalid match ID" });
-    }
-
-    const match = await Match.findOneAndUpdate(
-      {
-        _id: req.params.matchId,
-        status: "open",
-        players: { $size: 1, $ne: req.user.id },
-      },
-      {
-        $addToSet: { players: req.user.id },
-        $set: { status: "awaiting_result" },
-      },
-      { new: true, runValidators: true },
-    )
-      .populate("players", "name firstName lastName")
-      .populate("sport", "name");
-
-    if (!match) {
-      const existingMatch = await Match.findById(req.params.matchId).select(
-        "status players",
-      );
-      if (!existingMatch) {
-        return res.status(404).json({ message: "Match not found" });
-      }
+    await handler(req, res);
+  } catch (e) {
+    if (e.code === 11000 || e.name === "VersionError")
       return res
         .status(409)
-        .json({ message: "This match is no longer available to join" });
-    }
-
-    return res.status(200).json(match);
-  } catch (error) {
-    console.error("Join match error:", error);
-    return res.status(500).json({ message: "Failed to join match" });
+        .json({ message: "This match changed. Refresh and retry." });
+    const status =
+      e.status ||
+      (["CastError", "ValidationError"].includes(e.name) ? 400 : 500);
+    if (status === 500)
+      console.error("Individual match failed:", e.name, e.code);
+    res
+      .status(status)
+      .json({
+        message:
+          status === 500
+            ? "Match request failed. Check database transaction support and retry."
+            : e.message,
+      });
   }
 };
-
-const proposeResult = async (req, res) => {
-  try {
-    if (!mongoose.isValidObjectId(req.params.matchId)) {
-      return res.status(400).json({ message: "Invalid match ID" });
-    }
-
-    const existingMatch = await Match.findOne({
-      _id: req.params.matchId,
-      status: "awaiting_result",
-      players: req.user.id,
-    });
-
-    if (!existingMatch) {
-      const existingMatch = await Match.findById(req.params.matchId).select(
-        "status",
-      );
-      if (!existingMatch) {
-        return res.status(404).json({ message: "Match not found" });
-      }
-      return res
-        .status(409)
-        .json({ message: "This match is not awaiting a result" });
-    }
-
-    const winner = calculateWinner(req.body.score, existingMatch.players);
-    if (winner === null) {
-      return res
-        .status(400)
-        .json({ message: "A valid, non-tied score is required" });
-    }
-
-    const match = await Match.findOneAndUpdate(
-      {
-        _id: req.params.matchId,
-        status: "awaiting_result",
-        players: req.user.id,
-      },
-      {
-        $set: {
-          status: "awaiting_confirmation",
-          proposedScore: req.body.score,
-          resultReporter: req.user.id,
-        },
-      },
-      { new: true, runValidators: true },
-    );
-    if (!match) {
-      return res
-        .status(409)
-        .json({ message: "Another result was submitted first" });
-    }
-    await match.populate([
-      { path: "players", select: "name firstName lastName" },
-      { path: "sport", select: "name" },
-      { path: "resultReporter", select: "name firstName lastName" },
-    ]);
-
-    return res.status(200).json(match);
-  } catch (error) {
-    console.error("Propose match result error:", error);
-    return res.status(500).json({ message: "Failed to submit match result" });
-  }
+const get = async (id, session) => {
+  if (!mongoose.isValidObjectId(id)) fail("Invalid match ID.");
+  const match = await Match.findById(id).session(session || null);
+  if (!match) fail("Match not found.", 404);
+  return match;
 };
-
-const confirmResult = async (req, res) => {
-  if (!mongoose.isValidObjectId(req.params.matchId)) {
-    return res.status(400).json({ message: "Invalid match ID" });
-  }
-
+const populated = async (match) => {
+  await match.populate([
+    { path: "players", select: "name firstName lastName" },
+    { path: "sport", select: "name" },
+    { path: "resultReporter", select: "name" },
+  ]);
+  return (await enrich([match]))[0];
+};
+exports.createMatch = action(async (req, res) => {
+  const sport = mongoose.isValidObjectId(req.body.sport)
+    ? await Sport.findById(req.body.sport)
+    : null;
+  if (!sport) fail("Choose a valid sport.");
+  const d = resolve(sport.name, req.body.discipline);
+  if (!(await User.exists({ _id: req.user.id })))
+    fail("Player not found.", 401);
+  const scheduledAt = req.body.scheduledAt
+    ? new Date(req.body.scheduledAt)
+    : null;
+  if (
+    scheduledAt &&
+    (Number.isNaN(scheduledAt.getTime()) || scheduledAt <= new Date())
+  )
+    fail("Scheduled date must be in the future.");
+  const match = await Match.create({
+    sport: sport._id,
+    discipline: d.id,
+    sideSize: d.sideSize,
+    players: [req.user.id],
+    sideAssignments: [0],
+    createdBy: req.user.id,
+    status: "open",
+    context: context(d, req.body.context),
+    scheduledAt,
+    venue: String(req.body.venue || "")
+      .trim()
+      .slice(0, 120),
+  });
+  res.status(201).json(await populated(match));
+});
+exports.getUserMatches = action(async (req, res) => {
+  const id = req.params.userId || req.user.id;
+  if (!mongoose.isValidObjectId(id)) fail("Invalid user ID.");
+  const rows = await Match.find({ players: id })
+    .populate("players", "name firstName lastName")
+    .populate("sport", "name")
+    .populate("resultReporter", "name")
+    .sort({ createdAt: -1 });
+  res.json(await enrich(rows));
+});
+exports.getOpenMatches = action(async (req, res) => {
+  const rows = await Match.find({
+    status: { $in: ["open", "awaiting_result", "awaiting_confirmation"] },
+  })
+    .populate("players", "name firstName lastName")
+    .populate("sport", "name")
+    .populate("resultReporter", "name")
+    .sort({ createdAt: -1 });
+  res.json(await enrich(rows));
+});
+exports.joinMatch = action(async (req, res) => {
   const session = await mongoose.startSession();
-
+  let joined;
   try {
-    let completedMatch;
     await session.withTransaction(async () => {
-      const match = await Match.findOne({
-        _id: req.params.matchId,
-        status: "awaiting_confirmation",
-        players: req.user.id,
-        resultReporter: { $ne: req.user.id },
-      }).session(session);
-
-      if (!match) {
-        const existingMatch = await Match.findById(req.params.matchId)
-          .select("status players resultReporter")
-          .session(session);
-        if (!existingMatch) {
-          throw httpError(404, "Match not found");
-        }
-        throw httpError(
-          409,
-          "Only the other player can confirm this pending result",
-        );
-      }
-
-      const winnerIndex = calculateWinner(match.proposedScore, match.players);
-      if (winnerIndex === null || match.players.length !== 2) {
-        throw httpError(409, "The pending match result is invalid");
-      }
-
-      const winnerId = match.players[winnerIndex];
-      const loserId = match.players[1 - winnerIndex];
-      await updateRatings(winnerId, loserId, match.sport, match._id, session);
-
-      match.score = match.proposedScore;
-      match.winner = winnerIndex;
-      match.proposedScore = null;
-      match.resultReporter = null;
-      match.status = "completed";
-      await match.save({ session });
-      completedMatch = match;
+      const m = await get(req.params.matchId, session);
+      if (
+        m.status !== "open" ||
+        m.players.some((p) => String(p) === req.user.id)
+      )
+        fail("This match is not available to join.", 409);
+      if (!(await User.exists({ _id: req.user.id }).session(session)))
+        fail("Player not found.", 401);
+      const sport = await Sport.findById(m.sport).session(session),
+        d = resolve(sport.name, m.discipline);
+      if (!m.sideAssignments.length) m.sideAssignments = [0];
+      const side =
+        req.body?.side === undefined
+          ? [0, 1].find(
+              (side) =>
+                m.sideAssignments.filter((s) => s === side).length < d.sideSize,
+            )
+          : req.body.side;
+      if (
+        ![0, 1].includes(side) ||
+        m.sideAssignments.filter((s) => s === side).length >= d.sideSize
+      )
+        fail("Choose a side with an open place.", 409);
+      m.players.push(req.user.id);
+      m.sideAssignments.push(side);
+      if (m.players.length === d.sideSize * 2) m.status = "awaiting_result";
+      await m.save({ session });
+      joined = m;
     });
-
-    await completedMatch.populate([
-      { path: "players", select: "name firstName lastName" },
-      { path: "sport", select: "name" },
-    ]);
-    return res.status(200).json(completedMatch);
-  } catch (error) {
-    console.error("Confirm match result error:", error);
-    return res.status(error.status || 500).json({
-      message: error.status ? error.message : "Failed to confirm match result",
-    });
+    res.json(await populated(joined));
   } finally {
     await session.endSession();
   }
-};
-
-module.exports = {
-  createMatch,
-  getUserMatches,
-  getOpenMatches,
-  joinMatch,
-  proposeResult,
-  confirmResult,
-};
+});
+exports.proposeResult = action(async (req, res) => {
+  const m = await get(req.params.matchId);
+  if (
+    m.status !== "awaiting_result" ||
+    !m.players.some((p) => String(p) === req.user.id)
+  )
+    fail("Only a participant can submit a result for a ready match.", 409);
+  if (m.scheduledAt && m.scheduledAt > new Date())
+    fail("The match has not started yet.");
+  const sport = await Sport.findById(m.sport),
+    d = resolve(sport.name, m.discipline);
+  const parsed = result(d, req.body?.score);
+  const updated = await Match.findOneAndUpdate(
+    { _id: m._id, status: "awaiting_result" },
+    {
+      $set: {
+        proposedScore: parsed.score,
+        resultReporter: req.user.id,
+        confirmations: [req.user.id],
+        status: "awaiting_confirmation",
+      },
+    },
+    { returnDocument: "after" },
+  );
+  if (!updated) fail("A result was submitted first.", 409);
+  res.json(await populated(updated));
+});
+exports.confirmResult = action(async (req, res) => {
+  const session = await mongoose.startSession();
+  let completed;
+  try {
+    await session.withTransaction(async () => {
+      const m = await get(req.params.matchId, session);
+      if (
+        m.status !== "awaiting_confirmation" ||
+        !m.players.some((p) => String(p) === req.user.id) ||
+        m.confirmations.some((p) => String(p) === req.user.id) ||
+        String(m.resultReporter) === req.user.id
+      )
+        fail("Only an unconfirmed participant may confirm this result.", 409);
+      if (
+        m.resultReporter &&
+        !m.confirmations.some((p) => String(p) === String(m.resultReporter))
+      )
+        m.confirmations.push(m.resultReporter);
+      m.confirmations.push(req.user.id);
+      if (m.confirmations.length === m.players.length) {
+        const sport = await Sport.findById(m.sport).session(session),
+          d = resolve(sport.name, m.discipline),
+          parsed = result(d, m.proposedScore);
+        m.score = parsed.score;
+        m.winner = parsed.winner;
+        if (d.mode === "racket") await updateRatings(m, session);
+        else
+          for (const [i, userId] of m.players.entries())
+            await Performance.create(
+              [
+                {
+                  userId,
+                  sportId: m.sport,
+                  discipline: d.id,
+                  value: parsed.score.values[i],
+                  context: m.context,
+                  source: "opponent-confirmed",
+                  matchId: m._id,
+                  recordedAt: m.scheduledAt || new Date(),
+                },
+              ],
+              { session },
+            );
+        m.proposedScore = null;
+        m.status = "completed";
+      }
+      await m.save({ session });
+      completed = m;
+    });
+    res.json(await populated(completed));
+  } finally {
+    await session.endSession();
+  }
+});

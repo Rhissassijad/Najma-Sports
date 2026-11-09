@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ALL_SPORTS } from "@/lib/sports";
+import { ALL_SPORTS, disciplines, individualDiscipline } from "@/lib/sports";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
@@ -29,6 +29,7 @@ type ApiPostCommunity = {
 };
 
 type ApiFeedPost = {
+  discipline?: string;
   _id: string;
   text: string;
   sportTag: ComposerSportTag;
@@ -42,6 +43,7 @@ type ApiFeedPost = {
 };
 
 type ApiCommunity = {
+  discipline?: string;
   sport?: string;
   _id: string;
   name: string;
@@ -155,6 +157,11 @@ function FeedPageContent() {
   const [sportFilter, setSportFilter] = useState<SportFilter>("all");
 
   const [composerText, setComposerText] = useState("");
+  const [composerDiscipline, setComposerDiscipline] = useState("");
+  const [editDiscipline, setEditDiscipline] = useState("");
+  const [filterDiscipline, setFilterDiscipline] = useState("");
+  const [communityDiscipline, setCommunityDiscipline] = useState("");
+  const [communityEventFilter, setCommunityEventFilter] = useState("");
   const [composerSportTag, setComposerSportTag] =
     useState<ComposerSportTag>("Tennis");
   const [composerLocation, setComposerLocation] = useState("");
@@ -342,6 +349,8 @@ function FeedPageContent() {
       }
     }
 
+    if (filterDiscipline)
+      list = list.filter((post) => post.discipline === filterDiscipline);
     if (sportFilter !== "all") {
       list = list.filter((post) => post.sportTag === sportFilter);
     }
@@ -352,6 +361,7 @@ function FeedPageContent() {
     section,
     userSports,
     sportFilter,
+    filterDiscipline,
     showFutureSectionCard,
     showFutureFilterCard,
     myCommunities,
@@ -394,6 +404,7 @@ function FeedPageContent() {
         body: JSON.stringify({
           text: cleanText,
           sportTag: composerSportTag,
+          discipline: composerDiscipline,
           location: composerLocation.trim(),
           isMatchResult: matchResultFlag,
           hasMedia: mediaFlag,
@@ -433,7 +444,8 @@ function FeedPageContent() {
   const startEditingPost = (post: ApiFeedPost) => {
     setEditingPostId(post._id);
     setEditText(post.text);
-    setEditSportTag(post.sportTag);
+    selectEditSport(post.sportTag);
+    setEditDiscipline(post.discipline || "");
     setEditLocation(post.location || "");
     setComposerMessage("");
   };
@@ -441,7 +453,7 @@ function FeedPageContent() {
   const cancelEditingPost = () => {
     setEditingPostId(null);
     setEditText("");
-    setEditSportTag("Tennis");
+    selectEditSport("Tennis");
     setEditLocation("");
   };
 
@@ -469,6 +481,7 @@ function FeedPageContent() {
         body: JSON.stringify({
           text: cleanText,
           sportTag: editSportTag,
+          discipline: editDiscipline,
           location: editLocation.trim(),
         }),
       });
@@ -584,7 +597,11 @@ function FeedPageContent() {
     }
   };
 
-  const updateCommunitySport = async (id: string, sport: string) => {
+  const updateCommunitySport = async (
+    id: string,
+    sport: string,
+    discipline = "",
+  ) => {
     if (!token || communityUpdating) return;
     setCommunityUpdating(id);
     setCommunityMessage("");
@@ -595,7 +612,7 @@ function FeedPageContent() {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ sport }),
+        body: JSON.stringify({ sport, discipline }),
       });
       const result = await response.json();
       if (!response.ok)
@@ -610,6 +627,26 @@ function FeedPageContent() {
       setCommunityUpdating("");
     }
   };
+  function selectComposerSport(sport: string) {
+    setComposerSportTag(sport);
+    setComposerDiscipline("");
+  }
+  function selectEditSport(sport: string) {
+    setEditSportTag(sport);
+    setEditDiscipline("");
+  }
+  function selectCommunitySport(sport: string) {
+    setCommunitySport(sport);
+    setCommunityDiscipline("");
+  }
+  function selectSportFilter(sport: string) {
+    setSportFilter(sport);
+    setFilterDiscipline("");
+  }
+  function selectCommunityFilter(sport: string) {
+    setCommunityFilter(sport);
+    setCommunityEventFilter("");
+  }
   const handleCreateCommunity = async () => {
     const cleanName = communityName.trim();
     if (!cleanName) {
@@ -632,7 +669,11 @@ function FeedPageContent() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name: cleanName, sport: communitySport }),
+        body: JSON.stringify({
+          name: cleanName,
+          sport: communitySport,
+          discipline: communityDiscipline,
+        }),
       });
 
       const data = await res.json().catch(() => null);
@@ -794,7 +835,7 @@ function FeedPageContent() {
                     className={styles.selectControl}
                     value={sportFilter}
                     onChange={(event) =>
-                      setSportFilter(event.target.value as SportFilter)
+                      selectSportFilter(event.target.value as SportFilter)
                     }
                   >
                     <option value="all">All sports</option>
@@ -805,6 +846,23 @@ function FeedPageContent() {
                     ))}
                   </select>
                 </label>
+                {disciplines(sportFilter).length > 0 && (
+                  <label className={styles.filterLabel}>
+                    Filter discipline
+                    <select
+                      className={styles.selectControl}
+                      value={filterDiscipline}
+                      onChange={(e) => setFilterDiscipline(e.target.value)}
+                    >
+                      <option value="">All disciplines / unspecified</option>
+                      {disciplines(sportFilter).map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
               </div>
             </section>
 
@@ -850,7 +908,7 @@ function FeedPageContent() {
                     className={styles.tagSelect}
                     value={composerSportTag}
                     onChange={(event) =>
-                      setComposerSportTag(
+                      selectComposerSport(
                         event.target.value as ComposerSportTag,
                       )
                     }
@@ -862,6 +920,23 @@ function FeedPageContent() {
                     ))}
                   </select>
                 </label>
+                {disciplines(composerSportTag).length > 0 && (
+                  <label className={styles.filterLabel}>
+                    Post discipline
+                    <select
+                      className={styles.selectControl}
+                      value={composerDiscipline}
+                      onChange={(e) => setComposerDiscipline(e.target.value)}
+                    >
+                      <option value="">All disciplines / unspecified</option>
+                      {disciplines(composerSportTag).map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 {isCommunitySection && (
                   <label className={styles.communitySelectWrap}>
                     Community
@@ -939,13 +1014,30 @@ function FeedPageContent() {
                     <select
                       className={styles.selectControl}
                       value={communitySport}
-                      onChange={(e) => setCommunitySport(e.target.value)}
+                      onChange={(e) => selectCommunitySport(e.target.value)}
                     >
                       {["General", ...ALL_SPORTS].map((sport) => (
                         <option key={sport}>{sport}</option>
                       ))}
                     </select>
                   </label>
+                  {disciplines(communitySport).length > 0 && (
+                    <label className={styles.filterLabel}>
+                      Community discipline
+                      <select
+                        className={styles.selectControl}
+                        value={communityDiscipline}
+                        onChange={(e) => setCommunityDiscipline(e.target.value)}
+                      >
+                        <option value="">All disciplines / unspecified</option>
+                        {disciplines(communitySport).map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
                   <button
                     type="button"
                     className={styles.communityCreateButton}
@@ -965,7 +1057,7 @@ function FeedPageContent() {
                   <select
                     className={styles.selectControl}
                     value={communityFilter}
-                    onChange={(e) => setCommunityFilter(e.target.value)}
+                    onChange={(e) => selectCommunityFilter(e.target.value)}
                   >
                     <option value="all">All sports</option>
                     {["General", ...ALL_SPORTS].map((sport) => (
@@ -973,12 +1065,35 @@ function FeedPageContent() {
                     ))}
                   </select>
                 </label>
+                {disciplines(communityFilter).length > 0 && (
+                  <label className={styles.filterLabel}>
+                    Browse community discipline
+                    <select
+                      className={styles.selectControl}
+                      value={communityEventFilter}
+                      onChange={(e) => setCommunityEventFilter(e.target.value)}
+                    >
+                      <option value="">All disciplines / unspecified</option>
+                      {disciplines(communityFilter).map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 <div className={styles.communityList}>
-                  {communities.filter(
-                    (c) =>
-                      communityFilter === "all" ||
-                      (c.sport || "General") === communityFilter,
-                  ).length === 0 && (
+                  {communities
+                    .filter(
+                      (c) =>
+                        !communityEventFilter ||
+                        c.discipline === communityEventFilter,
+                    )
+                    .filter(
+                      (c) =>
+                        communityFilter === "all" ||
+                        (c.sport || "General") === communityFilter,
+                    ).length === 0 && (
                     <div className={styles.communityEmpty}>
                       No communities match this category. Create one or choose
                       another sport.
@@ -986,6 +1101,11 @@ function FeedPageContent() {
                   )}
 
                   {communities
+                    .filter(
+                      (c) =>
+                        !communityEventFilter ||
+                        c.discipline === communityEventFilter,
+                    )
                     .filter(
                       (c) =>
                         communityFilter === "all" ||
@@ -1002,6 +1122,9 @@ function FeedPageContent() {
                           </p>
                           <p className={styles.communityMeta}>
                             {community.sport || "General"}
+                            {community.discipline
+                              ? ` · ${individualDiscipline(community.sport || "", community.discipline)?.label || community.discipline}`
+                              : ""}
                           </p>
                           {community.createdBy?._id === currentUserId && (
                             <label className={styles.filterLabel}>
@@ -1023,6 +1146,35 @@ function FeedPageContent() {
                               </select>
                             </label>
                           )}
+                          {community.createdBy?._id === currentUserId &&
+                            disciplines(community.sport || "").length > 0 && (
+                              <label className={styles.filterLabel}>
+                                Change discipline
+                                <select
+                                  className={styles.selectControl}
+                                  value={community.discipline || ""}
+                                  disabled={!!communityUpdating}
+                                  onChange={(e) =>
+                                    updateCommunitySport(
+                                      community._id,
+                                      community.sport!,
+                                      e.target.value,
+                                    )
+                                  }
+                                >
+                                  <option value="">
+                                    All disciplines / unspecified
+                                  </option>
+                                  {disciplines(community.sport || "").map(
+                                    (d) => (
+                                      <option key={d.id} value={d.id}>
+                                        {d.label}
+                                      </option>
+                                    ),
+                                  )}
+                                </select>
+                              </label>
+                            )}
                           <p className={styles.communityMeta}>
                             {community.memberCount} member
                             {community.memberCount === 1 ? "" : "s"}
@@ -1124,6 +1276,9 @@ function FeedPageContent() {
                             {getAuthorName(post.author)}
                             <span className={styles.ratingTag}>
                               #{post.sportTag}
+                              {post.discipline
+                                ? ` · ${individualDiscipline(post.sportTag, post.discipline)?.label || post.discipline}`
+                                : ""}
                             </span>
                           </p>
                           <p className={styles.metaLine}>
@@ -1160,7 +1315,7 @@ function FeedPageContent() {
                                 className={styles.selectControl}
                                 value={editSportTag}
                                 onChange={(event) =>
-                                  setEditSportTag(
+                                  selectEditSport(
                                     event.target.value as ComposerSportTag,
                                   )
                                 }
@@ -1172,6 +1327,27 @@ function FeedPageContent() {
                                 ))}
                               </select>
                             </label>
+                            {disciplines(editSportTag).length > 0 && (
+                              <label className={styles.filterLabel}>
+                                Edit post discipline
+                                <select
+                                  className={styles.selectControl}
+                                  value={editDiscipline}
+                                  onChange={(e) =>
+                                    setEditDiscipline(e.target.value)
+                                  }
+                                >
+                                  <option value="">
+                                    All disciplines / unspecified
+                                  </option>
+                                  {disciplines(editSportTag).map((d) => (
+                                    <option key={d.id} value={d.id}>
+                                      {d.label}
+                                    </option>
+                                  ))}
+                                </select>
+                              </label>
+                            )}
                             <input
                               className={styles.locationInput}
                               placeholder="Location"

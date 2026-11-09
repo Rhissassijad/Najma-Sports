@@ -12,6 +12,7 @@ const ratingHistorySchema = new mongoose.Schema(
       ref: "Sport",
       required: true,
     },
+    discipline: { type: String, default: "singles" },
     matchId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Match",
@@ -30,7 +31,7 @@ const ratingHistorySchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // ✅ THIS LINE IS CRITICAL

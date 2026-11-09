@@ -14,7 +14,7 @@ const {
 } = require("../utils/teamSports");
 test("shared catalog includes every proposed sport and normalizes volleyball", () => {
   assert.equal(teamSports.length, 7);
-  assert.equal(allSports.length, 10);
+  assert.equal(allSports.length, 14);
   assert.equal(normalizeSport("Volley-Ball"), "Volleyball");
 });
 for (const sport of teamSports)

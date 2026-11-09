@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  disciplines,
   ALL_SPORTS,
   TEAM_SPORTS,
   INDIVIDUAL_SPORTS,
@@ -67,6 +68,7 @@ export default function RegisterPage() {
     setCountryOptions(buildCountryOptions());
   }, []);
 
+  const [startingDiscipline, setStartingDiscipline] = useState("singles");
   const [startingSport, setStartingSport] = useState("Tennis");
   const [category, setCategory] = useState("both");
   const [intent, setIntent] = useState("player");
@@ -106,7 +108,14 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          onboarding: { category, intent, sport: startingSport },
+          onboarding: {
+            category,
+            intent,
+            sport: startingSport,
+            discipline: !isTeamSport(startingSport)
+              ? startingDiscipline
+              : undefined,
+          },
           firstName,
           lastName,
           email,
@@ -131,7 +140,13 @@ export default function RegisterPage() {
                 (isTeamSport(startingSport) ? startingSport : "Soccer"),
             ),
         );
-      else router.push("/auth/login");
+      else
+        router.push(
+          "/auth/login?next=" +
+            encodeURIComponent(
+              `/compete?sport=${encodeURIComponent(startingSport)}&discipline=${encodeURIComponent(startingDiscipline)}&section=${["Swimming", "Golf"].includes(startingSport) ? "records" : "find"}`,
+            ),
+        );
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -161,6 +176,7 @@ export default function RegisterPage() {
           value={category}
           onChange={(e) => {
             setCategory(e.target.value);
+            setStartingDiscipline("singles");
             if (e.target.value === "individual") setIntent("player");
             setStartingSport(
               e.target.value === "team" ? TEAM_SPORTS[0] : INDIVIDUAL_SPORTS[0],
@@ -181,7 +197,10 @@ export default function RegisterPage() {
         <select
           id="starting-sport"
           value={startingSport}
-          onChange={(e) => setStartingSport(e.target.value)}
+          onChange={(e) => {
+            setStartingSport(e.target.value);
+            setStartingDiscipline(disciplines(e.target.value)[0]?.id || "");
+          }}
         >
           {(category === "team"
             ? TEAM_SPORTS
@@ -192,6 +211,21 @@ export default function RegisterPage() {
             <option key={sport}>{sport}</option>
           ))}
         </select>
+        {disciplines(startingSport).length > 0 && (
+          <label className={styles.fieldLabel}>
+            Starting discipline / event
+            <select
+              value={startingDiscipline}
+              onChange={(e) => setStartingDiscipline(e.target.value)}
+            >
+              {disciplines(startingSport).map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className={styles.fieldLabel} htmlFor="participation">
           How would you like to get started?
         </label>

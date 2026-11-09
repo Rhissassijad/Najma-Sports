@@ -1,3 +1,4 @@
+const { optionalDiscipline } = require("../utils/individualSports");
 const FeedPost = require("../models/FeedPost");
 const User = require("../models/User");
 const Community = require("../models/Community");
@@ -124,11 +125,9 @@ exports.createFeedPost = async (req, res) => {
         : false;
 
       if (!isMember) {
-        return res
-          .status(403)
-          .json({
-            message: "You must join this community before posting in it.",
-          });
+        return res.status(403).json({
+          message: "You must join this community before posting in it.",
+        });
       }
 
       resolvedCommunityId = community._id;
@@ -138,6 +137,7 @@ exports.createFeedPost = async (req, res) => {
       author: userId,
       text: trimmedText,
       sportTag: normalizedSportTag,
+      discipline: optionalDiscipline(normalizedSportTag, req.body.discipline),
       location: trimmedLocation,
       isMatchResult: Boolean(isMatchResult),
       hasMedia: Boolean(hasMedia),
@@ -151,7 +151,11 @@ exports.createFeedPost = async (req, res) => {
 
     res.status(201).json(populatedPost);
   } catch (error) {
-    res.status(500).json({ message: "Failed to create feed post." });
+    res
+      .status(error.status || 500)
+      .json({
+        message: error.status ? error.message : "Failed to create feed post.",
+      });
   }
 };
 
@@ -190,9 +194,12 @@ exports.updateFeedPost = async (req, res) => {
       if (!ALLOWED_SPORT_TAGS.includes(normalizedSportTag)) {
         return res.status(400).json({ message: "Invalid sport tag." });
       }
+      if (post.sportTag !== normalizedSportTag) post.discipline = "";
       post.sportTag = normalizedSportTag;
     }
 
+    if (req.body.discipline !== undefined)
+      post.discipline = optionalDiscipline(post.sportTag, req.body.discipline);
     if (location !== undefined) {
       post.location = String(location || "").trim();
     }
@@ -216,7 +223,11 @@ exports.updateFeedPost = async (req, res) => {
       .populate("community", "name");
     res.json(populatedPost);
   } catch (error) {
-    res.status(500).json({ message: "Failed to update feed post." });
+    res
+      .status(error.status || 500)
+      .json({
+        message: error.status ? error.message : "Failed to update feed post.",
+      });
   }
 };
 

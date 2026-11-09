@@ -1,5 +1,6 @@
 "use client";
 
+import { disciplines } from "@/lib/sports";
 import { isTeamSport } from "@/lib/sports";
 import Link from "next/link";
 import { SportPanel } from "@/components/RatingPanels";
@@ -66,6 +67,7 @@ export default function ProfilePage() {
   const [saveMessage, setSaveMessage] = useState("");
   const [apiError, setApiError] = useState("");
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [selectedDiscipline, setSelectedDiscipline] = useState("");
   const [selectedSportId, setSelectedSportId] = useState("");
   const [isAddingSport, setIsAddingSport] = useState(false);
 
@@ -177,7 +179,9 @@ export default function ProfilePage() {
           ...userRatings
             .filter((rating: any) => rating?.sportId?._id)
             .map((rating: any) =>
-              safeFetch(`${API_URL}/api/leaderboard/${rating.sportId._id}`),
+              safeFetch(
+                `${API_URL}/api/leaderboard/${rating.sportId._id}?discipline=${encodeURIComponent(rating.discipline || "singles")}`,
+              ),
             ),
         ]);
         const leaderboards: Record<string, any[]> = {};
@@ -186,9 +190,9 @@ export default function ProfilePage() {
           .forEach((rating: any, index: number) => {
             const result = leaderboardResults[index];
             if (result.status === "fulfilled") {
-              leaderboards[rating.sportId._id] = Array.isArray(result.value)
-                ? result.value
-                : [];
+              leaderboards[
+                `${rating.sportId._id}:${rating.discipline || "singles"}`
+              ] = Array.isArray(result.value) ? result.value : [];
             }
           });
         setData((previous: any) => ({
@@ -276,7 +280,10 @@ export default function ProfilePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ sportId: selectedSportId }),
+        body: JSON.stringify({
+          sportId: selectedSportId,
+          discipline: selectedDiscipline,
+        }),
       });
       const result = await response.json();
       if (!response.ok) {
@@ -286,7 +293,9 @@ export default function ProfilePage() {
       setData((previous: any) => ({
         ...previous,
         ratings: previous.ratings.some(
-          (rating: any) => rating.sportId?._id === selectedSportId,
+          (rating: any) =>
+            rating.sportId?._id === selectedSportId &&
+            (rating.discipline || "singles") === selectedDiscipline,
         )
           ? previous.ratings
           : [...previous.ratings, result],
@@ -294,7 +303,7 @@ export default function ProfilePage() {
       setSelectedSportId("");
 
       const leaderboardResponse = await fetch(
-        `${API_URL}/api/leaderboard/${selectedSportId}`,
+        `${API_URL}/api/leaderboard/${selectedSportId}?discipline=${encodeURIComponent(selectedDiscipline)}`,
       );
       if (!leaderboardResponse.ok) {
         throw new Error(
@@ -306,7 +315,9 @@ export default function ProfilePage() {
         ...previous,
         leaderboards: {
           ...previous.leaderboards,
-          [selectedSportId]: Array.isArray(rows) ? rows : [],
+          [`${selectedSportId}:${selectedDiscipline}`]: Array.isArray(rows)
+            ? rows
+            : [],
         },
       }));
     } catch (error) {
@@ -632,27 +643,45 @@ export default function ProfilePage() {
                       id="profile-sport"
                       className={styles.sportPicker}
                       value={selectedSportId}
-                      onChange={(event) =>
-                        setSelectedSportId(event.target.value)
-                      }
+                      onChange={(event) => {
+                        setSelectedSportId(event.target.value);
+                        setSelectedDiscipline(
+                          disciplines(
+                            sportsCatalog.find(
+                              (s: any) => s._id === event.target.value,
+                            )?.name,
+                          )[0]?.id || "",
+                        );
+                      }}
                     >
                       <option value="">Choose a sport</option>
                       {sportsCatalog
-                        .filter(
-                          (sport: any) =>
-                            !isTeamSport(sport.name) &&
-                            !ratings.some(
-                              (rating: any) =>
-                                String(rating.sportId?._id) ===
-                                String(sport._id),
-                            ),
-                        )
+                        .filter((sport: any) => !isTeamSport(sport.name))
                         .map((sport: any) => (
                           <option key={sport._id} value={sport._id}>
                             {sport.name}
                           </option>
                         ))}
                     </select>
+                    <label className={styles.sportPickerLabel}>
+                      Discipline / event
+                      <select
+                        aria-label="Add sport discipline"
+                        className={styles.sportPicker}
+                        value={selectedDiscipline}
+                        onChange={(e) => setSelectedDiscipline(e.target.value)}
+                      >
+                        {disciplines(
+                          sportsCatalog.find(
+                            (s: any) => s._id === selectedSportId,
+                          )?.name,
+                        ).map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                     <button
                       type="button"
                       className={styles.settingsButton}

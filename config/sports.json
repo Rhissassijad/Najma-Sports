@@ -1,5 +1,13 @@
 {
-  "individual": ["Tennis", "Padel", "Pickleball"],
+  "individual": [
+    "Tennis",
+    "Padel",
+    "Pickleball",
+    "Badminton",
+    "Table Tennis",
+    "Swimming",
+    "Golf"
+  ],
   "team": {
     "Soccer": {
       "formats": ["5", "7", "11"],
@@ -302,5 +310,440 @@
       "marginStep": 0.05,
       "sideLabel": "Dominant hand"
     }
+  },
+  "disciplines": {
+    "Tennis": [
+      {
+        "id": "singles",
+        "label": "Singles",
+        "mode": "racket",
+        "sideSize": 1
+      },
+      {
+        "id": "doubles",
+        "label": "Doubles",
+        "mode": "racket",
+        "sideSize": 2
+      },
+      {
+        "id": "mixed-doubles",
+        "label": "Mixed doubles",
+        "mode": "racket",
+        "sideSize": 2
+      }
+    ],
+    "Padel": [
+      {
+        "id": "singles",
+        "label": "Singles",
+        "mode": "racket",
+        "sideSize": 1
+      },
+      {
+        "id": "doubles",
+        "label": "Doubles",
+        "mode": "racket",
+        "sideSize": 2
+      },
+      {
+        "id": "mixed-doubles",
+        "label": "Mixed doubles",
+        "mode": "racket",
+        "sideSize": 2
+      }
+    ],
+    "Pickleball": [
+      {
+        "id": "singles",
+        "label": "Singles",
+        "mode": "racket",
+        "sideSize": 1
+      },
+      {
+        "id": "doubles",
+        "label": "Doubles",
+        "mode": "racket",
+        "sideSize": 2
+      },
+      {
+        "id": "mixed-doubles",
+        "label": "Mixed doubles",
+        "mode": "racket",
+        "sideSize": 2
+      }
+    ],
+    "Badminton": [
+      {
+        "id": "singles",
+        "label": "Singles",
+        "mode": "racket",
+        "sideSize": 1
+      },
+      {
+        "id": "doubles",
+        "label": "Doubles",
+        "mode": "racket",
+        "sideSize": 2
+      },
+      {
+        "id": "mixed-doubles",
+        "label": "Mixed doubles",
+        "mode": "racket",
+        "sideSize": 2
+      }
+    ],
+    "Table Tennis": [
+      {
+        "id": "singles",
+        "label": "Singles",
+        "mode": "racket",
+        "sideSize": 1
+      },
+      {
+        "id": "doubles",
+        "label": "Doubles",
+        "mode": "racket",
+        "sideSize": 2
+      },
+      {
+        "id": "mixed-doubles",
+        "label": "Mixed doubles",
+        "mode": "racket",
+        "sideSize": 2
+      }
+    ],
+    "Swimming": [
+      {
+        "id": "50m-freestyle-50m",
+        "label": "50 m freestyle \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 50,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "100m-freestyle-50m",
+        "label": "100 m freestyle \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 100,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "200m-freestyle-50m",
+        "label": "200 m freestyle \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 200,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "400m-freestyle-50m",
+        "label": "400 m freestyle \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 400,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "800m-freestyle-50m",
+        "label": "800 m freestyle \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 800,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "1500m-freestyle-50m",
+        "label": "1500 m freestyle \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 1500,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "50m-backstroke-50m",
+        "label": "50 m backstroke \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 50,
+        "stroke": "Backstroke"
+      },
+      {
+        "id": "100m-backstroke-50m",
+        "label": "100 m backstroke \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 100,
+        "stroke": "Backstroke"
+      },
+      {
+        "id": "200m-backstroke-50m",
+        "label": "200 m backstroke \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 200,
+        "stroke": "Backstroke"
+      },
+      {
+        "id": "50m-breaststroke-50m",
+        "label": "50 m breaststroke \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 50,
+        "stroke": "Breaststroke"
+      },
+      {
+        "id": "100m-breaststroke-50m",
+        "label": "100 m breaststroke \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 100,
+        "stroke": "Breaststroke"
+      },
+      {
+        "id": "200m-breaststroke-50m",
+        "label": "200 m breaststroke \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 200,
+        "stroke": "Breaststroke"
+      },
+      {
+        "id": "50m-butterfly-50m",
+        "label": "50 m butterfly \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 50,
+        "stroke": "Butterfly"
+      },
+      {
+        "id": "100m-butterfly-50m",
+        "label": "100 m butterfly \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 100,
+        "stroke": "Butterfly"
+      },
+      {
+        "id": "200m-butterfly-50m",
+        "label": "200 m butterfly \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 200,
+        "stroke": "Butterfly"
+      },
+      {
+        "id": "200m-individual-medley-50m",
+        "label": "200 m individual medley \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 200,
+        "stroke": "Individual medley"
+      },
+      {
+        "id": "400m-individual-medley-50m",
+        "label": "400 m individual medley \u00b7 50 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 50,
+        "distance": 400,
+        "stroke": "Individual medley"
+      },
+      {
+        "id": "50m-freestyle-25m",
+        "label": "50 m freestyle \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 50,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "100m-freestyle-25m",
+        "label": "100 m freestyle \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 100,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "200m-freestyle-25m",
+        "label": "200 m freestyle \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 200,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "400m-freestyle-25m",
+        "label": "400 m freestyle \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 400,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "800m-freestyle-25m",
+        "label": "800 m freestyle \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 800,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "1500m-freestyle-25m",
+        "label": "1500 m freestyle \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 1500,
+        "stroke": "Freestyle"
+      },
+      {
+        "id": "50m-backstroke-25m",
+        "label": "50 m backstroke \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 50,
+        "stroke": "Backstroke"
+      },
+      {
+        "id": "100m-backstroke-25m",
+        "label": "100 m backstroke \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 100,
+        "stroke": "Backstroke"
+      },
+      {
+        "id": "200m-backstroke-25m",
+        "label": "200 m backstroke \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 200,
+        "stroke": "Backstroke"
+      },
+      {
+        "id": "50m-breaststroke-25m",
+        "label": "50 m breaststroke \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 50,
+        "stroke": "Breaststroke"
+      },
+      {
+        "id": "100m-breaststroke-25m",
+        "label": "100 m breaststroke \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 100,
+        "stroke": "Breaststroke"
+      },
+      {
+        "id": "200m-breaststroke-25m",
+        "label": "200 m breaststroke \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 200,
+        "stroke": "Breaststroke"
+      },
+      {
+        "id": "50m-butterfly-25m",
+        "label": "50 m butterfly \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 50,
+        "stroke": "Butterfly"
+      },
+      {
+        "id": "100m-butterfly-25m",
+        "label": "100 m butterfly \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 100,
+        "stroke": "Butterfly"
+      },
+      {
+        "id": "200m-butterfly-25m",
+        "label": "200 m butterfly \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 200,
+        "stroke": "Butterfly"
+      },
+      {
+        "id": "200m-individual-medley-25m",
+        "label": "200 m individual medley \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 200,
+        "stroke": "Individual medley"
+      },
+      {
+        "id": "400m-individual-medley-25m",
+        "label": "400 m individual medley \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 400,
+        "stroke": "Individual medley"
+      },
+      {
+        "id": "100m-individual-medley-25m",
+        "label": "100 m individual medley \u00b7 25 m pool",
+        "mode": "time",
+        "sideSize": 1,
+        "poolLength": 25,
+        "distance": 100,
+        "stroke": "Individual medley"
+      }
+    ],
+    "Golf": [
+      {
+        "id": "stroke-18",
+        "label": "18-hole stroke play \u00b7 gross",
+        "mode": "strokes",
+        "sideSize": 1,
+        "holes": 18
+      },
+      {
+        "id": "stroke-9",
+        "label": "9-hole stroke play \u00b7 gross",
+        "mode": "strokes",
+        "sideSize": 1,
+        "holes": 9
+      }
+    ]
   }
 }

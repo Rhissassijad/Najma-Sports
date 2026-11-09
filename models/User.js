@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema(
       foot: { type: String, enum: ["Left", "Right", "Both"] },
     },
     onboarding: {
+      discipline: String,
       sport: { type: String, enum: require("../utils/sports").allSports },
       category: {
         type: String,

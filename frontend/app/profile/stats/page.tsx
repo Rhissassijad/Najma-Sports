@@ -1,5 +1,7 @@
 "use client";
+import Link from "next/link";
 
+import { individualDiscipline } from "@/lib/sports";
 import { isTeamSport } from "@/lib/sports";
 import { useEffect, useState } from "react";
 import { ratingNumber } from "@/components/RatingPanels";
@@ -24,11 +26,19 @@ export default function StatsPage() {
       const data = await res.json();
 
       setRatings(
-        (data.ratings || []).filter((r: any) => !isTeamSport(r.sportId?.name)),
+        (data.ratings || []).filter(
+          (r: any) =>
+            !isTeamSport(r.sportId?.name) &&
+            individualDiscipline(r.sportId?.name, r.discipline)?.mode ===
+              "racket",
+        ),
       );
       setHistory(
         (data.ratingHistory || []).filter(
-          (r: any) => !isTeamSport(r.sportId?.name),
+          (r: any) =>
+            !isTeamSport(r.sportId?.name) &&
+            individualDiscipline(r.sportId?.name, r.discipline)?.mode ===
+              "racket",
         ),
       );
     };
@@ -41,6 +51,11 @@ export default function StatsPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold">Stats</h1>
+      <p>
+        <Link href="/compete?section=records">
+          Swimming times and golf rounds →
+        </Link>
+      </p>
 
       {/* Ratings */}
       <div className="mt-6">
@@ -48,7 +63,10 @@ export default function StatsPage() {
 
         {ratings.map((r) => (
           <div key={r._id} className="bg-white p-4 rounded-lg shadow mb-2">
-            <p>{r.sportId?.name}</p>
+            <p>
+              {r.sportId?.name} ·{" "}
+              {individualDiscipline(r.sportId?.name, r.discipline)?.label}
+            </p>
             <p className="font-bold">{ratingNumber(r.currentRating)}</p>
           </div>
         ))}
@@ -60,6 +78,8 @@ export default function StatsPage() {
 
         {history.map((h) => (
           <div key={h._id} className="text-sm text-gray-600">
+            {h.sportId?.name} ·{" "}
+            {individualDiscipline(h.sportId?.name, h.discipline)?.label}:{" "}
             {ratingNumber(h.previousRating)} → {ratingNumber(h.newRating)} (
             {h.ratingChange > 0 ? "+" : ""}
             {ratingNumber(h.ratingChange)})

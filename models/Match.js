@@ -8,6 +8,11 @@ const matchSchema = new mongoose.Schema(
       required: true,
     },
 
+    discipline: { type: String, default: "singles" },
+    sideSize: { type: Number, default: 1 },
+    sideAssignments: { type: [Number], default: [] },
+    confirmations: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    context: { type: mongoose.Schema.Types.Mixed, default: {} },
     players: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -67,7 +72,7 @@ const matchSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, optimisticConcurrency: true },
 );
 
 module.exports = mongoose.model("Match", matchSchema);

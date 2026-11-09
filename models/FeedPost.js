@@ -13,6 +13,7 @@ const feedPostSchema = new mongoose.Schema(
       trim: true,
       maxlength: 1200,
     },
+    discipline: { type: String, default: "" },
     sportTag: {
       type: String,
       required: true,
@@ -41,7 +42,7 @@ const feedPostSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 feedPostSchema.index({ createdAt: -1 });

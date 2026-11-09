@@ -7,16 +7,15 @@ const Sport = require("../models/Sport");
 router.get("/", async (req, res) => {
   try {
     const sports = await Sport.find().sort({ name: 1 });
-    res
-      .status(200)
-      .json(
-        sports.map((s) => ({
-          ...s.toObject(),
-          category: require("../utils/sports").isTeamSport(s.name)
-            ? "team"
-            : "individual",
-        })),
-      );
+    res.status(200).json(
+      sports.map((s) => ({
+        ...s.toObject(),
+        disciplines: require("../utils/individualSports").list(s.name),
+        category: require("../utils/sports").isTeamSport(s.name)
+          ? "team"
+          : "individual",
+      })),
+    );
   } catch (error) {
     console.error("List sports error:", error);
     res.status(500).json({ message: "Failed to retrieve sports" });

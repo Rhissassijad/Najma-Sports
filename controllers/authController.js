@@ -1,3 +1,4 @@
+const { optionalDiscipline } = require("../utils/individualSports");
 const { allSports, normalizeSport } = require("../utils/sports");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
@@ -35,6 +36,16 @@ exports.register = async (req, res) => {
         return res
           .status(400)
           .json({ message: "Choose a supported starting sport." });
+    }
+    if (onboarding.discipline) {
+      try {
+        onboarding.discipline = optionalDiscipline(
+          onboarding.sport,
+          onboarding.discipline,
+        );
+      } catch (e) {
+        return res.status(400).json({ message: e.message });
+      }
     }
     const normalizedEmail = String(email || "")
       .trim()

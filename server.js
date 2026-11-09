@@ -51,6 +51,7 @@ const userRoutes = require("./routes/userRoutes");
 
 // ⚠️ ORDER MATTERS
 app.use("/api/matches", matchRoutes);
+app.use("/api/individual", require("./routes/individualRoutes"));
 app.use("/api/sports", sportRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/communities", communityRoutes);
@@ -90,6 +91,7 @@ mongoose
       await Sport.insertMany(missingSports);
     }
 
+    await require("./utils/migrateDisciplines")();
     const apiPort = process.env.API_PORT || 8080;
     app.listen(apiPort, "0.0.0.0", () =>
       console.log(`🚀 Server running on port ${apiPort}`),

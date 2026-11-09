@@ -14,6 +14,7 @@ const communitySchema = new mongoose.Schema(
       enum: ["General", ...require("../utils/sports").allSports],
       default: "General",
     },
+    discipline: { type: String, default: "" },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

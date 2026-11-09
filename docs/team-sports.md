@@ -35,7 +35,7 @@ Every sport/format starts at 800; the first 10 confirmed matches are provisional
 
 ## Social categories
 
-All ten supported sports are available when composing or editing a feed post and when filtering the feed. My Sports includes accepted squad memberships and saved team-player identities as well as individual sport participation.
+All fourteen supported sports are available when composing or editing a feed post and when filtering the feed. My Sports includes accepted squad memberships and saved team-player identities as well as individual sport participation.
 
 Communities have a sport category or **General**. Creators choose the category at creation and can change it later; existing post tags are preserved. The Communities view can be filtered by category, and a visible feed navigation works on mobile. Legacy uncategorized communities appear as General.
 
