@@ -57,10 +57,13 @@ type UserMeResponse = {
 const API_BASE = "http://localhost:8080";
 const FUTURE_FEATURE_TEXT = "Feature available in the near future.";
 
-const SECTION_INTRO: Record<FeedSection, { title: string; subtitle: string; pill: string }> = {
+const SECTION_INTRO: Record<
+  FeedSection,
+  { title: string; subtitle: string; pill: string }
+> = {
   feed: {
     title: "Your Feed",
-    subtitle: "Real posts from RyadaZone users in one stream.",
+    subtitle: "The latest from your sports community.",
     pill: "Live feed",
   },
   trending: {
@@ -81,7 +84,11 @@ const SECTION_INTRO: Record<FeedSection, { title: string; subtitle: string; pill
 };
 
 function normalizeSection(section: string | null): FeedSection {
-  if (section === "trending" || section === "my-sports" || section === "my-communities") {
+  if (
+    section === "trending" ||
+    section === "my-sports" ||
+    section === "my-communities"
+  ) {
     return section;
   }
   return "feed";
@@ -145,7 +152,8 @@ function FeedPageContent() {
   const [sportFilter, setSportFilter] = useState<SportFilter>("all");
 
   const [composerText, setComposerText] = useState("");
-  const [composerSportTag, setComposerSportTag] = useState<ComposerSportTag>("Tennis");
+  const [composerSportTag, setComposerSportTag] =
+    useState<ComposerSportTag>("Tennis");
   const [composerLocation, setComposerLocation] = useState("");
   const [matchResultFlag, setMatchResultFlag] = useState(false);
   const [mediaFlag, setMediaFlag] = useState(false);
@@ -165,7 +173,9 @@ function FeedPageContent() {
   const [communities, setCommunities] = useState<ApiCommunity[]>([]);
   const [communityName, setCommunityName] = useState("");
   const [isCreatingCommunity, setIsCreatingCommunity] = useState(false);
-  const [joiningCommunityId, setJoiningCommunityId] = useState<string | null>(null);
+  const [joiningCommunityId, setJoiningCommunityId] = useState<string | null>(
+    null,
+  );
   const [communityMessage, setCommunityMessage] = useState("");
   const [composerCommunityId, setComposerCommunityId] = useState("");
 
@@ -213,13 +223,14 @@ function FeedPageContent() {
           if (meRes.ok) {
             const meData: UserMeResponse = await meRes.json();
             setCurrentUserId(meData?.user?._id || null);
-            setFollowingIds(Array.isArray(meData?.followingIds) ? meData.followingIds : []);
-            const sports =
-              Array.isArray(meData?.ratings)
-                ? meData.ratings
-                    .map((rating) => rating?.sportId?.name)
-                    .filter((sport): sport is string => Boolean(sport))
-                : [];
+            setFollowingIds(
+              Array.isArray(meData?.followingIds) ? meData.followingIds : [],
+            );
+            const sports = Array.isArray(meData?.ratings)
+              ? meData.ratings
+                  .map((rating) => rating?.sportId?.name)
+                  .filter((sport): sport is string => Boolean(sport))
+              : [];
             setUserSports(Array.from(new Set(sports)));
           } else {
             setCurrentUserId(null);
@@ -235,7 +246,9 @@ function FeedPageContent() {
 
           if (communitiesRes.ok) {
             const communitiesData = await communitiesRes.json();
-            setCommunities(Array.isArray(communitiesData) ? communitiesData : []);
+            setCommunities(
+              Array.isArray(communitiesData) ? communitiesData : [],
+            );
           } else {
             setCommunities([]);
           }
@@ -259,11 +272,20 @@ function FeedPageContent() {
   const showFutureSectionCard = section === "trending";
   const showFutureFilterCard = contentFilter === "matches";
   const isCommunitySection = section === "my-communities";
-  const myCommunities = useMemo(() => communities.filter((community) => community.isMember), [communities]);
-  const myCommunityIds = useMemo(() => new Set(myCommunities.map((community) => String(community._id))), [myCommunities]);
+  const myCommunities = useMemo(
+    () => communities.filter((community) => community.isMember),
+    [communities],
+  );
+  const myCommunityIds = useMemo(
+    () => new Set(myCommunities.map((community) => String(community._id))),
+    [myCommunities],
+  );
   const selectedComposerCommunity = useMemo(
-    () => myCommunities.find((community) => community._id === composerCommunityId) || null,
-    [myCommunities, composerCommunityId]
+    () =>
+      myCommunities.find(
+        (community) => community._id === composerCommunityId,
+      ) || null,
+    [myCommunities, composerCommunityId],
   );
 
   useEffect(() => {
@@ -273,7 +295,9 @@ function FeedPageContent() {
       return;
     }
 
-    const hasSelectedCommunity = myCommunities.some((community) => community._id === composerCommunityId);
+    const hasSelectedCommunity = myCommunities.some(
+      (community) => community._id === composerCommunityId,
+    );
     if (!hasSelectedCommunity) {
       setComposerCommunityId(myCommunities[0]._id);
     }
@@ -292,10 +316,14 @@ function FeedPageContent() {
     if (section === "my-communities") {
       if (myCommunities.length === 0) return [];
 
-      list = list.filter((post) => myCommunityIds.has(getPostCommunityId(post)));
+      list = list.filter((post) =>
+        myCommunityIds.has(getPostCommunityId(post)),
+      );
 
       if (composerCommunityId) {
-        list = list.filter((post) => getPostCommunityId(post) === composerCommunityId);
+        list = list.filter(
+          (post) => getPostCommunityId(post) === composerCommunityId,
+        );
       }
     }
 
@@ -304,7 +332,17 @@ function FeedPageContent() {
     }
 
     return list;
-  }, [posts, section, userSports, sportFilter, showFutureSectionCard, showFutureFilterCard, myCommunities, myCommunityIds, composerCommunityId]);
+  }, [
+    posts,
+    section,
+    userSports,
+    sportFilter,
+    showFutureSectionCard,
+    showFutureFilterCard,
+    myCommunities,
+    myCommunityIds,
+    composerCommunityId,
+  ]);
 
   const handleCreatePost = async () => {
     const cleanText = composerText.trim();
@@ -352,7 +390,11 @@ function FeedPageContent() {
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         const fallbackMessage = `Failed to publish post (HTTP ${res.status}).`;
-        throw new Error((data && typeof data === "object" && "message" in data ? (data as { message?: string }).message : null) || fallbackMessage);
+        throw new Error(
+          (data && typeof data === "object" && "message" in data
+            ? (data as { message?: string }).message
+            : null) || fallbackMessage,
+        );
       }
 
       setPosts((prev) => [data as ApiFeedPost, ...prev]);
@@ -362,7 +404,9 @@ function FeedPageContent() {
       setMediaFlag(false);
       setLocationFlag(false);
       setComposerMessage(
-        isCommunitySection && selectedComposerCommunity ? `Post published in ${selectedComposerCommunity.name}.` : "Post published."
+        isCommunitySection && selectedComposerCommunity
+          ? `Post published in ${selectedComposerCommunity.name}.`
+          : "Post published.",
       );
     } catch (error: any) {
       setComposerMessage(error?.message || "Failed to publish post.");
@@ -417,10 +461,18 @@ function FeedPageContent() {
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         const fallbackMessage = `Failed to update post (HTTP ${res.status}).`;
-        throw new Error((data && typeof data === "object" && "message" in data ? (data as { message?: string }).message : null) || fallbackMessage);
+        throw new Error(
+          (data && typeof data === "object" && "message" in data
+            ? (data as { message?: string }).message
+            : null) || fallbackMessage,
+        );
       }
 
-      setPosts((prev) => prev.map((post) => (post._id === postId ? (data as ApiFeedPost) : post)));
+      setPosts((prev) =>
+        prev.map((post) =>
+          post._id === postId ? (data as ApiFeedPost) : post,
+        ),
+      );
       cancelEditingPost();
       setComposerMessage("Post updated.");
     } catch (error: any) {
@@ -452,7 +504,11 @@ function FeedPageContent() {
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         const fallbackMessage = `Failed to delete post (HTTP ${res.status}).`;
-        throw new Error((data && typeof data === "object" && "message" in data ? (data as { message?: string }).message : null) || fallbackMessage);
+        throw new Error(
+          (data && typeof data === "object" && "message" in data
+            ? (data as { message?: string }).message
+            : null) || fallbackMessage,
+        );
       }
 
       setPosts((prev) => prev.filter((post) => post._id !== postId));
@@ -488,15 +544,22 @@ function FeedPageContent() {
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         const fallbackMessage = `Failed to update follow (HTTP ${res.status}).`;
-        throw new Error((data && typeof data === "object" && "message" in data ? (data as { message?: string }).message : null) || fallbackMessage);
+        throw new Error(
+          (data && typeof data === "object" && "message" in data
+            ? (data as { message?: string }).message
+            : null) || fallbackMessage,
+        );
       }
 
       setFollowingIds((prev) => {
         const has = prev.includes(targetUserId);
-        const shouldFollow = Boolean((data as { following?: boolean })?.following);
+        const shouldFollow = Boolean(
+          (data as { following?: boolean })?.following,
+        );
 
         if (shouldFollow && !has) return [...prev, targetUserId];
-        if (!shouldFollow && has) return prev.filter((id) => id !== targetUserId);
+        if (!shouldFollow && has)
+          return prev.filter((id) => id !== targetUserId);
         return prev;
       });
     } catch (error: any) {
@@ -534,11 +597,18 @@ function FeedPageContent() {
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         const fallbackMessage = `Failed to create community (HTTP ${res.status}).`;
-        throw new Error((data && typeof data === "object" && "message" in data ? (data as { message?: string }).message : null) || fallbackMessage);
+        throw new Error(
+          (data && typeof data === "object" && "message" in data
+            ? (data as { message?: string }).message
+            : null) || fallbackMessage,
+        );
       }
 
       const created = data as ApiCommunity;
-      setCommunities((prev) => [created, ...prev.filter((community) => community._id !== created._id)]);
+      setCommunities((prev) => [
+        created,
+        ...prev.filter((community) => community._id !== created._id),
+      ]);
       setComposerCommunityId(created._id);
       setCommunityName("");
       setCommunityMessage("Community created. You are now a member.");
@@ -559,21 +629,32 @@ function FeedPageContent() {
       setJoiningCommunityId(communityId);
       setCommunityMessage("");
 
-      const res = await fetch(`${API_BASE}/api/communities/${communityId}/join`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `${API_BASE}/api/communities/${communityId}/join`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         const fallbackMessage = `Failed to join community (HTTP ${res.status}).`;
-        throw new Error((data && typeof data === "object" && "message" in data ? (data as { message?: string }).message : null) || fallbackMessage);
+        throw new Error(
+          (data && typeof data === "object" && "message" in data
+            ? (data as { message?: string }).message
+            : null) || fallbackMessage,
+        );
       }
 
       const updated = data as ApiCommunity;
-      setCommunities((prev) => prev.map((community) => (community._id === communityId ? updated : community)));
+      setCommunities((prev) =>
+        prev.map((community) =>
+          community._id === communityId ? updated : community,
+        ),
+      );
       setComposerCommunityId(updated._id);
       setCommunityMessage("Joined community successfully.");
     } catch (error: any) {
@@ -583,7 +664,10 @@ function FeedPageContent() {
     }
   };
 
-  const feedCountLabel = visiblePosts.length === 1 ? "1 live post" : `${visiblePosts.length} live posts`;
+  const feedCountLabel =
+    visiblePosts.length === 1
+      ? "1 live post"
+      : `${visiblePosts.length} live posts`;
 
   return (
     <div className={styles.page}>
@@ -595,14 +679,20 @@ function FeedPageContent() {
             <section className={styles.heroCard}>
               <div>
                 <p className={styles.heroPill}>{SECTION_INTRO[section].pill}</p>
-                <h1 className={styles.heroTitle}>{SECTION_INTRO[section].title}</h1>
-                <p className={styles.heroSubtitle}>{SECTION_INTRO[section].subtitle}</p>
+                <h1 className={styles.heroTitle}>
+                  {SECTION_INTRO[section].title}
+                </h1>
+                <p className={styles.heroSubtitle}>
+                  {SECTION_INTRO[section].subtitle}
+                </p>
               </div>
 
               <div className={styles.gamificationCard}>
                 <p className={styles.gamificationLabel}>Feed Status</p>
                 <p className={styles.gamificationValue}>{feedCountLabel}</p>
-                <p className={styles.gamificationMeta}>Posts are now persisted across user sessions.</p>
+                <p className={styles.gamificationMeta}>
+                  Catch up, connect, and share your next milestone.
+                </p>
               </div>
             </section>
 
@@ -642,7 +732,9 @@ function FeedPageContent() {
                   <select
                     className={styles.selectControl}
                     value={contentFilter}
-                    onChange={(event) => setContentFilter(event.target.value as ContentFilter)}
+                    onChange={(event) =>
+                      setContentFilter(event.target.value as ContentFilter)
+                    }
                   >
                     <option value="all">All content</option>
                     <option value="posts">Only posts</option>
@@ -655,7 +747,9 @@ function FeedPageContent() {
                   <select
                     className={styles.selectControl}
                     value={sportFilter}
-                    onChange={(event) => setSportFilter(event.target.value as SportFilter)}
+                    onChange={(event) =>
+                      setSportFilter(event.target.value as SportFilter)
+                    }
                   >
                     <option value="all">All sports</option>
                     <option value="Tennis">Tennis</option>
@@ -668,7 +762,9 @@ function FeedPageContent() {
             </section>
 
             <section id="create-post" className={styles.composerCard}>
-              <h3 className={styles.composerTitle}>What&apos;s happening in your game today?</h3>
+              <h3 className={styles.composerTitle}>
+                What&apos;s happening in your game today?
+              </h3>
               <textarea
                 className={styles.composerInput}
                 placeholder="Share progress, post a result, or ask for an opponent..."
@@ -706,7 +802,11 @@ function FeedPageContent() {
                   <select
                     className={styles.tagSelect}
                     value={composerSportTag}
-                    onChange={(event) => setComposerSportTag(event.target.value as ComposerSportTag)}
+                    onChange={(event) =>
+                      setComposerSportTag(
+                        event.target.value as ComposerSportTag,
+                      )
+                    }
                   >
                     <option value="Tennis">#Tennis</option>
                     <option value="Soccer">#Soccer</option>
@@ -720,7 +820,9 @@ function FeedPageContent() {
                     <select
                       className={styles.communitySelect}
                       value={composerCommunityId}
-                      onChange={(event) => setComposerCommunityId(event.target.value)}
+                      onChange={(event) =>
+                        setComposerCommunityId(event.target.value)
+                      }
                       disabled={myCommunities.length === 0}
                     >
                       {myCommunities.length === 0 ? (
@@ -738,7 +840,10 @@ function FeedPageContent() {
               </div>
 
               {isCommunitySection && myCommunities.length === 0 && (
-                <p className={styles.communityPickerHint}>Join or create a community first, then choose where to publish.</p>
+                <p className={styles.communityPickerHint}>
+                  Join or create a community first, then choose where to
+                  publish.
+                </p>
               )}
 
               {locationFlag && (
@@ -761,13 +866,18 @@ function FeedPageContent() {
                 </button>
               </div>
 
-              {composerMessage && <p className={styles.composerMessage}>{composerMessage}</p>}
+              {composerMessage && (
+                <p className={styles.composerMessage}>{composerMessage}</p>
+              )}
             </section>
 
             {isCommunitySection && (
               <section className={styles.communitySectionCard}>
                 <h3 className={styles.communitySectionTitle}>My Communities</h3>
-                <p className={styles.communitySectionSubtitle}>Create or join communities. Membership is automatic when created or joined.</p>
+                <p className={styles.communitySectionSubtitle}>
+                  Create or join communities. Membership is automatic when
+                  created or joined.
+                </p>
 
                 <div className={styles.communityCreateRow}>
                   <input
@@ -786,28 +896,47 @@ function FeedPageContent() {
                   </button>
                 </div>
 
-                {communityMessage && <p className={styles.communityMessage}>{communityMessage}</p>}
+                {communityMessage && (
+                  <p className={styles.communityMessage}>{communityMessage}</p>
+                )}
 
                 <div className={styles.communityList}>
                   {communities.length === 0 && (
-                    <div className={styles.communityEmpty}>No communities yet. Create the first one.</div>
+                    <div className={styles.communityEmpty}>
+                      No communities yet. Create the first one.
+                    </div>
                   )}
 
                   {communities.map((community) => (
-                    <article key={community._id} className={styles.communityCard}>
+                    <article
+                      key={community._id}
+                      className={styles.communityCard}
+                    >
                       <div>
                         <p className={styles.communityName}>{community.name}</p>
                         <p className={styles.communityMeta}>
-                          {community.memberCount} member{community.memberCount === 1 ? "" : "s"}
+                          {community.memberCount} member
+                          {community.memberCount === 1 ? "" : "s"}
                         </p>
                       </div>
                       <button
                         type="button"
-                        className={community.isMember ? styles.communityJoinedButton : styles.communityJoinButton}
+                        className={
+                          community.isMember
+                            ? styles.communityJoinedButton
+                            : styles.communityJoinButton
+                        }
                         onClick={() => handleJoinCommunity(community._id)}
-                        disabled={community.isMember || joiningCommunityId === community._id}
+                        disabled={
+                          community.isMember ||
+                          joiningCommunityId === community._id
+                        }
                       >
-                        {community.isMember ? "Member" : joiningCommunityId === community._id ? "Joining..." : "Join"}
+                        {community.isMember
+                          ? "Member"
+                          : joiningCommunityId === community._id
+                            ? "Joining..."
+                            : "Join"}
                       </button>
                     </article>
                   ))}
@@ -815,14 +944,25 @@ function FeedPageContent() {
               </section>
             )}
 
-            {showFutureModeCard && <FutureFeatureCard title={`${feedMode === "following" ? "Following" : "Nearby"} Feed`} />}
-            {showFutureSectionCard && <FutureFeatureCard title="Trending Feed" />}
-            {showFutureFilterCard && <FutureFeatureCard title="Match-Only Feed Filter" />}
+            {showFutureModeCard && (
+              <FutureFeatureCard
+                title={`${feedMode === "following" ? "Following" : "Nearby"} Feed`}
+              />
+            )}
+            {showFutureSectionCard && (
+              <FutureFeatureCard title="Trending Feed" />
+            )}
+            {showFutureFilterCard && (
+              <FutureFeatureCard title="Match-Only Feed Filter" />
+            )}
 
             {isInitialLoading ? (
               <section className={styles.feedStream}>
                 {Array.from({ length: 3 }).map((_, index) => (
-                  <div key={`skeleton-${index}`} className={styles.skeletonCard}>
+                  <div
+                    key={`skeleton-${index}`}
+                    className={styles.skeletonCard}
+                  >
                     <div className={styles.skeletonLineWide} />
                     <div className={styles.skeletonLine} />
                     <div className={styles.skeletonLine} />
@@ -855,27 +995,44 @@ function FeedPageContent() {
                   const isUpdating = updatingPostId === post._id;
                   const isDeleting = deletingPostId === post._id;
                   const authorId = post.author?._id || "";
-                  const isFollowingAuthor = authorId ? followingIds.includes(authorId) : false;
+                  const isFollowingAuthor = authorId
+                    ? followingIds.includes(authorId)
+                    : false;
                   const isFollowBusy = followBusyUserId === authorId;
                   const communityId = getPostCommunityId(post);
                   const communityName = getPostCommunityName(post);
 
                   return (
-                    <article key={post._id} className={`${styles.feedCard} ${styles.reveal}`}>
+                    <article
+                      key={post._id}
+                      className={`${styles.feedCard} ${styles.reveal}`}
+                    >
                       <div className={styles.cardTop}>
                         <div>
-                          <p className={`${styles.authorLine} ${isOwner ? styles.ownerAuthorGlow : ""}`}>
+                          <p
+                            className={`${styles.authorLine} ${isOwner ? styles.ownerAuthorGlow : ""}`}
+                          >
                             {getAuthorName(post.author)}
-                            <span className={styles.ratingTag}>#{post.sportTag}</span>
+                            <span className={styles.ratingTag}>
+                              #{post.sportTag}
+                            </span>
                           </p>
                           <p className={styles.metaLine}>
                             {formatRelativeTime(post.createdAt)}
                             {communityName ? ` • ${communityName}` : ""}
                             {post.location ? ` • ${post.location}` : ""}
-                            {post.author?.email ? ` • ${post.author.email}` : ""}
+                            {post.author?.email
+                              ? ` • ${post.author.email}`
+                              : ""}
                           </p>
                         </div>
-                        <span className={styles.postTag}>{communityId ? "Community Post" : isOwner ? "Your Post" : "Post"}</span>
+                        <span className={styles.postTag}>
+                          {communityId
+                            ? "Community Post"
+                            : isOwner
+                              ? "Your Post"
+                              : "Post"}
+                        </span>
                       </div>
 
                       {isEditing ? (
@@ -883,7 +1040,9 @@ function FeedPageContent() {
                           <textarea
                             className={styles.inlineEditTextarea}
                             value={editText}
-                            onChange={(event) => setEditText(event.target.value)}
+                            onChange={(event) =>
+                              setEditText(event.target.value)
+                            }
                           />
                           <div className={styles.inlineEditControls}>
                             <label className={styles.filterLabel}>
@@ -891,7 +1050,11 @@ function FeedPageContent() {
                               <select
                                 className={styles.selectControl}
                                 value={editSportTag}
-                                onChange={(event) => setEditSportTag(event.target.value as ComposerSportTag)}
+                                onChange={(event) =>
+                                  setEditSportTag(
+                                    event.target.value as ComposerSportTag,
+                                  )
+                                }
                               >
                                 <option value="Tennis">Tennis</option>
                                 <option value="Soccer">Soccer</option>
@@ -903,7 +1066,9 @@ function FeedPageContent() {
                               className={styles.locationInput}
                               placeholder="Location"
                               value={editLocation}
-                              onChange={(event) => setEditLocation(event.target.value)}
+                              onChange={(event) =>
+                                setEditLocation(event.target.value)
+                              }
                             />
                           </div>
                           <div className={styles.ownerActions}>
@@ -931,10 +1096,20 @@ function FeedPageContent() {
 
                       {!isEditing && (
                         <div className={styles.postExtras}>
-                          {communityName && <span className={styles.communityPill}>{communityName}</span>}
-                          {post.isMatchResult && <span className={styles.pill}>Match Result</span>}
-                          {post.hasMedia && <span className={styles.pillMuted}>Media</span>}
-                          {post.hasLocation && <span className={styles.pillMuted}>Location</span>}
+                          {communityName && (
+                            <span className={styles.communityPill}>
+                              {communityName}
+                            </span>
+                          )}
+                          {post.isMatchResult && (
+                            <span className={styles.pill}>Match Result</span>
+                          )}
+                          {post.hasMedia && (
+                            <span className={styles.pillMuted}>Media</span>
+                          )}
+                          {post.hasLocation && (
+                            <span className={styles.pillMuted}>Location</span>
+                          )}
                         </div>
                       )}
 
@@ -951,14 +1126,25 @@ function FeedPageContent() {
                         {!isOwner && Boolean(authorId) && (
                           <button
                             type="button"
-                            className={isFollowingAuthor ? styles.followingButton : styles.followButton}
+                            className={
+                              isFollowingAuthor
+                                ? styles.followingButton
+                                : styles.followButton
+                            }
                             onClick={() => handleToggleFollow(authorId)}
                             disabled={isFollowBusy}
                           >
-                            {isFollowBusy ? "..." : isFollowingAuthor ? "Following" : "Follow"}
+                            {isFollowBusy
+                              ? "..."
+                              : isFollowingAuthor
+                                ? "Following"
+                                : "Follow"}
                           </button>
                         )}
-                        <button type="button" className={styles.challengeButton}>
+                        <button
+                          type="button"
+                          className={styles.challengeButton}
+                        >
                           Challenge
                         </button>
                       </div>

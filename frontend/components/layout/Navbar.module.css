@@ -1,55 +1,137 @@
-@reference "../../style/globals.css";
-
 .nav {
-  @apply sticky top-0 left-0 z-50 h-24 w-full border-b-2 border-blue-900 bg-blue-700 text-white shadow-lg;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: white;
+  border-bottom: 1px solid #e0e6ef;
 }
-
 .inner {
-  @apply mx-auto flex h-full max-w-[1400px] items-center gap-3 px-4 md:px-8;
+  max-width: 1440px;
+  margin: auto;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  padding: 0 32px;
 }
-
 .brand {
-  @apply mr-1 text-3xl font-black tracking-wide text-white;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: #173b95;
+  white-space: nowrap;
 }
-
 .brandAccent {
-  @apply text-amber-400;
+  color: #bd8d12;
 }
-
 .primaryLinks {
-  @apply hidden flex-1 items-center justify-center gap-2 lg:flex xl:gap-5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: auto;
 }
-
 .primaryLink {
-  @apply rounded-lg px-3 py-2 text-lg font-bold text-blue-100 transition hover:bg-blue-600 hover:text-white;
+  font-size: 13px;
+  font-weight: 650;
+  color: #66748e;
+  padding: 11px 14px;
+  border-radius: 7px;
+  white-space: nowrap;
 }
-
+.primaryLink:hover,
+.primaryLink[aria-current="page"] {
+  background: #edf2ff;
+  color: #2349bd;
+}
 .ctaGroup {
-  @apply hidden items-center gap-2 md:flex lg:hidden;
+  display: none;
 }
-
-.ctaLink {
-  @apply rounded-full bg-blue-600 px-4 py-2 font-bold text-white transition hover:bg-blue-500;
-}
-
 .authGroup {
-  @apply ml-auto flex items-center gap-2 md:gap-3;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-
-.logoutButton {
-  @apply rounded-full bg-white/10 px-4 py-2 font-bold text-white transition hover:bg-white/20;
-}
-
+.logoutButton,
 .loginLink {
-  @apply rounded-full bg-white/10 px-4 py-2 font-bold text-white transition hover:bg-white/20;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5e6e88;
+  padding: 10px;
 }
-
 .signUpButton {
-  @apply rounded-full bg-amber-400 px-5 py-2 font-black text-blue-950 transition hover:bg-amber-300;
+  font-size: 12px;
+  font-weight: 700;
+  background: #2450d8;
+  color: white;
+  padding: 11px 18px;
+  border-radius: 7px;
+  white-space: nowrap;
 }
-
 .userBubble {
-  @apply flex h-11 w-11 items-center justify-center rounded-full bg-amber-400 text-lg font-black text-blue-950;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f3cc55;
+  color: #17315f;
+  font-weight: 750;
 }
-
-@media(max-width:450px){.inner{padding:0 12px;gap:8px}.brand{font-size:23px;letter-spacing:0}.logoutButton{font-size:12px;padding:8px 10px}.userBubble{width:32px;height:32px;font-size:14px}}
+.mobileMenu {
+  display: none;
+}
+.mobileLinks {
+  display: none;
+}
+@media (max-width: 850px) {
+  .inner {
+    padding: 0 20px;
+    gap: 12px;
+    min-height: 72px;
+  }
+  .primaryLinks {
+    display: none;
+  }
+  .mobileMenu {
+    display: block;
+    border: 1px solid #dde4ee;
+    border-radius: 7px;
+    padding: 8px;
+    color: #27477c;
+  }
+  .mobileLinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 10px 14px;
+    border-top: 1px solid #edf0f6;
+  }
+  .mobileLinks a {
+    flex: 1;
+    text-align: center;
+  }
+  .brand {
+    font-size: 24px;
+  }
+}
+@media (max-width: 390px) {
+  .inner {
+    padding: 0 12px;
+    gap: 6px;
+  }
+  .authGroup {
+    gap: 4px;
+  }
+  .loginLink,
+  .logoutButton {
+    padding: 8px 5px;
+  }
+  .signUpButton {
+    padding: 10px 12px;
+  }
+  .brand {
+    font-size: 21px;
+  }
+}

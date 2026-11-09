@@ -1,39 +1,39 @@
 .cta {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 5rem 1.5rem;
-    background-image: linear-gradient(to right, rgba(0,0,0,0.25),rgba(0,0,0,0.90)),url(Football.jpg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-height: 500px;
-    align-items: center;
-    color: white;
-    font-weight: bolder;
-    font-size: large;
-    text-align: center;
+  margin: 48px auto;
+  max-width: 1200px;
+  padding: 52px 32px;
+  background: #123486;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  color: white;
 }
-
 .title {
-    margin-bottom: 1.5rem;
-    font-size: 2.5rem;
-    font-weight: 700;
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 750;
+  letter-spacing: -1px;
+  max-width: 600px;
 }
-
 .button {
-    padding: 0.75rem 1.5rem;
-    background-color: #F59E0B;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
+  display: inline-block;
+  background: #f3c84a;
+  color: #152b55;
+  padding: 14px 26px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 750;
+  white-space: nowrap;
 }
-
 .button:hover {
-    opacity: 0.9;
-    transform:scale(1.05);
-    transition:0.3s;
+  background: #ffdb73;
+}
+@media (max-width: 700px) {
+  .cta {
+    margin: 24px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 32px 24px;
+  }
 }

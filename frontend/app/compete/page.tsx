@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { LeaderboardPanel, ratingNumber } from "@/components/RatingPanels";
+import Link from "next/link";
 import Sidebar from "@/components/layout/Sidebar";
 import MatchCard from "@/components/cards/cards";
 import { useAuthGuard } from "@/lib/withAuth";
@@ -17,6 +19,15 @@ type Section =
   | "tournaments";
 
 export default function CompetePage() {
+  return (
+    <Suspense fallback={<p role="status">Loading competition…</p>}>
+      <CompetitionContent />
+    </Suspense>
+  );
+}
+
+function CompetitionContent() {
+  const query = useSearchParams().toString();
   const { isAuthenticated, isCheckingAuth } = useAuthGuard("/");
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [leaderboardError, setLeaderboardError] = useState("");
@@ -37,92 +48,99 @@ export default function CompetePage() {
   });
 
   useEffect(() => {
-  const safeFetch = async (url: string, token?: string) => {
-    const res = await fetch(url, {
-      headers: token
-        ? { Authorization: `Bearer ${token}` }
-        : {},
-    });
-
-    const contentType = res.headers.get("content-type");
-
-    // 🔴 Detect HTML / errors BEFORE parsing JSON
-    if (!res.ok || !contentType?.includes("application/json")) {
-      const text = await res.text();
-      console.error("❌ API ERROR:", {
-        url,
-        status: res.status,
-        contentType,
-        response: text,
+    const safeFetch = async (url: string, token?: string) => {
+      const res = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      throw new Error(
-        `Request failed (${res.status}) for ${url}: ${text || "Invalid server response"}`
+
+      const contentType = res.headers.get("content-type");
+
+      // 🔴 Detect HTML / errors BEFORE parsing JSON
+      if (!res.ok || !contentType?.includes("application/json")) {
+        const text = await res.text();
+        console.error("❌ API ERROR:", {
+          url,
+          status: res.status,
+          contentType,
+          response: text,
+        });
+        throw new Error(
+          `Request failed (${res.status}) for ${url}: ${text || "Invalid server response"}`,
+        );
+      }
+
+      return res.json();
+    };
+
+    const fetchData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setPageError("You must be logged in to load competition data.");
+        return;
+      }
+
+      const results = await Promise.allSettled([
+        safeFetch(`${API_URL}/api/users/me`, token),
+        safeFetch(`${API_URL}/api/sports`),
+        safeFetch(`${API_URL}/api/matches/my`, token),
+        safeFetch(`${API_URL}/api/matches/open`, token),
+      ]);
+      const [userResult, sportsResult, matchesResult, openMatchesResult] =
+        results;
+      const userJson =
+        userResult.status === "fulfilled" ? userResult.value : null;
+      const sportsCatalog =
+        sportsResult.status === "fulfilled" && Array.isArray(sportsResult.value)
+          ? sportsResult.value
+          : [];
+      const matches =
+        matchesResult.status === "fulfilled" &&
+        Array.isArray(matchesResult.value)
+          ? matchesResult.value
+          : [];
+      const openMatches =
+        openMatchesResult.status === "fulfilled" &&
+        Array.isArray(openMatchesResult.value)
+          ? openMatchesResult.value
+          : [];
+
+      setData({
+        user: userJson?.user || userJson || null,
+        ratings: Array.isArray(userJson?.ratings) ? userJson.ratings : [],
+        matches,
+        openMatches,
+        sportsCatalog,
+        leaderboard: [],
+      });
+      const firstRatedSportId = userJson?.ratings?.[0]?.sportId?._id;
+      const params = new URLSearchParams(query);
+      if (params.get("section") === "leaderboard") setSection("leaderboard");
+      const requestedSport = params.get("sport");
+      setSelectedSportId(
+        sportsCatalog.some((s: any) => s._id === requestedSport)
+          ? requestedSport!
+          : firstRatedSportId || sportsCatalog[0]?._id || "",
       );
-    }
 
-    return res.json();
-  };
+      const failures = results
+        .filter((result) => result.status === "rejected")
+        .map((result) =>
+          result.status === "rejected" && result.reason instanceof Error
+            ? result.reason.message
+            : "One or more competition data requests failed.",
+        );
+      if (failures.length > 0) setPageError(failures.join(" "));
+    };
 
-  const fetchData = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setPageError("You must be logged in to load competition data.");
-      return;
-    }
-
-    const results = await Promise.allSettled([
-      safeFetch(`${API_URL}/api/users/me`, token),
-      safeFetch(`${API_URL}/api/sports`),
-      safeFetch(`${API_URL}/api/matches/my`, token),
-      safeFetch(`${API_URL}/api/matches/open`, token),
-    ]);
-    const [userResult, sportsResult, matchesResult, openMatchesResult] = results;
-    const userJson = userResult.status === "fulfilled" ? userResult.value : null;
-    const sportsCatalog =
-      sportsResult.status === "fulfilled" && Array.isArray(sportsResult.value)
-        ? sportsResult.value
-        : [];
-    const matches =
-      matchesResult.status === "fulfilled" && Array.isArray(matchesResult.value)
-        ? matchesResult.value
-        : [];
-    const openMatches =
-      openMatchesResult.status === "fulfilled" &&
-      Array.isArray(openMatchesResult.value)
-        ? openMatchesResult.value
-        : [];
-
-    setData({
-      user: userJson?.user || userJson || null,
-      ratings: Array.isArray(userJson?.ratings) ? userJson.ratings : [],
-      matches,
-      openMatches,
-      sportsCatalog,
-      leaderboard: [],
+    void fetchData().catch((error) => {
+      console.error("Competition page fetch error:", error);
+      setPageError(
+        error instanceof Error
+          ? error.message
+          : "Unable to load competition data.",
+      );
     });
-    const firstRatedSportId = userJson?.ratings?.[0]?.sportId?._id;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("section") === "leaderboard") setSection("leaderboard");
-    const requestedSport = params.get("sport");
-    setSelectedSportId(sportsCatalog.some((s: any) => s._id === requestedSport) ? requestedSport! : firstRatedSportId || sportsCatalog[0]?._id || "");
-
-    const failures = results
-      .filter((result) => result.status === "rejected")
-      .map((result) =>
-        result.status === "rejected" && result.reason instanceof Error
-          ? result.reason.message
-          : "One or more competition data requests failed."
-      );
-    if (failures.length > 0) setPageError(failures.join(" "));
-  };
-
-  void fetchData().catch((error) => {
-    console.error("Competition page fetch error:", error);
-    setPageError(
-      error instanceof Error ? error.message : "Unable to load competition data."
-    );
-  });
-}, []);
+  }, [query]);
   const { user, matches, ratings, leaderboard } = data;
 
   useEffect(() => {
@@ -134,7 +152,7 @@ export default function CompetePage() {
     const loadLeaderboard = async () => {
       try {
         const response = await fetch(
-          `${API_URL}/api/leaderboard/${selectedSportId}`
+          `${API_URL}/api/leaderboard/${selectedSportId}`,
         );
         if (!response.ok) {
           throw new Error("Unable to load the selected sport leaderboard.");
@@ -147,14 +165,21 @@ export default function CompetePage() {
         }));
       } catch (error) {
         console.error("Leaderboard fetch error:", error);
-        if (active) setLeaderboardError(error instanceof Error ? error.message : "Unable to load leaderboard.");
+        if (active)
+          setLeaderboardError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load leaderboard.",
+          );
       } finally {
         if (active) setLeaderboardLoading(false);
       }
     };
 
     loadLeaderboard();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [selectedSportId]);
 
   const refreshMatches = async (token: string) => {
@@ -179,7 +204,7 @@ export default function CompetePage() {
 
   const postMatchAction = async (
     path: string,
-    body?: Record<string, unknown>
+    body?: Record<string, unknown>,
   ) => {
     setActionError("");
     setActionMessage("");
@@ -205,7 +230,7 @@ export default function CompetePage() {
     } catch (error) {
       console.error("Match action error:", error);
       setActionError(
-        error instanceof Error ? error.message : "Match request failed."
+        error instanceof Error ? error.message : "Match request failed.",
       );
     }
   };
@@ -225,13 +250,8 @@ export default function CompetePage() {
   return (
     <div className={styles.page}>
       <div className={styles.shell}>
-
         {/* SIDEBAR */}
-        <Sidebar
-          section={section}
-          setSection={setSection}
-          user={user}
-        />
+        <Sidebar section={section} setSection={setSection} user={user} />
 
         {/* MAIN CONTENT */}
         <div className={styles.main}>
@@ -259,7 +279,8 @@ export default function CompetePage() {
                         {ratingNumber(r.currentRating)}
                       </p>
                       <p className={styles.matchesPlayed}>
-                        {r.matchesPlayed} {r.matchesPlayed === 1 ? "match" : "matches"}
+                        {r.matchesPlayed}{" "}
+                        {r.matchesPlayed === 1 ? "match" : "matches"}
                       </p>
                     </div>
                   ))
@@ -270,228 +291,326 @@ export default function CompetePage() {
             </div>
 
             {/* MATCHES SECTION - Using Professional MatchCard */}
-{(section === "matches" || section === "find-players") && (
-  <div>
-    <div className={styles.matchesHeader}>
-      <h2 className={styles.matchesTitle}>
-        {section === "matches" ? "My Matches" : "Find a Match"}
-      </h2>
-      
-      {matches.length > 0 && (
-        <p className={styles.matchesCount}>
-          {matches.length} match{matches.length > 1 ? 'es' : ''} found
-        </p>
-      )}
-    </div>
+            {(section === "matches" || section === "find-players") && (
+              <div>
+                <div className={styles.matchesHeader}>
+                  <h2 className={styles.matchesTitle}>
+                    {section === "matches" ? "My Matches" : "Find a Match"}
+                  </h2>
 
-    <section className={`${styles.sectionCard} ${styles.matchControls}`}>
-      <h3 className={styles.sectionTitle}>Create a competitive match</h3>
-      <div className={styles.actionRow}>
-        <label htmlFor="match-sport">Sport</label>
-        <select
-          id="match-sport"
-          value={selectedSportId}
-          onChange={(event) => setSelectedSportId(event.target.value)}
-          disabled={isCreatingMatch}
-        >
-          <option value="">Choose a sport</option>
-          {data.sportsCatalog.map((sport: any) => (
-            <option key={sport._id} value={sport._id}>{sport.name}</option>
-          ))}
-        </select>
-        <button
-          type="button"
-          className={styles.actionButton}
-          onClick={createMatch}
-          disabled={!selectedSportId || isCreatingMatch}
-        >
-          {isCreatingMatch ? "Creating..." : "Create open match"}
-        </button>
-      </div>
-      {actionError && <p className={styles.actionError} role="alert">{actionError}</p>}
-      {actionMessage && <p className={styles.actionMessage} role="status">{actionMessage}</p>}
-    </section>
+                  {matches.length > 0 && (
+                    <p className={styles.matchesCount}>
+                      {matches.length} match{matches.length > 1 ? "es" : ""}{" "}
+                      found
+                    </p>
+                  )}
+                </div>
 
-    <section className={styles.matchSection}>
-      <h3 className={styles.sectionTitle}>Available matches</h3>
-      {data.openMatches.length > 0 ? (
-        <div className={styles.matchesList}>
-          {data.openMatches.map((match: any) => (
-            <div key={match._id} className={styles.matchItem}>
-              <MatchCard match={match} sport={match.sport?.name || "Sport"} />
-              {match.status === "open" &&
-                !match.players?.some(
-                  (player: any) => String(player._id) === String(user?._id)
-                ) && (
-                  <button
-                    type="button"
-                    className={styles.actionButton}
-                    onClick={() => postMatchAction(`${match._id}/join`)}
-                  >
-                    Join match
-                  </button>
-                )}
-              {match.status === "awaiting_result" &&
-                match.players?.some(
-                  (player: any) => String(player._id) === String(user?._id)
-                ) && (
-                  <form
-                    className={styles.resultForm}
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      const fields = new FormData(event.currentTarget);
-                      const scoreType = String(fields.get("score-type"));
-                      let score: { type: string; points?: number[]; sets?: number[][] };
-
-                      if (scoreType === "sets") {
-                        const rawSets = String(fields.get("set-scores") || "");
-                        const sets = rawSets.split(",").map((set) =>
-                          set.trim().split("-").map((points) => Number(points.trim()))
-                        );
-                        if (
-                          !rawSets.trim() ||
-                          sets.some(
-                            (set) =>
-                              set.length !== 2 ||
-                              set.some((points) => !Number.isFinite(points) || points < 0)
-                          )
-                        ) {
-                          setActionError("Enter set scores as 6-4, 3-6, 6-2.");
-                          return;
-                        }
-                        score = { type: "sets", sets };
-                      } else {
-                        const rawPoints = [
-                          String(fields.get("player-one-score") || ""),
-                          String(fields.get("player-two-score") || ""),
-                        ];
-                        const points = rawPoints.map(Number);
-                        if (
-                          rawPoints.some((value) => !value.trim()) ||
-                          points.some((value) => !Number.isFinite(value) || value < 0)
-                        ) {
-                          setActionError("Enter a valid score for both players.");
-                          return;
-                        }
-                        score = { type: "standard", points };
+                <section
+                  className={`${styles.sectionCard} ${styles.matchControls}`}
+                >
+                  <h3 className={styles.sectionTitle}>
+                    Create a competitive match
+                  </h3>
+                  <div className={styles.actionRow}>
+                    <label htmlFor="match-sport">Sport</label>
+                    <select
+                      id="match-sport"
+                      value={selectedSportId}
+                      onChange={(event) =>
+                        setSelectedSportId(event.target.value)
                       }
-
-                      void postMatchAction(`${match._id}/result`, {
-                        score,
-                      });
-                    }}
-                  >
-                    <label className={styles.scoreTypeLabel}>
-                      Score format
-                      <select name="score-type" defaultValue="standard">
-                        <option value="standard">Points</option>
-                        <option value="sets">Sets</option>
-                      </select>
-                    </label>
-                    <fieldset className={styles.scoreFields}>
-                      <legend>Points score</legend>
-                      <label>
-                        Player 1
-                        <input name="player-one-score" type="number" min="0" />
-                      </label>
-                      <label>
-                        Player 2
-                        <input name="player-two-score" type="number" min="0" />
-                      </label>
-                    </fieldset>
-                    <label>
-                      Set scores
-                      <input name="set-scores" placeholder="6-4, 3-6, 6-2" />
-                    </label>
-                    <button type="submit" className={styles.actionButton}>
-                      Submit result for confirmation
+                      disabled={isCreatingMatch}
+                    >
+                      <option value="">Choose a sport</option>
+                      {data.sportsCatalog.map((sport: any) => (
+                        <option key={sport._id} value={sport._id}>
+                          {sport.name}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      className={styles.actionButton}
+                      onClick={createMatch}
+                      disabled={!selectedSportId || isCreatingMatch}
+                    >
+                      {isCreatingMatch ? "Creating..." : "Create open match"}
                     </button>
-                  </form>
-                )}
-              {match.status === "awaiting_confirmation" &&
-                match.players?.some(
-                  (player: any) => String(player._id) === String(user?._id)
-                ) &&
-                String(match.resultReporter?._id) !== String(user?._id) && (
-                  <button
-                    type="button"
-                    className={styles.actionButton}
-                    onClick={() =>
-                      postMatchAction(`${match._id}/confirm-result`)
-                    }
-                  >
-                    Confirm result
-                  </button>
-                )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className={styles.emptyMatchesCard}>
-          <h3 className={styles.emptyMatchesTitle}>No open matches yet</h3>
-          <p className={styles.emptyMatchesDesc}>
-            Create one above and another player can join.
-          </p>
-        </div>
-      )}
-    </section>
+                  </div>
+                  {actionError && (
+                    <p className={styles.actionError} role="alert">
+                      {actionError}
+                    </p>
+                  )}
+                  {actionMessage && (
+                    <p className={styles.actionMessage} role="status">
+                      {actionMessage}
+                    </p>
+                  )}
+                </section>
 
-    {section === "matches" && (
-    <section className={styles.matchSection}>
-      <div className={styles.matchesHeader}>
-        <h3 className={styles.matchesTitle}>My match history</h3>
-      </div>
-    {matches.length > 0 ? (
-      <div className={styles.matchesList}>
-        {matches.map((m: any) => (
-          <MatchCard key={m._id} match={m} sport={m.sport?.name || "Sport"} />
-        ))}
-      </div>
-    ) : (
-      <div className={styles.emptyMatchesCard}>
-        <div className={styles.emptyMatchesIconWrap}>
-          🎾
-        </div>
-        <h3 className={styles.emptyMatchesTitle}>No matches yet</h3>
-        <p className={styles.emptyMatchesDesc}>
-          You haven't played any matches yet. Start competing to see your match history here.
-        </p>
-      </div>
-    )}
-    </section>
-    )}
-  </div>
-)}
+                <section className={styles.matchSection}>
+                  <h3 className={styles.sectionTitle}>Available matches</h3>
+                  {data.openMatches.length > 0 ? (
+                    <div className={styles.matchesList}>
+                      {data.openMatches.map((match: any) => (
+                        <div key={match._id} className={styles.matchItem}>
+                          <MatchCard
+                            match={match}
+                            sport={match.sport?.name || "Sport"}
+                          />
+                          {match.status === "open" &&
+                            !match.players?.some(
+                              (player: any) =>
+                                String(player._id) === String(user?._id),
+                            ) && (
+                              <button
+                                type="button"
+                                className={styles.actionButton}
+                                onClick={() =>
+                                  postMatchAction(`${match._id}/join`)
+                                }
+                              >
+                                Join match
+                              </button>
+                            )}
+                          {match.status === "awaiting_result" &&
+                            match.players?.some(
+                              (player: any) =>
+                                String(player._id) === String(user?._id),
+                            ) && (
+                              <form
+                                className={styles.resultForm}
+                                onSubmit={(event) => {
+                                  event.preventDefault();
+                                  const fields = new FormData(
+                                    event.currentTarget,
+                                  );
+                                  const scoreType = String(
+                                    fields.get("score-type"),
+                                  );
+                                  let score: {
+                                    type: string;
+                                    points?: number[];
+                                    sets?: number[][];
+                                  };
+
+                                  if (scoreType === "sets") {
+                                    const rawSets = String(
+                                      fields.get("set-scores") || "",
+                                    );
+                                    const sets = rawSets.split(",").map((set) =>
+                                      set
+                                        .trim()
+                                        .split("-")
+                                        .map((points) => Number(points.trim())),
+                                    );
+                                    if (
+                                      !rawSets.trim() ||
+                                      sets.some(
+                                        (set) =>
+                                          set.length !== 2 ||
+                                          set.some(
+                                            (points) =>
+                                              !Number.isFinite(points) ||
+                                              points < 0,
+                                          ),
+                                      )
+                                    ) {
+                                      setActionError(
+                                        "Enter set scores as 6-4, 3-6, 6-2.",
+                                      );
+                                      return;
+                                    }
+                                    score = { type: "sets", sets };
+                                  } else {
+                                    const rawPoints = [
+                                      String(
+                                        fields.get("player-one-score") || "",
+                                      ),
+                                      String(
+                                        fields.get("player-two-score") || "",
+                                      ),
+                                    ];
+                                    const points = rawPoints.map(Number);
+                                    if (
+                                      rawPoints.some(
+                                        (value) => !value.trim(),
+                                      ) ||
+                                      points.some(
+                                        (value) =>
+                                          !Number.isFinite(value) || value < 0,
+                                      )
+                                    ) {
+                                      setActionError(
+                                        "Enter a valid score for both players.",
+                                      );
+                                      return;
+                                    }
+                                    score = { type: "standard", points };
+                                  }
+
+                                  void postMatchAction(`${match._id}/result`, {
+                                    score,
+                                  });
+                                }}
+                              >
+                                <label className={styles.scoreTypeLabel}>
+                                  Score format
+                                  <select
+                                    name="score-type"
+                                    defaultValue="standard"
+                                  >
+                                    <option value="standard">Points</option>
+                                    <option value="sets">Sets</option>
+                                  </select>
+                                </label>
+                                <fieldset className={styles.scoreFields}>
+                                  <legend>Points score</legend>
+                                  <label>
+                                    Player 1
+                                    <input
+                                      name="player-one-score"
+                                      type="number"
+                                      min="0"
+                                    />
+                                  </label>
+                                  <label>
+                                    Player 2
+                                    <input
+                                      name="player-two-score"
+                                      type="number"
+                                      min="0"
+                                    />
+                                  </label>
+                                </fieldset>
+                                <label>
+                                  Set scores
+                                  <input
+                                    name="set-scores"
+                                    placeholder="6-4, 3-6, 6-2"
+                                  />
+                                </label>
+                                <button
+                                  type="submit"
+                                  className={styles.actionButton}
+                                >
+                                  Submit result for confirmation
+                                </button>
+                              </form>
+                            )}
+                          {match.status === "awaiting_confirmation" &&
+                            match.players?.some(
+                              (player: any) =>
+                                String(player._id) === String(user?._id),
+                            ) &&
+                            String(match.resultReporter?._id) !==
+                              String(user?._id) && (
+                              <button
+                                type="button"
+                                className={styles.actionButton}
+                                onClick={() =>
+                                  postMatchAction(`${match._id}/confirm-result`)
+                                }
+                              >
+                                Confirm result
+                              </button>
+                            )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={styles.emptyMatchesCard}>
+                      <h3 className={styles.emptyMatchesTitle}>
+                        No open matches yet
+                      </h3>
+                      <p className={styles.emptyMatchesDesc}>
+                        Create one above and another player can join.
+                      </p>
+                    </div>
+                  )}
+                </section>
+
+                {section === "matches" && (
+                  <section className={styles.matchSection}>
+                    <div className={styles.matchesHeader}>
+                      <h3 className={styles.matchesTitle}>My match history</h3>
+                    </div>
+                    {matches.length > 0 ? (
+                      <div className={styles.matchesList}>
+                        {matches.map((m: any) => (
+                          <MatchCard
+                            key={m._id}
+                            match={m}
+                            sport={m.sport?.name || "Sport"}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className={styles.emptyMatchesCard}>
+                        <div className={styles.emptyMatchesIconWrap}>🎾</div>
+                        <h3 className={styles.emptyMatchesTitle}>
+                          No matches yet
+                        </h3>
+                        <p className={styles.emptyMatchesDesc}>
+                          You haven't played any matches yet. Start competing to
+                          see your match history here.
+                        </p>
+                      </div>
+                    )}
+                  </section>
+                )}
+              </div>
+            )}
             {/* LEADERBOARD */}
             {section === "leaderboard" && (
-              <LeaderboardPanel rows={leaderboard} sports={data.sportsCatalog} selectedSport={selectedSportId} onSportChange={setSelectedSportId} user={user} loading={leaderboardLoading} error={leaderboardError} />
+              <LeaderboardPanel
+                rows={leaderboard}
+                sports={data.sportsCatalog}
+                selectedSport={selectedSportId}
+                onSportChange={setSelectedSportId}
+                user={user}
+                loading={leaderboardLoading}
+                error={leaderboardError}
+              />
             )}
 
             {/* OTHER SECTIONS (UNCHANGED) */}
             {section === "rating" && (
               <div className={styles.sectionCard}>
-                <h2 className={styles.sectionTitle}>Ratings</h2>
+                <h2 className={styles.sectionTitle}>Your rating journey</h2>
+                <p className={styles.emptyStateText}>
+                  Every confirmed result shapes your level. Explore your sport
+                  ratings and progression on your player profile.
+                </p>
+                <Link href="/profile" className={styles.textLink}>
+                  View my profile →
+                </Link>
               </div>
             )}
 
             {section === "venues" && (
               <div className={styles.sectionCard}>
-                <h2 className={styles.sectionTitle}>Venues</h2>
+                <h2 className={styles.sectionTitle}>Find your home court.</h2>
+                <p className={styles.emptyStateText}>
+                  Venue discovery is coming soon. In the meantime, find your
+                  next opponent and arrange a place to play together.
+                </p>
               </div>
             )}
 
             {section === "tournaments" && (
               <div className={styles.sectionCard}>
-                <h2 className={styles.sectionTitle}>Tournaments</h2>
+                <h2 className={styles.sectionTitle}>
+                  A bigger stage is coming.
+                </h2>
+                <p className={styles.emptyStateText}>
+                  Tournaments are on the roadmap. Keep competing and building
+                  your rating while we prepare the next chapter.
+                </p>
               </div>
             )}
-
-            {section === "find-players" && (
-              <div className={styles.sectionCard}>
-                <h2 className={styles.sectionTitle}>Find Players</h2>
-              </div>
-            )}
-
           </div>
         </div>
       </div>

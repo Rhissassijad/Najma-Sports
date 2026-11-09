@@ -1,7 +1,7 @@
 @reference "../../style/globals.css";
 
 .page {
-  @apply min-h-screen bg-gray-200;
+  @apply min-h-screen bg-slate-50;
 }
 
 .shell {
@@ -13,17 +13,17 @@
 }
 
 .sidebarNav {
-  @apply sticky top-24 flex h-full flex-col border-r-2 border-gray-300 bg-gray-200;
+  @apply sticky top-24 flex h-full flex-col border-r border-slate-200 bg-slate-50;
   min-height: calc(100vh - 96px);
   align-self: flex-start;
 }
 
 .sidebarHeader {
-  @apply border-b-2 border-gray-300 px-4 pb-3 pt-4;
+  @apply border-b border-slate-200 px-4 pb-3 pt-4;
 }
 
 .sidebarTitle {
-  @apply text-xl font-black uppercase tracking-wide text-blue-800;
+  @apply text-xl font-semibold uppercase tracking-wide text-blue-800;
 }
 
 .sidebarList {
@@ -31,7 +31,7 @@
 }
 
 .sidebarButton {
-  @apply w-full rounded-lg px-3 py-2.5 text-left text-[1.02rem] font-bold text-amber-600 transition hover:bg-white/70 hover:text-amber-700;
+  @apply w-full rounded-lg px-3 py-2.5 text-left text-[1.02rem] font-bold text-slate-500 transition hover:bg-white/70 hover:text-slate-500;
 }
 
 .sidebarButtonActive {
@@ -47,11 +47,11 @@
 }
 
 .sectionCard {
-  @apply rounded-xl border border-gray-400 bg-gray-100 p-6 shadow-sm;
+  @apply rounded-xl border border-slate-200 bg-white p-6 shadow-sm;
 }
 
 .sectionTitle {
-  @apply mb-6 text-3xl font-black text-blue-800;
+  @apply mb-6 text-3xl font-semibold text-blue-800;
 }
 
 .overviewTop {
@@ -67,7 +67,7 @@
 }
 
 .profileFallback {
-  @apply flex h-28 w-28 items-center justify-center rounded-full bg-blue-800 text-4xl font-black text-white;
+  @apply flex h-28 w-28 items-center justify-center rounded-full bg-blue-800 text-4xl font-semibold text-white;
 }
 
 .uploadButton {
@@ -87,7 +87,7 @@
 }
 
 .playerName {
-  @apply text-4xl font-black text-gray-900;
+  @apply text-4xl font-semibold text-gray-900;
 }
 
 .playerMeta {
@@ -99,7 +99,7 @@
 }
 
 .infoCard {
-  @apply rounded-lg border border-gray-300 bg-white p-4;
+  @apply rounded-lg border border-slate-200 bg-white p-4;
 }
 
 .infoLabel {
@@ -107,7 +107,7 @@
 }
 
 .infoValue {
-  @apply mt-1 text-lg font-black text-gray-900;
+  @apply mt-1 text-lg font-semibold text-gray-900;
 }
 
 .noteCard {
@@ -115,7 +115,7 @@
 }
 
 .noteTitle {
-  @apply text-lg font-black text-blue-800;
+  @apply text-lg font-semibold text-blue-800;
 }
 
 .noteText {
@@ -127,7 +127,7 @@
 }
 
 .tournamentsButton {
-  @apply inline-flex rounded-md bg-amber-400 px-4 py-2 font-black text-blue-950 transition hover:bg-amber-300;
+  @apply inline-flex rounded-md bg-amber-400 px-4 py-2 font-semibold text-blue-950 transition hover:bg-amber-300;
 }
 
 .matchesList {
@@ -135,7 +135,7 @@
 }
 
 .emptyState {
-  @apply rounded-lg border border-dashed border-gray-400 bg-white px-5 py-8 text-center font-semibold text-gray-600;
+  @apply rounded-lg border border-dashed border-slate-200 bg-white px-5 py-8 text-center font-semibold text-gray-600;
 }
 
 .sportsGrid {
@@ -143,11 +143,11 @@
 }
 
 .infoCardLarge {
-  @apply rounded-lg border border-gray-300 bg-white p-4;
+  @apply rounded-lg border border-slate-200 bg-white p-4;
 }
 
 .cardTitle {
-  @apply mb-3 text-lg font-black text-blue-800;
+  @apply mb-3 text-lg font-semibold text-blue-800;
 }
 
 .rowLine {
@@ -171,7 +171,7 @@
 }
 
 .sportPicker {
-  @apply min-w-48 rounded-md border border-gray-300 bg-white px-3 py-2 font-semibold text-gray-800;
+  @apply min-w-48 rounded-md border border-slate-200 bg-white px-3 py-2 font-semibold text-gray-800;
 }
 
 .sportPicker:focus-visible,
@@ -306,7 +306,7 @@
   }
 
   .sidebarNav {
-    @apply top-16 h-auto border-b-2 border-r-0;
+    @apply top-16 h-auto border-b border-r-0;
     min-height: 0;
   }
 
@@ -369,9 +369,180 @@
   }
 }
 
-.page { background:#f3f6fb; }
-.mainInner { max-width:1200px; }
-.sectionCard { background:#fff; border-color:#e0e6ef; box-shadow:none; }
-.addSportDisclosure { border-top:1px solid #e0e6ef; padding-top:18px; margin-top:16px; }
-.addSportDisclosure summary { color:#2449b7; font-size:13px; font-weight:700; cursor:pointer; }
-@media(max-width:700px){.shell{flex-direction:column}.sidebar{width:100%}.sidebarNav{position:static;min-height:0;border-right:0}.sidebarHeader{display:none}.sidebarList{display:flex;overflow-x:auto;gap:8px;padding:10px;}.sidebarList li{flex-shrink:0}.sidebarButton{font-size:12px;white-space:nowrap}.sectionCard{padding:16px}}
+.page {
+  background: #f3f6fb;
+}
+.mainInner {
+  max-width: 1200px;
+}
+.sectionCard {
+  background: #fff;
+  border-color: #e0e6ef;
+  box-shadow: none;
+}
+.addSportDisclosure {
+  border-top: 1px solid #e0e6ef;
+  padding-top: 18px;
+  margin-top: 16px;
+}
+.addSportDisclosure summary {
+  color: #2449b7;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+@media (max-width: 700px) {
+  .shell {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+  }
+  .sidebarNav {
+    position: static;
+    min-height: 0;
+    border-right: 0;
+  }
+  .sidebarHeader {
+    display: none;
+  }
+  .sidebarList {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 10px;
+  }
+  .sidebarList li {
+    flex-shrink: 0;
+  }
+  .sidebarButton {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .sectionCard {
+    padding: 16px;
+  }
+}
+
+.sidebarNav {
+  background: #fff;
+  top: 80px;
+}
+.sidebarTitle {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #8190a7;
+}
+.sidebarHeader {
+  padding: 24px;
+}
+.sidebarButton {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+.sidebarButtonActive {
+  background: #edf2ff;
+  border-color: transparent;
+  box-shadow: none;
+  color: #2450d8;
+}
+.sectionTitle {
+  font-size: 28px;
+  letter-spacing: -0.8px;
+  color: #172e59;
+  font-weight: 750;
+}
+.overviewTop {
+  padding: 24px;
+  border-radius: 10px;
+  background: #f8faff;
+  border: 1px solid #e0e6ef;
+  gap: 28px;
+}
+.profilePictureBlock {
+  min-width: 140px;
+}
+.profilePicture,
+.profileFallback {
+  width: 80px;
+  height: 80px;
+  border: 3px solid #edc54d;
+  background: #173b95;
+  font-size: 28px;
+}
+.uploadButton {
+  font-size: 10px;
+  padding: 7px 10px;
+  background: white;
+  color: #2450d8;
+  border: 1px solid #dce3ed;
+}
+.playerName {
+  font-size: 32px;
+  letter-spacing: -1px;
+  color: #172e59;
+}
+.playerMeta {
+  font-size: 12px;
+  color: #6a7890;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.infoCard {
+  padding: 22px;
+  background: white;
+  border-color: #e0e6ef;
+}
+.infoLabel {
+  font-size: 10px;
+  color: #718097;
+  letter-spacing: 1px;
+}
+.infoValue {
+  font-size: 17px;
+  color: #233958;
+  margin-top: 10px;
+}
+.noteText {
+  font-size: 13px;
+  color: #6a7890;
+  font-weight: 400;
+}
+.formGroup label {
+  font-size: 12px;
+  color: #596b88;
+}
+.formGroup input {
+  border-color: #dce3ed;
+  background: #f8faff;
+  font-size: 13px;
+}
+.formActions,
+.settingsList {
+  font-size: 13px;
+}
+.settingsButton {
+  font-size: 12px;
+}
+.emptyState {
+  font-size: 13px;
+  font-weight: 400;
+  border-style: solid;
+  background: #f8faff;
+}
+.errorMessage {
+  font-size: 12px;
+}
+.tournamentsButton {
+  font-size: 12px;
+  background: #2450d8;
+  color: white;
+}
+.noteCard {
+  background: #f8faff;
+  border-color: #e0e6ef;
+}
+.noteTitle {
+  font-size: 15px;
+}

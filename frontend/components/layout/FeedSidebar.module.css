@@ -5,15 +5,15 @@
 }
 
 .nav {
-  @apply sticky top-24 flex h-[calc(100vh-6rem)] flex-col rounded-r-2xl border-r-2 border-gray-300 bg-gradient-to-b from-gray-100 via-gray-200 to-gray-200;
+  @apply sticky top-24 flex h-[calc(100vh-6rem)] flex-col rounded-r-2xl border-r border-slate-200 bg-gradient-to-b from-gray-100 via-gray-200 to-gray-200;
 }
 
 .header {
-  @apply border-b-2 border-gray-300 px-4 pb-4 pt-5;
+  @apply border-b border-slate-200 px-4 pb-4 pt-5;
 }
 
 .title {
-  @apply text-xl font-black uppercase tracking-wide text-blue-800;
+  @apply text-xl font-semibold uppercase tracking-wide text-blue-800;
 }
 
 .subtitle {
@@ -21,7 +21,7 @@
 }
 
 .createPostButton {
-  @apply mt-4 inline-flex w-full items-center justify-center rounded-xl bg-blue-700 px-3 py-2 text-sm font-black text-white transition hover:bg-blue-600;
+  @apply mt-4 inline-flex w-full items-center justify-center rounded-xl bg-blue-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-blue-600;
 }
 
 .list {
@@ -29,7 +29,7 @@
 }
 
 .itemLink {
-  @apply my-1 flex items-center rounded-lg px-3 py-2.5 text-[1.02rem] font-bold text-amber-700 transition hover:bg-white/80 hover:text-amber-800;
+  @apply my-1 flex items-center rounded-lg px-3 py-2.5 text-[1.02rem] font-bold text-slate-500 transition hover:bg-white/80 hover:text-amber-800;
 }
 
 .itemLinkActive {
@@ -38,4 +38,45 @@
 
 .dot {
   @apply mr-3 h-2.5 w-2.5 rounded-full bg-current;
+}
+
+.nav {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e0e6ef;
+  top: 100px;
+  height: auto;
+  min-height: 500px;
+}
+.title {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  color: #233958;
+}
+.subtitle {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #8a98ae;
+}
+.itemLink {
+  font-size: 13px;
+  color: #718097;
+}
+.itemLinkActive {
+  background: #edf2ff;
+  box-shadow: none;
+  border-color: transparent;
+  color: #2450d8;
+}
+.dot {
+  width: 5px;
+  height: 5px;
+}
+.createPostButton {
+  font-size: 12px;
+  border-radius: 7px;
+  background: #2450d8;
+}
+.header {
+  border-color: #e0e6ef;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ratingNumber } from "@/components/RatingPanels";
 import { useAuthGuard } from "@/lib/withAuth";
 
 export default function StatsPage() {
@@ -41,7 +42,7 @@ export default function StatsPage() {
         {ratings.map((r) => (
           <div key={r._id} className="bg-white p-4 rounded-lg shadow mb-2">
             <p>{r.sportId?.name}</p>
-            <p className="font-bold">{r.currentRating}</p>
+            <p className="font-bold">{ratingNumber(r.currentRating)}</p>
           </div>
         ))}
       </div>
@@ -52,11 +53,12 @@ export default function StatsPage() {
 
         {history.map((h) => (
           <div key={h._id} className="text-sm text-gray-600">
-            {h.previousRating} → {h.newRating} ({h.ratingChange > 0 ? "+" : ""}{h.ratingChange})
+            {ratingNumber(h.previousRating)} → {ratingNumber(h.newRating)} (
+            {h.ratingChange > 0 ? "+" : ""}
+            {ratingNumber(h.ratingChange)})
           </div>
         ))}
       </div>
-
     </div>
   );
 }

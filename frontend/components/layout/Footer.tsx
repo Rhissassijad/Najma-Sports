@@ -10,45 +10,47 @@ export default function Footer() {
             Najma<span className={styles.brandAccent}>Sports</span>
           </Link>
           <p className={styles.brandText}>
-            Compete, track performance, and climb rankings across your favorite sports.
+            Your people. Your progress. Your next match.
+            <br />
+            Make every point count.
           </p>
         </div>
-
         <div className={styles.col}>
-          <h3 className={styles.colTitle}>Contact</h3>
-          <ul className={styles.linkList}>
-            <li><Link href="/help" className={styles.link}>Help Center</Link></li>
-            <li><Link href="/support" className={styles.link}>Support</Link></li>
-          </ul>
+          <h3 className={styles.colTitle}>Play</h3>
+          <Link href="/compete" className={styles.link}>
+            Find a match
+          </Link>
+          <Link href="/compete?section=leaderboard" className={styles.link}>
+            Player rankings
+          </Link>
+          <Link href="/profile" className={styles.link}>
+            My profile
+          </Link>
         </div>
-
         <div className={styles.col}>
-          <h3 className={styles.colTitle}>About Us</h3>
-          <ul className={styles.linkList}>
-            <li><Link href="/about" className={styles.link}>Our Mission</Link></li>
-            <li><Link href="/how-it-works" className={styles.link}>How It Works</Link></li>
-          </ul>
+          <h3 className={styles.colTitle}>Connect</h3>
+          <Link href="/feed" className={styles.link}>
+            Community feed
+          </Link>
+          <Link href="/#features" className={styles.link}>
+            About NajmaSports
+          </Link>
+          <Link href="/#how-it-works" className={styles.link}>
+            How it works
+          </Link>
         </div>
-
         <div className={styles.col}>
-          <h3 className={styles.colTitle}>Help</h3>
-          <ul className={styles.linkList}>
-            <li><Link href="/faq" className={styles.link}>FAQ</Link></li>
-            <li><Link href="/terms" className={styles.link}>Terms</Link></li>
-          </ul>
-        </div>
-
-        <div className={styles.col}>
-          <h3 className={styles.colTitle}>Stay In Touch</h3>
-          <ul className={styles.linkList}>
-            <li><Link href="https://www.instagram.com" className={styles.link}>Instagram</Link></li>
-            <li><Link href="https://x.com" className={styles.link}>X / Twitter</Link></li>
-            <li><Link href="https://www.facebook.com" className={styles.link}>Facebook</Link></li>
-          </ul>
+          <h3 className={styles.colTitle}>Your next level</h3>
+          <p className={styles.brandText}>A place for every player.</p>
+          <Link href="/auth/register" className={styles.join}>
+            Join the community →
+          </Link>
         </div>
       </div>
-
-      <div className={styles.bottom}>© {new Date().getFullYear()} RyadaZone. All rights reserved.</div>
+      <div className={styles.bottom}>
+        © {new Date().getFullYear()} NajmaSports. All rights reserved.
+        <span>Built around the love of the game.</span>
+      </div>
     </footer>
   );
 }

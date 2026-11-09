@@ -1,15 +1,62 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #1d4ed8;
-  --accent: #f59e0b;
-  --background: #e5e7eb;
-  --text: #111827;
+  --primary: #2450d8;
+  --accent: #eec64c;
+  --background: #f3f6fb;
+  --text: #1b2d4e;
+  --border: #e0e6ef;
+  --muted: #6a7890;
 }
-
 body {
   background-color: var(--background);
   color: var(--text);
-  font-family: "Inter","Roboto Slab", Cambria, "Times New Roman", serif;
-  font-family:Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button:not(:disabled),
+summary {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+a,
+button,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #c39a22;
+  outline-offset: 3px;
+}
+::selection {
+  background: #dce6ff;
+  color: #173b95;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+img {
+  max-width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }

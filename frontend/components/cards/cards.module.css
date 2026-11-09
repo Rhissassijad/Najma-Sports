@@ -1,7 +1,7 @@
 @reference "../../style/globals.css";
 
 .card {
-  @apply mb-10 overflow-hidden rounded-2xl border border-amber-600 bg-amber-400 shadow-md transition-all duration-200 hover:shadow-lg;
+  @apply mb-10 overflow-hidden rounded-2xl border border-amber-600 bg-amber-400 shadow-sm transition-all duration-200 hover:shadow-lg;
 }
 
 .accentBar {
@@ -25,7 +25,7 @@
 }
 
 .venue {
-  @apply text-2xl font-black text-blue-900;
+  @apply text-2xl font-semibold text-blue-900;
 }
 
 .meta {
@@ -37,7 +37,7 @@
 }
 
 .status {
-  @apply text-xs font-black uppercase tracking-widest text-blue-800;
+  @apply text-xs font-semibold uppercase tracking-widest text-blue-800;
 }
 
 .date {
@@ -69,7 +69,7 @@
 }
 
 .playerName {
-  @apply text-xl font-black;
+  @apply text-xl font-semibold;
 }
 
 .playerNameWinner {
@@ -85,7 +85,7 @@
 }
 
 .ratingValue {
-  @apply font-black text-blue-900;
+  @apply font-semibold text-blue-900;
 }
 
 .scoreBox {
@@ -93,11 +93,11 @@
 }
 
 .score {
-  @apply text-4xl font-black leading-none text-blue-800 tabular-nums md:text-5xl;
+  @apply text-4xl font-semibold leading-none text-blue-800 tabular-nums md:text-5xl;
 }
 
 .ratingChange {
-  @apply mt-1 flex items-center justify-end gap-1 text-sm font-black;
+  @apply mt-1 flex items-center justify-end gap-1 text-sm font-semibold;
 }
 
 .ratingUp {
@@ -121,5 +121,106 @@
 }
 
 .sportTag {
-  @apply font-black uppercase tracking-wide text-blue-800;
+  @apply font-semibold uppercase tracking-wide text-blue-800;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e0e6ef;
+  box-shadow: none;
+  margin-bottom: 20px;
+  border-radius: 12px;
+}
+.accentBar {
+  height: 3px;
+  background: #eac348;
+}
+.body {
+  padding: 24px;
+}
+.sportIcon {
+  background: #edf2ff;
+  color: #2450d8;
+  font-size: 20px;
+}
+.venue {
+  font-size: 18px;
+  color: #1b2d4e;
+}
+.meta,
+.date {
+  font-size: 12px;
+  color: #718097;
+}
+.status {
+  font-size: 10px;
+  color: #36558d;
+  letter-spacing: 1px;
+  background: #edf2ff;
+  border-radius: 20px;
+  padding: 5px 9px;
+  display: inline-block;
+}
+.playerRow {
+  background: #f8faff;
+  border-color: #e7ecf4;
+  border-radius: 8px;
+  padding: 14px;
+}
+.playerRowWinner {
+  background: #eff4ff;
+  border-color: #cedcf9;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: #e0e8f8;
+  color: #3c5b9c;
+  font-size: 16px;
+}
+.playerName {
+  font-size: 15px;
+}
+.ratingLine {
+  font-size: 11px;
+  color: #6a7890;
+}
+.score {
+  font-size: 30px;
+}
+.footer {
+  border-color: #e0e6ef;
+  font-size: 11px;
+  font-weight: 500;
+}
+.sportTag {
+  font-size: 10px;
+}
+.playerLeft,
+.headerLeft {
+  gap: 12px;
+}
+@media (max-width: 500px) {
+  .body {
+    padding: 16px;
+  }
+  .header {
+    flex-wrap: wrap;
+  }
+  .playerName {
+    font-size: 13px;
+  }
+  .avatar {
+    display: none;
+  }
+  .score {
+    font-size: 26px;
+  }
+  .playerRow {
+    padding: 12px;
+  }
+  .footer {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
 }

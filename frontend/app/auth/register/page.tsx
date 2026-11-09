@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import styles from "../auth.module.css";
 import { useRouter } from "next/navigation";
 
 type CountryOption = {
@@ -8,7 +10,20 @@ type CountryOption = {
   name: string;
 };
 
-const FALLBACK_REGION_CODES = ["US", "CA", "GB", "FR", "DE", "ES", "IT", "BR", "MX", "JP", "CN", "IN"];
+const FALLBACK_REGION_CODES = [
+  "US",
+  "CA",
+  "GB",
+  "FR",
+  "DE",
+  "ES",
+  "IT",
+  "BR",
+  "MX",
+  "JP",
+  "CN",
+  "IN",
+];
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 function buildCountryOptions(): CountryOption[] {
@@ -34,14 +49,17 @@ function buildCountryOptions(): CountryOption[] {
     }
   }
 
-  return dynamicRegions
-    .sort((a, b) => a.name.localeCompare(b.name));
+  return dynamicRegions.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export default function RegisterPage() {
   const router = useRouter();
 
-  const countryOptions = useMemo(() => buildCountryOptions(), []);
+  // Resolve browser region names after hydration: Node and Chromium can use different ICU labels.
+  const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
+  useEffect(() => {
+    setCountryOptions(buildCountryOptions());
+  }, []);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -96,7 +114,6 @@ export default function RegisterPage() {
       }
 
       router.push("/auth/login");
-
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -105,112 +122,149 @@ export default function RegisterPage() {
   };
 
   return (
-    <form
-      onSubmit={handleRegister}
-      className="bg-white p-8 rounded-xl shadow-md"
-    >
-      <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
-
-      {error && (
-        <p className="text-red-500 mb-4 text-sm">{error}</p>
-      )}
-
-      <input
-        type="text"
-        placeholder="First Name"
-        className="w-full mb-4 px-4 py-3 border rounded-lg"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-      />
-
-      <input
-        type="text"
-        placeholder="Last Name"
-        className="w-full mb-4 px-4 py-3 border rounded-lg"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        required
-      />
-
-      <input
-        type="email"
-        placeholder="Email Address"
-        className="w-full mb-4 px-4 py-3 border rounded-lg"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-
-      <select
-        className="w-full mb-4 px-4 py-3 border rounded-lg bg-white"
-        value={phoneCountry}
-        onChange={(e) => setPhoneCountry(e.target.value)}
-        required
+    <>
+      <form
+        onSubmit={handleRegister}
+        className="bg-white p-8 rounded-xl shadow-md"
       >
-        <option value="">Country/Region</option>
-        {countryOptions.map((country) => (
-          <option key={country.code} value={country.code}>
-            {country.name} ({country.code})
-          </option>
-        ))}
-      </select>
+        <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
 
-      <input
-        type="tel"
-        placeholder="Phone Number"
-        className="w-full mb-4 px-4 py-3 border rounded-lg"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-        required
-      />
+        {error && (
+          <p role="alert" className="text-red-500 mb-4 text-sm">
+            {error}
+          </p>
+        )}
 
-      <select
-        className="w-full mb-4 px-4 py-3 border rounded-lg bg-white"
-        value={gender}
-        onChange={(e) => setGender(e.target.value)}
-        required
-      >
-        <option value="">Gender</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Non-binary">Non-binary</option>
-        <option value="Prefer not to say">Prefer not to say</option>
-      </select>
+        <label className={styles.fieldLabel} htmlFor="first-name">
+          First Name
+        </label>
+        <input
+          id="first-name"
+          type="text"
+          placeholder="First Name"
+          className="w-full mb-4 px-4 py-3 border rounded-lg"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+        />
 
-      <input
-        type="date"
-        className="w-full mb-4 px-4 py-3 border rounded-lg"
-        value={dateOfBirth}
-        onChange={(e) => setDateOfBirth(e.target.value)}
-        required
-      />
+        <label className={styles.fieldLabel} htmlFor="last-name">
+          Last Name
+        </label>
+        <input
+          id="last-name"
+          type="text"
+          placeholder="Last Name"
+          className="w-full mb-4 px-4 py-3 border rounded-lg"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+        />
 
-      <input
-        type="password"
-        placeholder="Password"
-        className="w-full mb-6 px-4 py-3 border rounded-lg"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+        <label className={styles.fieldLabel} htmlFor="email-address">
+          Email Address
+        </label>
+        <input
+          id="email-address"
+          type="email"
+          placeholder="Email Address"
+          className="w-full mb-4 px-4 py-3 border rounded-lg"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-      <input
-        type="password"
-        placeholder="Confirm Password"
-        className="w-full mb-6 px-4 py-3 border rounded-lg"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        required
-      />
+        <select
+          aria-label="Country or region"
+          className="w-full mb-4 px-4 py-3 border rounded-lg bg-white"
+          value={phoneCountry}
+          onChange={(e) => setPhoneCountry(e.target.value)}
+          required
+        >
+          <option value="">Country/Region</option>
+          {countryOptions.map((country) => (
+            <option key={country.code} value={country.code}>
+              {country.name} ({country.code})
+            </option>
+          ))}
+        </select>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-[#0055CC] text-white py-3 rounded-lg font-semibold hover:opacity-90 transition"
-      >
-        {loading ? "Creating account..." : "Sign Up"}
-      </button>
-    </form>
+        <label className={styles.fieldLabel} htmlFor="phone-number">
+          Phone Number
+        </label>
+        <input
+          id="phone-number"
+          type="tel"
+          placeholder="Phone Number"
+          className="w-full mb-4 px-4 py-3 border rounded-lg"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          required
+        />
+
+        <select
+          aria-label="Gender"
+          className="w-full mb-4 px-4 py-3 border rounded-lg bg-white"
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+          required
+        >
+          <option value="">Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Non-binary">Non-binary</option>
+          <option value="Prefer not to say">Prefer not to say</option>
+        </select>
+
+        <label className={styles.fieldLabel} htmlFor="date-of-birth">
+          Date of birth
+        </label>
+        <input
+          id="date-of-birth"
+          type="date"
+          className="w-full mb-4 px-4 py-3 border rounded-lg"
+          value={dateOfBirth}
+          onChange={(e) => setDateOfBirth(e.target.value)}
+          required
+        />
+
+        <label className={styles.fieldLabel} htmlFor="password">
+          Password
+        </label>
+        <input
+          id="password"
+          type="password"
+          placeholder="Password"
+          className="w-full mb-6 px-4 py-3 border rounded-lg"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
+        <label className={styles.fieldLabel} htmlFor="confirm-password">
+          Confirm Password
+        </label>
+        <input
+          id="confirm-password"
+          type="password"
+          placeholder="Confirm Password"
+          className="w-full mb-6 px-4 py-3 border rounded-lg"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-[#0055CC] text-white py-3 rounded-lg font-semibold hover:opacity-90 transition"
+        >
+          {loading ? "Creating account..." : "Sign Up"}
+        </button>
+      </form>
+      <p className={styles.switch}>
+        Already a player? <Link href="/auth/login">Sign in</Link>
+      </p>
+    </>
   );
 }

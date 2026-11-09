@@ -5,15 +5,15 @@
 }
 
 .nav {
-  @apply flex h-full min-h-full flex-col border-r-2 border-gray-300 bg-gray-200;
+  @apply flex h-full min-h-full flex-col border-r border-slate-200 bg-slate-50;
 }
 
 .header {
-  @apply border-b-2 border-gray-300 px-4 pb-3 pt-4;
+  @apply border-b border-slate-200 px-4 pb-3 pt-4;
 }
 
 .headerTitle {
-  @apply hidden text-xl font-black uppercase tracking-wide text-blue-800 md:block;
+  @apply hidden text-xl font-semibold uppercase tracking-wide text-blue-800 md:block;
 }
 
 .groups {
@@ -25,7 +25,7 @@
 }
 
 .sectionTitle {
-  @apply px-2 text-xl font-black uppercase tracking-wide text-blue-700;
+  @apply px-2 text-xl font-semibold uppercase tracking-wide text-blue-700;
 }
 
 .list {
@@ -41,7 +41,7 @@
 }
 
 .itemInactive {
-  @apply text-amber-600 hover:bg-white/70 hover:text-amber-700;
+  @apply text-slate-500 hover:bg-white/70 hover:text-slate-500;
 }
 
 .itemIcon {
@@ -53,7 +53,7 @@
 }
 
 .userRow {
-  @apply flex min-w-0 items-center gap-3 border-t-2 border-gray-300 bg-gray-300 p-4;
+  @apply flex min-w-0 items-center gap-3 border-t border-slate-200 bg-slate-100 p-4;
 }
 
 .avatar {
@@ -65,7 +65,7 @@
 }
 
 .userName {
-  @apply truncate text-sm font-black text-blue-900;
+  @apply truncate text-sm font-semibold text-blue-900;
 }
 
 .userEmail {
@@ -80,5 +80,111 @@
   @apply mx-auto text-gray-500 md:hidden;
 }
 
-.item{width:100%;text-align:left}.item:focus-visible{outline:3px solid #bd8d12;outline-offset:2px}
-@media(max-width:700px){.aside{width:100%}.header,.sectionTitle,.userRow{display:none}.groups{display:flex;overflow-x:auto;padding:8px;gap:8px}.group{display:contents}.list{display:flex;gap:6px}.item{padding:10px;white-space:nowrap}.itemText{display:inline;font-size:12px;margin-left:6px}.itemIcon{width:18px}.itemIcon svg{width:18px;height:18px}}
+.item {
+  width: 100%;
+  text-align: left;
+}
+.item:focus-visible {
+  outline: 3px solid #bd8d12;
+  outline-offset: 2px;
+}
+@media (max-width: 700px) {
+  .aside {
+    width: 100%;
+  }
+  .header,
+  .sectionTitle,
+  .userRow {
+    display: none;
+  }
+  .groups {
+    display: flex;
+    overflow-x: auto;
+    padding: 8px;
+    gap: 8px;
+  }
+  .group {
+    display: contents;
+  }
+  .list {
+    display: flex;
+    gap: 6px;
+  }
+  .item {
+    padding: 10px;
+    white-space: nowrap;
+  }
+  .itemText {
+    display: inline;
+    font-size: 12px;
+    margin-left: 6px;
+  }
+  .itemIcon {
+    width: 18px;
+  }
+  .itemIcon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.nav {
+  background: #fff;
+  border-color: #e0e6ef;
+}
+.headerTitle {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #8190a7;
+}
+.header {
+  padding: 24px;
+}
+.sectionTitle {
+  font-size: 10px;
+  color: #9aa5b8;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+.groups {
+  padding: 24px 16px;
+}
+.itemText {
+  font-size: 13px;
+}
+.itemIcon svg {
+  width: 18px;
+  height: 18px;
+}
+.itemInactive {
+  color: #718097;
+}
+.itemActive {
+  background: #edf2ff;
+  border-color: transparent;
+  box-shadow: none;
+  color: #2450d8;
+}
+.userRow {
+  background: #fff;
+  border-color: #e0e6ef;
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  background: #f3cc55;
+}
+.userName {
+  font-size: 12px;
+}
+.userEmail {
+  font-size: 10px;
+}
+@media (max-width: 700px) {
+  .groups {
+    padding: 8px;
+  }
+  .itemText {
+    font-size: 12px;
+  }
+}

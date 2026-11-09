@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import { ratingNumber } from "@/components/RatingPanels";
 import styles from "./cards.module.css";
 
 interface Player {
@@ -17,11 +18,13 @@ interface Match {
   createdAt?: string;
   scheduledAt?: string;
   players?: Player[];
-  score?: {
-    type?: string;
-    points?: number[];
-    sets?: number[][];
-  } | number[];
+  score?:
+    | {
+        type?: string;
+        points?: number[];
+        sets?: number[][];
+      }
+    | number[];
   proposedScore?: {
     type?: string;
     points?: number[];
@@ -42,7 +45,8 @@ export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
   const isCompleted =
     match.status === "completed" ||
     (match.winner !== null && match.winner !== undefined);
-  const pendingScore = match.status === "awaiting_confirmation" ? match.proposedScore : null;
+  const pendingScore =
+    match.status === "awaiting_confirmation" ? match.proposedScore : null;
   const score = pendingScore || match.score;
   const scoreForPlayer = (playerIndex: number) => {
     if (Array.isArray(score)) return score[playerIndex] ?? "—";
@@ -73,9 +77,7 @@ export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <div className={styles.sportIcon}>
-              🎾
-            </div>
+            <div className={styles.sportIcon}>🎾</div>
             <div>
               <p className={styles.venue}>
                 {match.venue ? match.venue : "Exhibition Match"}
@@ -103,68 +105,84 @@ export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
         {/* Match Result */}
         <div className={styles.results}>
           {/* Player 1 Row */}
-          <div className={`${styles.playerRow} ${
-            isPlayer1Winner 
-              ? styles.playerRowWinner
-              : styles.playerRowDefault
-          }`}>
+          <div
+            className={`${styles.playerRow} ${
+              isPlayer1Winner ? styles.playerRowWinner : styles.playerRowDefault
+            }`}
+          >
             <div className={styles.playerLeft}>
-              <div className={styles.avatar}>
-                👤
-              </div>
+              <div className={styles.avatar}>👤</div>
               <div>
-                <p className={`${styles.playerName} ${isPlayer1Winner ? styles.playerNameWinner : styles.playerNameDefault}`}>
+                <p
+                  className={`${styles.playerName} ${isPlayer1Winner ? styles.playerNameWinner : styles.playerNameDefault}`}
+                >
                   {player1?.name || "Player 1"}
                 </p>
                 <p className={styles.ratingLine}>
-                  Rating • <span className={styles.ratingValue}>{player1?.rating || "—"}</span>
+                  Rating •{" "}
+                  <span className={styles.ratingValue}>
+                    {ratingNumber(player1?.rating)}
+                  </span>
                 </p>
               </div>
             </div>
 
             <div className={styles.scoreBox}>
-              <p className={styles.score}>
-                {scoreForPlayer(0)}
-              </p>
-              {typeof player1?.ratingChange === "number" && player1.ratingChange !== 0 && (
-                <p className={`${styles.ratingChange} ${
-                  player1.ratingChange > 0 ? styles.ratingUp : styles.ratingDown
-                }`}>
-                  {player1.ratingChange > 0 ? "↑" : "↓"} {Math.abs(player1.ratingChange)}
-                </p>
-              )}
+              <p className={styles.score}>{scoreForPlayer(0)}</p>
+              {typeof player1?.ratingChange === "number" &&
+                player1.ratingChange !== 0 && (
+                  <p
+                    className={`${styles.ratingChange} ${
+                      player1.ratingChange > 0
+                        ? styles.ratingUp
+                        : styles.ratingDown
+                    }`}
+                  >
+                    {player1.ratingChange > 0 ? "↑" : "↓"}{" "}
+                    {ratingNumber(Math.abs(player1.ratingChange))}
+                  </p>
+                )}
             </div>
           </div>
 
           {/* Player 2 Row */}
-          <div className={`${styles.playerRow} ${
-            isPlayer2Winner 
-              ? styles.playerRowWinner
-              : styles.playerRowDefault
-          }`}>
+          <div
+            className={`${styles.playerRow} ${
+              isPlayer2Winner ? styles.playerRowWinner : styles.playerRowDefault
+            }`}
+          >
             <div className={styles.playerLeft}>
-              <div className={styles.avatar}>
-                👤
-              </div>
+              <div className={styles.avatar}>👤</div>
               <div>
-                <p className={`${styles.playerName} ${isPlayer2Winner ? styles.playerNameWinner : styles.playerNameDefault}`}>
+                <p
+                  className={`${styles.playerName} ${isPlayer2Winner ? styles.playerNameWinner : styles.playerNameDefault}`}
+                >
                   {player2?.name || "Player 2"}
                 </p>
                 <p className={styles.ratingLine}>
-                  Rating • <span className={styles.ratingValue}>{player2?.rating || "—"}</span>
+                  Rating •{" "}
+                  <span className={styles.ratingValue}>
+                    {ratingNumber(player2?.rating)}
+                  </span>
                 </p>
               </div>
             </div>
 
             <div className={styles.scoreBox}>
               <p className={styles.score}>{scoreForPlayer(1)}</p>
-              {typeof player2?.ratingChange === "number" && player2.ratingChange !== 0 && (
-                <p className={`${styles.ratingChange} ${
-                  player2.ratingChange > 0 ? styles.ratingUp : styles.ratingDown
-                }`}>
-                  {player2.ratingChange > 0 ? "↑" : "↓"} {Math.abs(player2.ratingChange)}
-                </p>
-              )}
+              {typeof player2?.ratingChange === "number" &&
+                player2.ratingChange !== 0 && (
+                  <p
+                    className={`${styles.ratingChange} ${
+                      player2.ratingChange > 0
+                        ? styles.ratingUp
+                        : styles.ratingDown
+                    }`}
+                  >
+                    {player2.ratingChange > 0 ? "↑" : "↓"}{" "}
+                    {ratingNumber(Math.abs(player2.ratingChange))}
+                  </p>
+                )}
             </div>
           </div>
         </div>
@@ -176,9 +194,7 @@ export default function MatchCard({ match, sport = "Tennis" }: MatchCardProps) {
             {isCompleted ? "Match Completed" : statusText}
           </div>
           {sport && (
-            <div className={styles.sportTag}>
-              {sport.toUpperCase()}
-            </div>
+            <div className={styles.sportTag}>{sport.toUpperCase()}</div>
           )}
         </div>
       </div>
