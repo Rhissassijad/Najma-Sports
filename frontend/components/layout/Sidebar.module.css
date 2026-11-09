@@ -79,3 +79,6 @@
 .menuMobile {
   @apply mx-auto text-gray-500 md:hidden;
 }
+
+.item{width:100%;text-align:left}.item:focus-visible{outline:3px solid #bd8d12;outline-offset:2px}
+@media(max-width:700px){.aside{width:100%}.header,.sectionTitle,.userRow{display:none}.groups{display:flex;overflow-x:auto;padding:8px;gap:8px}.group{display:contents}.list{display:flex;gap:6px}.item{padding:10px;white-space:nowrap}.itemText{display:inline;font-size:12px;margin-left:6px}.itemIcon{width:18px}.itemIcon svg{width:18px;height:18px}}

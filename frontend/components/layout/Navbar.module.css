@@ -51,3 +51,5 @@
 .userBubble {
   @apply flex h-11 w-11 items-center justify-center rounded-full bg-amber-400 text-lg font-black text-blue-950;
 }
+
+@media(max-width:450px){.inner{padding:0 12px;gap:8px}.brand{font-size:23px;letter-spacing:0}.logoutButton{font-size:12px;padding:8px 10px}.userBubble{width:32px;height:32px;font-size:14px}}

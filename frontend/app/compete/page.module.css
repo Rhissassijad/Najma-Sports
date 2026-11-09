@@ -182,3 +182,8 @@
     @apply flex-col items-stretch;
   }
 }
+
+.page { background:#f3f6fb; }
+.mainInner { max-width:1200px; }
+.profileCard { background:white;border-color:#e0e6ef;box-shadow:none; }
+@media(max-width:700px){.shell{flex-direction:column}}

@@ -368,3 +368,10 @@
     width: 100%;
   }
 }
+
+.page { background:#f3f6fb; }
+.mainInner { max-width:1200px; }
+.sectionCard { background:#fff; border-color:#e0e6ef; box-shadow:none; }
+.addSportDisclosure { border-top:1px solid #e0e6ef; padding-top:18px; margin-top:16px; }
+.addSportDisclosure summary { color:#2449b7; font-size:13px; font-weight:700; cursor:pointer; }
+@media(max-width:700px){.shell{flex-direction:column}.sidebar{width:100%}.sidebarNav{position:static;min-height:0;border-right:0}.sidebarHeader{display:none}.sidebarList{display:flex;overflow-x:auto;gap:8px;padding:10px;}.sidebarList li{flex-shrink:0}.sidebarButton{font-size:12px;white-space:nowrap}.sectionCard{padding:16px}}

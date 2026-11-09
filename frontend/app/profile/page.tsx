@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { SportPanel } from "@/components/RatingPanels";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import MatchCard from "@/components/cards/cards";
 import { useAuthGuard } from "@/lib/withAuth";
@@ -571,8 +572,8 @@ export default function ProfilePage() {
 
             {activeSection === "sports-levels" && (
               <section className={styles.sectionCard}>
-                <h1 className={styles.sectionTitle}>My Sports & Levels</h1>
-
+                <SportPanel user={user} ratings={ratings} history={ratingHistory} leaderboards={leaderboards} recentMatches={recentMatches} picture={profilePicture} onEdit={handleEditProfile} />
+                <details className={styles.addSportDisclosure}><summary>Add a sport</summary>
                 <div className={styles.settingsList}>
                   <label className={styles.sportPickerLabel} htmlFor="profile-sport">
                     Add a sport
@@ -608,79 +609,7 @@ export default function ProfilePage() {
                   </button>
                 </div>
 
-                <div className={styles.sportsGrid}>
-                  {ratings.length > 0 ? (
-                    ratings.map((rating: any) => {
-                      const sportId = String(rating.sportId?._id || "");
-                      const leaderboard = leaderboards?.[sportId] || [];
-                      const playerRank = leaderboard.find(
-                        (player: any) =>
-                          String(player.userId?._id || player.userId) ===
-                          String(user?._id)
-                      )?.rank;
-
-                      return (
-                        <div key={rating._id} className={styles.infoCardLarge}>
-                          <h2 className={styles.cardTitle}>
-                            {rating.sportId?.name || "Sport"}
-                          </h2>
-                          <div className={styles.rowLine}>
-                            <span>Current rating</span>
-                            <strong>{rating.currentRating}</strong>
-                          </div>
-                          <div className={styles.rowLine}>
-                            <span>Matches played</span>
-                            <strong>{rating.matchesPlayed}</strong>
-                          </div>
-                          <div className={styles.rowLine}>
-                            <span>Sport ranking</span>
-                            <strong>{playerRank ? `#${playerRank}` : "Not ranked"}</strong>
-                          </div>
-                          {rating.provisional && (
-                            <p className={styles.noteText}>Provisional rating</p>
-                          )}
-                          {leaderboard.length > 0 && (
-                            <div className={styles.leaderboardList}>
-                              <h3 className={styles.cardTitle}>Top players</h3>
-                              {leaderboard.slice(0, 3).map((player: any) => (
-                                <div key={player._id} className={styles.rowLine}>
-                                  <span>
-                                    #{player.rank} {player.userId?.name || "Player"}
-                                  </span>
-                                  <strong>{player.currentRating}</strong>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className={styles.emptyState}>
-                      No sports added yet. Choose a sport above to start tracking your level.
-                    </div>
-                  )}
-                </div>
-
-                <div className={styles.infoCardLarge}>
-                  <h2 className={styles.cardTitle}>Rating progression</h2>
-                  {ratingHistory.length > 0 ? (
-                    [...ratingHistory].reverse().slice(0, 10).map((entry: any) => (
-                      <div key={entry._id} className={styles.rowLine}>
-                        <span>
-                          {entry.sportId?.name || "Sport"} ·{" "}
-                          {new Date(entry.createdAt).toLocaleDateString()}
-                        </span>
-                        <span>
-                          {entry.ratingChange > 0 ? "+" : ""}
-                          {entry.ratingChange} → {entry.newRating}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className={styles.noteText}>Rating progression will appear after completed matches.</p>
-                  )}
-                </div>
+                </details>
               </section>
             )}
 

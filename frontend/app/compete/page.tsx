@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LeaderboardPanel, ratingNumber } from "@/components/RatingPanels";
 import Sidebar from "@/components/layout/Sidebar";
 import MatchCard from "@/components/cards/cards";
 import { useAuthGuard } from "@/lib/withAuth";
@@ -17,6 +18,8 @@ type Section =
 
 export default function CompetePage() {
   const { isAuthenticated, isCheckingAuth } = useAuthGuard("/");
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
+  const [leaderboardError, setLeaderboardError] = useState("");
   const [section, setSection] = useState<Section>("find-players");
   const [selectedSportId, setSelectedSportId] = useState("");
   const [actionMessage, setActionMessage] = useState("");
@@ -98,7 +101,10 @@ export default function CompetePage() {
       leaderboard: [],
     });
     const firstRatedSportId = userJson?.ratings?.[0]?.sportId?._id;
-    setSelectedSportId(firstRatedSportId || sportsCatalog[0]?._id || "");
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("section") === "leaderboard") setSection("leaderboard");
+    const requestedSport = params.get("sport");
+    setSelectedSportId(sportsCatalog.some((s: any) => s._id === requestedSport) ? requestedSport! : firstRatedSportId || sportsCatalog[0]?._id || "");
 
     const failures = results
       .filter((result) => result.status === "rejected")
@@ -122,6 +128,9 @@ export default function CompetePage() {
   useEffect(() => {
     if (!selectedSportId) return;
 
+    let active = true;
+    setLeaderboardLoading(true);
+    setLeaderboardError("");
     const loadLeaderboard = async () => {
       try {
         const response = await fetch(
@@ -131,19 +140,21 @@ export default function CompetePage() {
           throw new Error("Unable to load the selected sport leaderboard.");
         }
         const rows = await response.json();
+        if (!active) return;
         setData((previous: any) => ({
           ...previous,
           leaderboard: Array.isArray(rows) ? rows : [],
         }));
       } catch (error) {
         console.error("Leaderboard fetch error:", error);
-        setActionError(
-          error instanceof Error ? error.message : "Unable to load leaderboard."
-        );
+        if (active) setLeaderboardError(error instanceof Error ? error.message : "Unable to load leaderboard.");
+      } finally {
+        if (active) setLeaderboardLoading(false);
       }
     };
 
     loadLeaderboard();
+    return () => { active = false; };
   }, [selectedSportId]);
 
   const refreshMatches = async (token: string) => {
@@ -245,10 +256,10 @@ export default function CompetePage() {
                         {r.sportId?.name || "Sport"}
                       </p>
                       <p className={styles.ratingValue}>
-                        {r.currentRating}
+                        {ratingNumber(r.currentRating)}
                       </p>
                       <p className={styles.matchesPlayed}>
-                        {r.matchesPlayed} matches
+                        {r.matchesPlayed} {r.matchesPlayed === 1 ? "match" : "matches"}
                       </p>
                     </div>
                   ))
@@ -453,36 +464,7 @@ export default function CompetePage() {
 )}
             {/* LEADERBOARD */}
             {section === "leaderboard" && (
-              <div className={styles.sectionCard}>
-                <h2 className={styles.sectionTitleWithGap}>Leaderboard</h2>
-
-                <label className={styles.leaderboardSportLabel} htmlFor="leaderboard-sport">
-                  Sport
-                </label>
-                <select
-                  id="leaderboard-sport"
-                  className={styles.leaderboardSportSelect}
-                  value={selectedSportId}
-                  onChange={(event) => setSelectedSportId(event.target.value)}
-                >
-                  {data.sportsCatalog.map((sport: any) => (
-                    <option key={sport._id} value={sport._id}>{sport.name}</option>
-                  ))}
-                </select>
-
-                {Array.isArray(leaderboard) && leaderboard.length > 0 ? (
-                  leaderboard.slice(0, 10).map((p: any, i: number) => (
-                    <div key={p._id} className={styles.leaderboardRow}>
-                      <span>
-                        #{p.rank || i + 1} {p.userId?.name || p.name}
-                      </span>
-                      <span>{p.currentRating}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p>No leaderboard data</p>
-                )}
-              </div>
+              <LeaderboardPanel rows={leaderboard} sports={data.sportsCatalog} selectedSport={selectedSportId} onSportChange={setSelectedSportId} user={user} loading={leaderboardLoading} error={leaderboardError} />
             )}
 
             {/* OTHER SECTIONS (UNCHANGED) */}

@@ -23,10 +23,10 @@ function SidebarItem({
   onClick: () => void;
 }) {
   return (
-    <li onClick={onClick} className={`${styles.item} ${active ? styles.itemActive : styles.itemInactive}`}>
+    <li><button type="button" onClick={onClick} aria-current={active ? "page" : undefined} className={`${styles.item} ${active ? styles.itemActive : styles.itemInactive}`}>
       <div className={styles.itemIcon}>{icon}</div>
       <span className={styles.itemText}>{text}</span>
-    </li>
+    </button></li>
   );
 }
 
