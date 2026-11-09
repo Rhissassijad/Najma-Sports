@@ -58,6 +58,9 @@ router.get("/me", protect, async (req, res) => {
 
     res.json({
       user,
+      followingIds: (user?.following || []).map(String),
+      followersCount: user?.followers?.length || 0,
+      followingCount: user?.following?.length || 0,
       ratings,
       recentMatches: enrichedRecentMatches,
       upcomingMatches: enrichedUpcomingMatches,
@@ -66,6 +69,64 @@ router.get("/me", protect, async (req, res) => {
   } catch (error) {
     console.error("GET /api/users/me ERROR:", error);
     return res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/:userId/follow", protect, async (req, res) => {
+  const targetId = req.params.userId;
+  if (!mongoose.isValidObjectId(targetId))
+    return res.status(400).json({ message: "Invalid user ID." });
+  if (String(targetId) === String(req.user.id))
+    return res.status(400).json({ message: "You cannot follow yourself." });
+  if (
+    req.body?.following !== undefined &&
+    typeof req.body.following !== "boolean"
+  )
+    return res
+      .status(400)
+      .json({ message: "Following must be true or false." });
+  const session = await mongoose.startSession();
+  let result;
+  try {
+    await session.withTransaction(async () => {
+      const current = await User.findById(req.user.id)
+        .select("following")
+        .session(session);
+      const target = await User.findById(targetId)
+        .select("followers")
+        .session(session);
+      if (!current || !target)
+        throw Object.assign(new Error("User not found."), { status: 404 });
+      const following =
+        req.body?.following ??
+        !current.following.some((id) => String(id) === String(targetId));
+      await User.updateOne(
+        { _id: current._id },
+        following
+          ? { $addToSet: { following: target._id } }
+          : { $pull: { following: target._id } },
+        { session },
+      );
+      await User.updateOne(
+        { _id: target._id },
+        following
+          ? { $addToSet: { followers: current._id } }
+          : { $pull: { followers: current._id } },
+        { session },
+      );
+      result = { following };
+    });
+    res.json(result);
+  } catch (error) {
+    res
+      .status(error.status || 500)
+      .json({
+        message: error.status
+          ? error.message
+          : "Could not update following. Check database transaction support and retry.",
+      });
+  } finally {
+    await session.endSession();
   }
 });
 

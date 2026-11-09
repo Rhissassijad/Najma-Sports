@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { API_URL } from "@/lib/api";
 import { ALL_SPORTS, disciplines, individualDiscipline } from "@/lib/sports";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -59,7 +60,7 @@ type UserMeResponse = {
   followingIds?: string[];
 };
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = API_URL;
 const FUTURE_FEATURE_TEXT = "Feature available in the near future.";
 
 const SECTION_INTRO: Record<
@@ -290,7 +291,7 @@ function FeedPageContent() {
     load();
   }, []);
 
-  const showFutureModeCard = feedMode === "following" || feedMode === "nearby";
+  const showFutureModeCard = feedMode === "nearby";
   const showFutureSectionCard = section === "trending";
   const showFutureFilterCard = contentFilter === "matches";
   const isCommunitySection = section === "my-communities";
@@ -329,6 +330,10 @@ function FeedPageContent() {
     if (showFutureSectionCard || showFutureFilterCard) return [];
 
     let list = [...posts];
+    if (feedMode === "following")
+      list = list.filter((post) =>
+        followingIds.includes(String(post.author?._id)),
+      );
 
     if (section === "my-sports") {
       if (userSports.length === 0) return [];
@@ -358,6 +363,8 @@ function FeedPageContent() {
     return list;
   }, [
     posts,
+    feedMode,
+    followingIds,
     section,
     userSports,
     sportFilter,
@@ -557,7 +564,12 @@ function FeedPageContent() {
       return;
     }
 
-    if (!targetUserId || String(targetUserId) === String(currentUserId)) return;
+    if (
+      followBusyUserId ||
+      !targetUserId ||
+      String(targetUserId) === String(currentUserId)
+    )
+      return;
 
     try {
       setFollowBusyUserId(targetUserId);
@@ -566,11 +578,22 @@ function FeedPageContent() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          following: !followingIds.includes(targetUserId),
+        }),
       });
 
       const data = await res.json().catch(() => null);
       if (!res.ok) {
+        if (
+          res.status === 404 &&
+          String(data?.message || "").includes("API route not found")
+        )
+          throw new Error(
+            "This backend is missing the follow API. Pull the latest code and restart the backend with npm run server.",
+          );
         const fallbackMessage = `Failed to update follow (HTTP ${res.status}).`;
         throw new Error(
           (data && typeof data === "object" && "message" in data
@@ -1207,7 +1230,7 @@ function FeedPageContent() {
 
             {showFutureModeCard && (
               <FutureFeatureCard
-                title={`${feedMode === "following" ? "Following" : "Nearby"} Feed`}
+                title="Nearby Feed"
               />
             )}
             {showFutureSectionCard && (
@@ -1418,7 +1441,7 @@ function FeedPageContent() {
                                 : styles.followButton
                             }
                             onClick={() => handleToggleFollow(authorId)}
-                            disabled={isFollowBusy}
+                            disabled={!!followBusyUserId}
                           >
                             {isFollowBusy
                               ? "..."

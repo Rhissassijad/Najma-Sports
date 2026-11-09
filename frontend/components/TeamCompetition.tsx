@@ -74,8 +74,16 @@ export default function TeamCompetition({
       },
     );
     const result = await response.json();
-    if (!response.ok)
+    if (!response.ok) {
+      if (
+        response.status === 404 &&
+        String(result.message || "").includes("API route not found")
+      )
+        throw new Error(
+          "This backend is missing the team-sports API. Pull the latest repository changes and restart the backend with npm run server from the repository root. Check NEXT_PUBLIC_API_URL points to that backend.",
+        );
       throw new Error(result.message || "Unable to complete the request.");
+    }
     return result;
   }
   async function refresh() {
